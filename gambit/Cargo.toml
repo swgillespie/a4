@@ -5,4 +5,5 @@ authors = ["Sean Gillespie <sean@swgillespie.me>"]
 edition = "2018"
 
 [dependencies]
-thiserror = "1.0.23"
+thiserror = "1.0.23" 
+bitflags = "1.2.1"

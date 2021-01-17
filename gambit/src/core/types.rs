@@ -1,4 +1,4 @@
-// Copyright 2021 Sean Gillespie.
+// Copyright 2017-2021 Sean Gillespie.
 //
 // Licensed under the Apache License, Version 2.0 <LICENSE-APACHE or
 // http://www.apache.org/licenses/LICENSE-2.0> or the MIT license
@@ -7,6 +7,8 @@
 // except according to those terms.
 
 use std::{convert::TryFrom, fmt};
+
+use bitflags::bitflags;
 use thiserror::Error;
 
 #[derive(Debug, Error)]
@@ -19,12 +21,22 @@ pub enum SquareParseError {
 pub enum RankParseError {
     #[error("rank index out of range: {0}")]
     OutOfRange(u8),
+    #[error("invalid char: {0}")]
+    InvalidChar(char),
 }
 
 #[derive(Debug, Error)]
 pub enum FileParseError {
     #[error("file index out of range: {0}")]
     OutOfRange(u8),
+    #[error("invalid char: {0}")]
+    InvalidChar(char),
+}
+
+#[derive(Debug, Error)]
+pub enum PieceParseError {
+    #[error("invalid char: {0}")]
+    InvalidChar(char),
 }
 
 /// A square on the chessboard.
@@ -64,26 +76,6 @@ impl fmt::Display for Square {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}{}", self.file(), self.rank())
     }
-}
-
-pub struct SquaresIterator(u8);
-
-impl Iterator for SquaresIterator {
-    type Item = Square;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        if self.0 >= 64 {
-            None
-        } else {
-            let idx = self.0;
-            self.0 += 1;
-            Some(Square(idx))
-        }
-    }
-}
-
-pub fn squares() -> SquaresIterator {
-    SquaresIterator(0)
 }
 
 pub const A1: Square = Square(0);
@@ -166,6 +158,26 @@ impl TryFrom<u8> for Rank {
     }
 }
 
+impl TryFrom<char> for Rank {
+    type Error = RankParseError;
+
+    fn try_from(value: char) -> Result<Self, Self::Error> {
+        let rank = match value {
+            '1' => RANK_1,
+            '2' => RANK_2,
+            '3' => RANK_3,
+            '4' => RANK_4,
+            '5' => RANK_5,
+            '6' => RANK_6,
+            '7' => RANK_7,
+            '8' => RANK_8,
+            c => return Err(RankParseError::InvalidChar(c)),
+        };
+
+        Ok(rank)
+    }
+}
+
 impl fmt::Display for Rank {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let c = match self.0 {
@@ -208,6 +220,26 @@ impl TryFrom<u8> for File {
     }
 }
 
+impl TryFrom<char> for File {
+    type Error = FileParseError;
+
+    fn try_from(value: char) -> Result<Self, Self::Error> {
+        let file = match value {
+            'a' => FILE_A,
+            'b' => FILE_A,
+            'c' => FILE_A,
+            'd' => FILE_A,
+            'e' => FILE_A,
+            'f' => FILE_A,
+            'g' => FILE_A,
+            'h' => FILE_A,
+            c => return Err(FileParseError::InvalidChar(c)),
+        };
+
+        Ok(file)
+    }
+}
+
 impl fmt::Display for File {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let c = match self.0 {
@@ -235,7 +267,12 @@ pub const FILE_F: File = File(5);
 pub const FILE_G: File = File(6);
 pub const FILE_H: File = File(7);
 
-pub struct Color(u8);
+#[repr(u8)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq)]
+pub enum Color {
+    White,
+    Black,
+}
 
 #[repr(u8)]
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
@@ -246,6 +283,72 @@ pub enum PieceKind {
     Rook,
     Queen,
     King,
+}
+
+#[derive(Copy, Clone, Debug, PartialEq, Eq)]
+pub struct Piece {
+    pub color: Color,
+    pub kind: PieceKind,
+}
+
+impl TryFrom<char> for Piece {
+    type Error = PieceParseError;
+
+    fn try_from(value: char) -> Result<Self, Self::Error> {
+        let piece = match value {
+            'p' => Piece {
+                color: Color::Black,
+                kind: PieceKind::Pawn,
+            },
+            'n' => Piece {
+                color: Color::Black,
+                kind: PieceKind::Knight,
+            },
+            'b' => Piece {
+                color: Color::Black,
+                kind: PieceKind::Bishop,
+            },
+            'r' => Piece {
+                color: Color::Black,
+                kind: PieceKind::Rook,
+            },
+            'q' => Piece {
+                color: Color::Black,
+                kind: PieceKind::Queen,
+            },
+            'k' => Piece {
+                color: Color::Black,
+                kind: PieceKind::King,
+            },
+            'P' => Piece {
+                color: Color::White,
+                kind: PieceKind::Pawn,
+            },
+            'N' => Piece {
+                color: Color::White,
+                kind: PieceKind::Knight,
+            },
+            'B' => Piece {
+                color: Color::White,
+                kind: PieceKind::Bishop,
+            },
+            'R' => Piece {
+                color: Color::White,
+                kind: PieceKind::Rook,
+            },
+            'Q' => Piece {
+                color: Color::White,
+                kind: PieceKind::Queen,
+            },
+            'K' => Piece {
+                color: Color::White,
+                kind: PieceKind::King,
+            },
+            c => return Err(PieceParseError::InvalidChar(c)),
+        };
+
+        Ok(piece)
+    }
 }
 
 impl fmt::Display for PieceKind {
@@ -261,4 +364,70 @@ impl fmt::Display for PieceKind {
 
         write!(f, "{}", c)
     }
+}
+
+bitflags! {
+    pub struct CastleStatus: u8 {
+        const NONE = 0;
+        const WHITE_KINGSIDE = 0b0000_0001;
+        const WHITE_QUEENSIDE =0b0000_0010;
+        const WHITE = Self::WHITE_KINGSIDE.bits | Self::WHITE_QUEENSIDE.bits;
+        const BLACK_KINGSIDE = 0b0000_0100;
+        const BLACK_QUEENSIDE = 0b0000_1000;
+        const BLACK = Self::BLACK_KINGSIDE.bits | Self::BLACK_QUEENSIDE.bits;
+    }
+}
+
+macro_rules! type_iterator {
+    ($name:ident, $type:ident, $max:expr) => {
+        pub struct $name(u8, u8);
+
+        impl Iterator for $name {
+            type Item = $type;
+
+            fn next(&mut self) -> Option<Self::Item> {
+                if self.0 >= self.1 {
+                    None
+                } else {
+                    let next = self.0;
+                    self.0 += 1;
+                    Some($type(next))
+                }
+            }
+        }
+
+        impl ::std::iter::DoubleEndedIterator for $name {
+            fn next_back(&mut self) -> Option<Self::Item> {
+                if self.1 == 0 {
+                    None
+                } else {
+                    let next = self.1 - 1;
+                    self.1 -= 1;
+                    Some($type(next))
+                }
+            }
+        }
+
+        impl Default for $name {
+            fn default() -> Self {
+                $name(0, $max)
+            }
+        }
+    };
+}
+
+type_iterator!(AllSquares, Square, 64);
+type_iterator!(AllRanks, Rank, 8);
+type_iterator!(AllFiles, File, 8);
+
+pub fn squares() -> AllSquares {
+    AllSquares::default()
+}
+
+pub fn ranks() -> AllRanks {
+    AllRanks::default()
+}
+
+pub fn files() -> AllFiles {
+    AllFiles::default()
 }

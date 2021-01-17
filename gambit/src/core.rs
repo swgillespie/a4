@@ -13,7 +13,10 @@ mod squareset;
 mod types;
 
 pub use squareset::{SquareSet, SquareSetIterator};
-pub use types::{squares, Color, File, PieceKind, Rank, Square, SquareParseError, SquaresIterator};
+pub use types::{
+    files, ranks, squares, AllFiles, AllRanks, AllSquares, CastleStatus, Color, File, Piece,
+    PieceKind, PieceParseError, Rank, Square, SquareParseError,
+};
 
 pub use types::{
     A1, A2, A3, A4, A5, A6, A7, A8, B1, B2, B3, B4, B5, B6, B7, B8, C1, C2, C3, C4, C5, C6, C7, C8,

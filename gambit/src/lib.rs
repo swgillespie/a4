@@ -13,3 +13,6 @@
 //! is capable of playing chess via the `UCI` protocol.
 
 pub mod core;
+mod position;
+
+pub use position::Position;
