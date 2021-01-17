@@ -1,0 +1,8 @@
+{
+    "licenser.author": "Sean Gillespie <sean@swgillespie.me>",
+    "licenser.license": "MIT",
+    "licenser.projectName": "Gambit",
+    "license-header-manager.excludeExtensions": [
+        "toml"
+    ]
+}
