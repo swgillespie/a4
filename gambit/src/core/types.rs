@@ -431,3 +431,15 @@ pub fn ranks() -> AllRanks {
 pub fn files() -> AllFiles {
     AllFiles::default()
 }
+
+pub fn piece_kinds() -> ::std::vec::IntoIter<PieceKind> {
+    vec![
+        PieceKind::Pawn,
+        PieceKind::Bishop,
+        PieceKind::Knight,
+        PieceKind::Rook,
+        PieceKind::Queen,
+        PieceKind::King,
+    ]
+    .into_iter()
+}

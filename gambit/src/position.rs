@@ -50,11 +50,66 @@ pub struct Position {
 
 impl Position {
     pub fn new() -> Position {
-        unimplemented!()
+        Position {
+            sets_by_piece: [SquareSet::empty(); 12],
+            sets_by_color: [SquareSet::empty(); 2],
+            current_information: IrreversibleInformation {
+                halfmove_clock: 0,
+                fullmove_clock: 0,
+                castle_status: CastleStatus::BLACK | CastleStatus::WHITE,
+                en_passant_square: None,
+            },
+            previous_information: vec![],
+            side_to_move: Color::White,
+        }
     }
 
     pub fn add_piece(&mut self, square: Square, piece: Piece) -> Result<(), ()> {
-        unimplemented!()
+        if self.piece_at(square).is_some() {
+            return Err(());
+        }
+
+        self.sets_by_color[piece.color as usize].insert(square);
+        let offset = if piece.color == Color::White { 0 } else { 6 };
+        self.sets_by_piece[piece.kind as usize + offset].insert(square);
+        Ok(())
+    }
+
+    pub fn remove_piece(&mut self, square: Square) -> Result<(), ()> {
+        let existing_piece = if let Some(piece) = self.piece_at(square) {
+            piece
+        } else {
+            return Err(());
+        };
+
+        self.sets_by_color[existing_piece.color as usize].remove(square);
+        let offset = if existing_piece.color == Color::White {
+            0
+        } else {
+            6
+        };
+        self.sets_by_piece[existing_piece.kind as usize + offset].remove(square);
+        Ok(())
+    }
+
+    pub fn piece_at(&self, square: Square) -> Option<Piece> {
+        let (board_offset, color) = if self.sets_by_color[Color::White as usize].contains(square) {
+            (0, Color::White)
+        } else if self.sets_by_color[Color::Black as usize].contains(square) {
+            (6, Color::Black)
+        } else {
+            return None;
+        };
+
+        for kind in core::piece_kinds() {
+            let board = self.sets_by_piece[kind as usize + board_offset];
+            if board.contains(square) {
+                return Some(Piece { kind, color });
+            }
+        }
+
+        // If we get here, we failed to update a bitboard somewhere.
+        unreachable!()
     }
 }
 
@@ -104,7 +159,7 @@ impl Position {
     }
 
     /// Constructs a new position from a FEN representation of a board position.
-    pub fn from_fen<S: AsRef<str>>(fen: S) -> Result<Position, FenParseError> {
+    pub fn from_fen(fen: impl AsRef<str>) -> Result<Position, FenParseError> {
         use std::iter::Peekable;
         use std::str::Chars;
 
