@@ -8,14 +8,15 @@
 
 //! Module `core` contains core datatypes and data structures used pervasively throughout `gambit`.
 
+mod attacks;
 mod r#move;
 mod squareset;
 mod types;
 
 pub use squareset::{SquareSet, SquareSetIterator};
 pub use types::{
-    files, piece_kinds, ranks, squares, AllFiles, AllRanks, AllSquares, CastleStatus, Color,
-    Direction, File, Piece, PieceKind, PieceParseError, Rank, Square, SquareParseError,
+    colors, files, piece_kinds, ranks, squares, AllFiles, AllRanks, AllSquares, CastleStatus,
+    Color, Direction, File, Piece, PieceKind, PieceParseError, Rank, Square, SquareParseError,
 };
 
 pub use types::{
@@ -28,3 +29,5 @@ pub use types::{FILE_A, FILE_B, FILE_C, FILE_D, FILE_E, FILE_F, FILE_G, FILE_H};
 pub use types::{RANK_1, RANK_2, RANK_3, RANK_4, RANK_5, RANK_6, RANK_7, RANK_8};
 
 pub use r#move::Move;
+
+pub use attacks::{king_attacks, pawn_attacks};

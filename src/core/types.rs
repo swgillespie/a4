@@ -59,10 +59,14 @@ impl Square {
         Square(rank.0 * 8 + file.0)
     }
 
+    pub(in crate::core) const fn plus(self, offset: i32) -> Square {
+        Square((self.0 as i32 + offset) as u8)
+    }
+
     /// Returns the closest square in the given direction. Invalid if the requested direction goes off of the
     /// board.
     pub const fn towards(self, dir: Direction) -> Square {
-        Square((self.0 as i32 + dir.as_vector()) as u8)
+        self.plus(dir.as_vector())
     }
 }
 
@@ -542,4 +546,8 @@ pub fn piece_kinds() -> ::std::vec::IntoIter<PieceKind> {
         PieceKind::King,
     ]
     .into_iter()
+}
+
+pub fn colors() -> ::std::vec::IntoIter<Color> {
+    vec![Color::White, Color::Black].into_iter()
 }

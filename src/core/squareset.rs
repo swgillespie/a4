@@ -17,16 +17,12 @@ pub struct SquareSet(u64);
 impl SquareSet {
     /// Creates a new, empty SquareSet.
     pub const fn empty() -> SquareSet {
-        SquareSet::bits(0)
-    }
-
-    const fn bits(bits: u64) -> SquareSet {
-        SquareSet(bits)
+        SquareSet(0)
     }
 
     /// Creates a new SquareSet with all squares present in the set.
     pub const fn all() -> SquareSet {
-        SquareSet::bits(0xFFFFFFFFFFFF)
+        SquareSet(0xFFFFFFFFFFFF)
     }
 
     /// Tests whether or not the given square is contained within this SquareSet.
@@ -34,11 +30,11 @@ impl SquareSet {
         self.0 & (1u64 << square.0) != 0
     }
 
-    pub fn insert(&mut self, square: Square) {
+    pub const fn insert(&mut self, square: Square) {
         self.0 |= 1u64 << square.0;
     }
 
-    pub fn remove(&mut self, square: Square) {
+    pub const fn remove(&mut self, square: Square) {
         self.0 &= !(1u64 << square.0);
     }
 
@@ -62,36 +58,44 @@ impl SquareSet {
         SquareSet(!self.0)
     }
 
-    pub fn rank(self, rank: Rank) -> SquareSet {
+    pub const fn xor(self, other: SquareSet) -> SquareSet {
+        SquareSet(self.0 ^ other.0)
+    }
+
+    pub const fn rank(self, rank: Rank) -> SquareSet {
         let rank_set = match rank {
-            core::RANK_1 => SquareSet::bits(0x00000000000000FF),
-            core::RANK_2 => SquareSet::bits(0x000000000000FF00),
-            core::RANK_3 => SquareSet::bits(0x0000000000FF0000),
-            core::RANK_4 => SquareSet::bits(0x00000000FF000000),
-            core::RANK_5 => SquareSet::bits(0x000000FF00000000),
-            core::RANK_6 => SquareSet::bits(0x0000FF0000000000),
-            core::RANK_7 => SquareSet::bits(0x00FF000000000000),
-            core::RANK_8 => SquareSet::bits(0xFF00000000000000),
+            core::RANK_1 => SquareSet(0x00000000000000FF),
+            core::RANK_2 => SquareSet(0x000000000000FF00),
+            core::RANK_3 => SquareSet(0x0000000000FF0000),
+            core::RANK_4 => SquareSet(0x00000000FF000000),
+            core::RANK_5 => SquareSet(0x000000FF00000000),
+            core::RANK_6 => SquareSet(0x0000FF0000000000),
+            core::RANK_7 => SquareSet(0x00FF000000000000),
+            core::RANK_8 => SquareSet(0xFF00000000000000),
             _ => unreachable!(),
         };
 
         self.and(rank_set)
     }
 
-    pub fn file(self, file: File) -> SquareSet {
+    pub const fn file(self, file: File) -> SquareSet {
         let file_set = match file {
-            core::FILE_A => SquareSet::bits(0x00000000000000FF),
-            core::FILE_B => SquareSet::bits(0x0202020202020202),
-            core::FILE_C => SquareSet::bits(0x0404040404040404),
-            core::FILE_D => SquareSet::bits(0x0808080808080808),
-            core::FILE_E => SquareSet::bits(0x1010101010101010),
-            core::FILE_F => SquareSet::bits(0x2020202020202020),
-            core::FILE_G => SquareSet::bits(0x4040404040404040),
-            core::FILE_H => SquareSet::bits(0x8080808080808080),
+            core::FILE_A => SquareSet(0x00000000000000FF),
+            core::FILE_B => SquareSet(0x0202020202020202),
+            core::FILE_C => SquareSet(0x0404040404040404),
+            core::FILE_D => SquareSet(0x0808080808080808),
+            core::FILE_E => SquareSet(0x1010101010101010),
+            core::FILE_F => SquareSet(0x2020202020202020),
+            core::FILE_G => SquareSet(0x4040404040404040),
+            core::FILE_H => SquareSet(0x8080808080808080),
             _ => unreachable!(),
         };
 
         self.and(file_set)
+    }
+
+    pub fn bits(self) -> u64 {
+        self.0
     }
 }
 
