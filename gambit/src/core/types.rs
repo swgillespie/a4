@@ -274,6 +274,15 @@ pub enum Color {
     Black,
 }
 
+impl Color {
+    pub fn toggle(self) -> Color {
+        match self {
+            Color::White => Color::Black,
+            Color::Black => Color::White,
+        }
+    }
+}
+
 #[repr(u8)]
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub enum PieceKind {

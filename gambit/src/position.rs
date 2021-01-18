@@ -6,9 +6,11 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
-use crate::core::{self, CastleStatus, Color, File, Piece, PieceKind, Rank, Square, SquareSet};
+use crate::core::{
+    self, CastleStatus, Color, File, Move, Piece, PieceKind, Rank, Square, SquareSet,
+};
 use std::convert::TryFrom;
-use std::fmt;
+use std::fmt::{self, Write};
 use thiserror::Error;
 
 /// Information that can't be recovered normally when unmaking a move. When making or unmaking a move, this information
@@ -17,6 +19,7 @@ use thiserror::Error;
 /// Because this structure is cloned, care must be taken to make this structure as small as possible.
 #[derive(Clone, Debug)]
 struct IrreversibleInformation {
+    mov: Option<Move>,
     halfmove_clock: u16,
     fullmove_clock: u16,
     castle_status: CastleStatus,
@@ -135,6 +138,7 @@ impl Position {
             sets_by_piece: [SquareSet::empty(); 12],
             sets_by_color: [SquareSet::empty(); 2],
             current_information: IrreversibleInformation {
+                mov: None,
                 halfmove_clock: 0,
                 fullmove_clock: 0,
                 castle_status: CastleStatus::BLACK | CastleStatus::WHITE,
@@ -191,6 +195,79 @@ impl Position {
 
         // If we get here, we failed to update a bitboard somewhere.
         unreachable!()
+    }
+}
+
+//
+// Make and unmake move and associated state update functions.
+//
+
+impl Position {
+    /// Makes a move on the position, updating all internal state to reflect the effects of the move.
+    pub fn make_move(&mut self, mov: Move) {
+        // Position works by incrementally updating the lion's share of state while cloning and persisting the things
+        // that can't be incrementally updated.
+        //
+        // First thing we do: stash away this move's irreversible state. From here on out we will be destructively
+        // modifiying all state in the position.
+        self.current_information.mov = Some(mov);
+        self.previous_information
+            .push(self.current_information.clone());
+
+        if mov.is_null() {
+            // Quick out for null moves:
+            //  1. EP is not legal next turn.
+            //  2. Halfmove clock always increases.
+            //  3. Fullmove clock increases if Black is the one making the null move.
+            self.current_information.en_passant_square = None;
+            self.current_information.halfmove_clock += 1;
+            self.side_to_move = self.side_to_move.toggle();
+            if self.side_to_move == Color::White {
+                self.current_information.fullmove_clock += 1;
+            }
+
+            return;
+        }
+
+        let moving_piece = self
+            .piece_at(mov.source())
+            .expect("no piece at move source");
+        self.remove_piece(mov.source())
+            .expect("no piece at move source");
+        self.add_piece(mov.destination(), moving_piece).expect(
+            "piece present at move destination, should have been removed already if capture",
+        );
+        self.side_to_move = self.side_to_move.toggle();
+        if self.side_to_move == Color::White {
+            self.current_information.fullmove_clock += 1;
+        }
+    }
+
+    pub fn unmake_move(&mut self, mov: Move) {
+        // Almost all of our state will be re-calculated by incrementally unmaking the given move on our current state.
+        // The bits that can't be inferred from our current state are stored in the `previous_information` vector,
+        // which we'll pop and slam into `current_information`.
+        //
+        // First, we do two checks to make sure that what we're doing isn't totally invalid:
+        // 1. There needs to be at least one move to unmake
+        assert!(!self.previous_information.is_empty());
+        // 2. The move we're unmaking needs to be the most recently applied move.
+        assert!(self.previous_information.last().unwrap().mov.unwrap() == mov);
+
+        // Restore the previous move's information into our current information slot.
+        self.current_information = self.previous_information.pop().unwrap();
+        // Clear out the move; we're unmaking it and we'll overwrite it later when we make another move.
+        self.current_information.mov = None;
+
+        // The rest of unmake_move proceeds as the reverse of make_move, for the most part.
+        let moved_piece = self
+            .piece_at(mov.destination())
+            .expect("no piece at move destination");
+        self.remove_piece(mov.destination())
+            .expect("no piece at move destination");
+        self.add_piece(mov.source(), moved_piece)
+            .expect("piece at move source");
+        self.side_to_move = self.side_to_move.toggle();
     }
 }
 
@@ -577,12 +654,11 @@ impl Position {
     }
     */
 
-    /*
     pub fn as_fen(&self) -> String {
         let mut buf = String::new();
-        for &rank in RANKS.iter().rev() {
+        for rank in core::ranks().rev() {
             let mut empty_squares = 0;
-            for &file in &FILES {
+            for file in core::files() {
                 let square = Square::of(rank, file);
                 if let Some(piece) = self.piece_at(square) {
                     if empty_squares != 0 {
@@ -599,7 +675,7 @@ impl Position {
                 write!(&mut buf, "{}", empty_squares).unwrap();
             }
 
-            if rank != Rank::One {
+            if rank != core::RANK_1 {
                 buf.push('/');
             }
         }
@@ -638,7 +714,6 @@ impl Position {
         .unwrap();
         buf
     }
-    */
 }
 
 impl fmt::Display for Position {
@@ -1040,6 +1115,13 @@ mod tests {
             assert_eq!(FenParseError::InvalidFullmove, err);
         }
 
+        #[test]
+        fn start_position_roundtrip() {
+            let str = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+            let pos = Position::from_fen(str).unwrap();
+            assert_eq!(pos.as_fen(), str);
+        }
+
         /*
         #[test]
         fn uci_nullmove() {
@@ -1143,5 +1225,33 @@ mod tests {
             );
         }
         */
+    }
+
+    mod make_unmake {
+        use crate::core::*;
+        use crate::position::Position;
+
+        // White pawn on e3, white to move, white moves to e4. It should now be black's turn and there should be
+        // a white pawn on e4. Unmake the move, it should be white's turn to move and a white pawn should be on e3.
+        #[test]
+        fn basic_movement() {
+            let mut pos = Position::from_fen("8/8/8/8/8/4P3/8/8 w - - 0 1").unwrap();
+            assert!(pos.piece_at(E3).is_some());
+            let mov = Move::quiet(E3, E4);
+            pos.make_move(mov);
+            assert!(pos.piece_at(E3).is_none());
+            assert!(pos.piece_at(E4).is_some());
+            let piece = pos.piece_at(E4).unwrap();
+            assert_eq!(piece.kind, PieceKind::Pawn);
+            assert_eq!(piece.color, Color::White);
+            assert_eq!(pos.side_to_move(), Color::Black);
+            pos.unmake_move(mov);
+            assert!(pos.side_to_move() == Color::White);
+            assert!(pos.piece_at(E4).is_none());
+            assert!(pos.piece_at(E3).is_some());
+            let unmake_piece = pos.piece_at(E3).unwrap();
+            assert_eq!(unmake_piece.kind, PieceKind::Pawn);
+            assert_eq!(unmake_piece.color, Color::White);
+        }
     }
 }
