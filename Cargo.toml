@@ -1,4 +1,16 @@
-[workspace]
-members = [
-    "gambit"
-]
+[package]
+name = "gambit"
+version = "0.1.0"
+authors = ["Sean Gillespie <sean@swgillespie.me>"]
+edition = "2018"
+
+[dependencies]
+thiserror = "1.0.23" 
+bitflags = "1.2.1"
+
+[dev-dependencies]
+criterion = "0.3"
+
+[[bench]]
+name = "position"
+harness = false
