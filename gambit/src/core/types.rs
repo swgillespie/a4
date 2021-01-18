@@ -150,7 +150,7 @@ impl TryFrom<u8> for Rank {
     type Error = RankParseError;
 
     fn try_from(value: u8) -> Result<Self, Self::Error> {
-        if value >= 7 {
+        if value >= 8 {
             return Err(RankParseError::OutOfRange(value));
         }
 
@@ -212,7 +212,7 @@ impl TryFrom<u8> for File {
     type Error = FileParseError;
 
     fn try_from(value: u8) -> Result<Self, Self::Error> {
-        if value >= 7 {
+        if value >= 8 {
             return Err(FileParseError::OutOfRange(value));
         }
 
@@ -226,13 +226,13 @@ impl TryFrom<char> for File {
     fn try_from(value: char) -> Result<Self, Self::Error> {
         let file = match value {
             'a' => FILE_A,
-            'b' => FILE_A,
-            'c' => FILE_A,
-            'd' => FILE_A,
-            'e' => FILE_A,
-            'f' => FILE_A,
-            'g' => FILE_A,
-            'h' => FILE_A,
+            'b' => FILE_B,
+            'c' => FILE_C,
+            'd' => FILE_D,
+            'e' => FILE_E,
+            'f' => FILE_F,
+            'g' => FILE_G,
+            'h' => FILE_H,
             c => return Err(FileParseError::InvalidChar(c)),
         };
 
@@ -283,6 +283,21 @@ pub enum PieceKind {
     Rook,
     Queen,
     King,
+}
+
+impl fmt::Display for PieceKind {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let c = match self {
+            PieceKind::Pawn => 'p',
+            PieceKind::Knight => 'n',
+            PieceKind::Bishop => 'b',
+            PieceKind::Rook => 'r',
+            PieceKind::Queen => 'q',
+            PieceKind::King => 'k',
+        };
+
+        write!(f, "{}", c)
+    }
 }
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
@@ -351,15 +366,57 @@ impl TryFrom<char> for Piece {
     }
 }
 
-impl fmt::Display for PieceKind {
+impl fmt::Display for Piece {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let c = match self {
-            PieceKind::Pawn => 'p',
-            PieceKind::Knight => 'n',
-            PieceKind::Bishop => 'b',
-            PieceKind::Rook => 'r',
-            PieceKind::Queen => 'q',
-            PieceKind::King => 'k',
+            Piece {
+                color: Color::White,
+                kind: PieceKind::Pawn,
+            } => 'P',
+            Piece {
+                color: Color::White,
+                kind: PieceKind::Knight,
+            } => 'N',
+            Piece {
+                color: Color::White,
+                kind: PieceKind::Bishop,
+            } => 'B',
+            Piece {
+                color: Color::White,
+                kind: PieceKind::Rook,
+            } => 'R',
+            Piece {
+                color: Color::White,
+                kind: PieceKind::Queen,
+            } => 'Q',
+            Piece {
+                color: Color::White,
+                kind: PieceKind::King,
+            } => 'K',
+            Piece {
+                color: Color::Black,
+                kind: PieceKind::Pawn,
+            } => 'p',
+            Piece {
+                color: Color::Black,
+                kind: PieceKind::Knight,
+            } => 'n',
+            Piece {
+                color: Color::Black,
+                kind: PieceKind::Bishop,
+            } => 'b',
+            Piece {
+                color: Color::Black,
+                kind: PieceKind::Rook,
+            } => 'r',
+            Piece {
+                color: Color::Black,
+                kind: PieceKind::Queen,
+            } => 'q',
+            Piece {
+                color: Color::Black,
+                kind: PieceKind::King,
+            } => 'k',
         };
 
         write!(f, "{}", c)

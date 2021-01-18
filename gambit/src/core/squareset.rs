@@ -6,7 +6,8 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
-use crate::core::Square;
+use crate::core::{self, File, Rank, Square};
+use std::ops::BitOr;
 
 /// A set of squares on the chessboard. The implementation of SquareSet is designed to mirror
 /// [`std::collections::HashSet`], but is specifically designed to store squares efficiently on modern processors.
@@ -59,6 +60,46 @@ impl SquareSet {
 
     pub const fn not(self) -> SquareSet {
         SquareSet(!self.0)
+    }
+
+    pub fn rank(self, rank: Rank) -> SquareSet {
+        let rank_set = match rank {
+            core::RANK_1 => SquareSet::bits(0x00000000000000FF),
+            core::RANK_2 => SquareSet::bits(0x000000000000FF00),
+            core::RANK_3 => SquareSet::bits(0x0000000000FF0000),
+            core::RANK_4 => SquareSet::bits(0x00000000FF000000),
+            core::RANK_5 => SquareSet::bits(0x000000FF00000000),
+            core::RANK_6 => SquareSet::bits(0x0000FF0000000000),
+            core::RANK_7 => SquareSet::bits(0x00FF000000000000),
+            core::RANK_8 => SquareSet::bits(0xFF00000000000000),
+            _ => unreachable!(),
+        };
+
+        self.and(rank_set)
+    }
+
+    pub fn file(self, file: File) -> SquareSet {
+        let file_set = match file {
+            core::FILE_A => SquareSet::bits(0x00000000000000FF),
+            core::FILE_B => SquareSet::bits(0x0202020202020202),
+            core::FILE_C => SquareSet::bits(0x0404040404040404),
+            core::FILE_D => SquareSet::bits(0x0808080808080808),
+            core::FILE_E => SquareSet::bits(0x1010101010101010),
+            core::FILE_F => SquareSet::bits(0x2020202020202020),
+            core::FILE_G => SquareSet::bits(0x4040404040404040),
+            core::FILE_H => SquareSet::bits(0x8080808080808080),
+            _ => unreachable!(),
+        };
+
+        self.and(file_set)
+    }
+}
+
+impl BitOr for SquareSet {
+    type Output = Self;
+
+    fn bitor(self, rhs: Self) -> Self::Output {
+        self.or(rhs)
     }
 }
 

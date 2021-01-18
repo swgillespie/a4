@@ -6,8 +6,9 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
-use crate::core::{self, CastleStatus, Color, File, Piece, Rank, Square, SquareSet};
+use crate::core::{self, CastleStatus, Color, File, Piece, PieceKind, Rank, Square, SquareSet};
 use std::convert::TryFrom;
+use std::fmt;
 use thiserror::Error;
 
 /// Information that can't be recovered normally when unmaking a move. When making or unmaking a move, this information
@@ -29,7 +30,7 @@ struct IrreversibleInformation {
 /// state, respectively.
 ///
 /// Almost everything about `Position` is performance-critical.
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Position {
     /// SquareSets for each piece and color combination (6 pieces, 2 colors = 12 sets).
     sets_by_piece: [SquareSet; 12],
@@ -46,6 +47,86 @@ pub struct Position {
 
     /// Color whose turn it is to move.
     side_to_move: Color,
+}
+
+impl Position {
+    pub fn en_passant_square(&self) -> Option<Square> {
+        self.current_information.en_passant_square
+    }
+
+    pub fn halfmove_clock(&self) -> u16 {
+        self.current_information.halfmove_clock
+    }
+
+    pub fn fullmove_clock(&self) -> u16 {
+        self.current_information.fullmove_clock
+    }
+
+    pub fn side_to_move(&self) -> Color {
+        self.side_to_move
+    }
+
+    pub fn can_castle_kingside(&self, color: Color) -> bool {
+        match color {
+            Color::White => self
+                .current_information
+                .castle_status
+                .contains(CastleStatus::WHITE_KINGSIDE),
+            Color::Black => self
+                .current_information
+                .castle_status
+                .contains(CastleStatus::BLACK_KINGSIDE),
+        }
+    }
+
+    pub fn can_castle_queenside(&self, color: Color) -> bool {
+        match color {
+            Color::White => self
+                .current_information
+                .castle_status
+                .contains(CastleStatus::WHITE_QUEENSIDE),
+            Color::Black => self
+                .current_information
+                .castle_status
+                .contains(CastleStatus::BLACK_QUEENSIDE),
+        }
+    }
+
+    pub fn pieces(&self, color: Color) -> SquareSet {
+        self.sets_by_color[color as usize]
+    }
+
+    pub fn pieces_of_kind(&self, color: Color, kind: PieceKind) -> SquareSet {
+        let offset = match color {
+            Color::White => 0,
+            Color::Black => 6,
+        };
+        self.sets_by_piece[offset + kind as usize]
+    }
+
+    pub fn pawns(&self, color: Color) -> SquareSet {
+        self.pieces_of_kind(color, PieceKind::Pawn)
+    }
+
+    pub fn bishops(&self, color: Color) -> SquareSet {
+        self.pieces_of_kind(color, PieceKind::Bishop)
+    }
+
+    pub fn knights(&self, color: Color) -> SquareSet {
+        self.pieces_of_kind(color, PieceKind::Knight)
+    }
+
+    pub fn rooks(&self, color: Color) -> SquareSet {
+        self.pieces_of_kind(color, PieceKind::Rook)
+    }
+
+    pub fn queens(&self, color: Color) -> SquareSet {
+        self.pieces_of_kind(color, PieceKind::Queen)
+    }
+
+    pub fn kings(&self, color: Color) -> SquareSet {
+        self.pieces_of_kind(color, PieceKind::King)
+    }
 }
 
 impl Position {
@@ -125,7 +206,7 @@ impl Position {
 //
 
 /// Possible errors that can arise when parsing a FEN string into a `Position`.
-#[derive(Debug, Error)]
+#[derive(Clone, PartialEq, Eq, Debug, Error)]
 pub enum FenParseError {
     #[error("unexpected char: {0}")]
     UnexpectedChar(char),
@@ -135,8 +216,8 @@ pub enum FenParseError {
     InvalidDigit,
     #[error("file does not sum to 8")]
     FileDoesNotSumToEight,
-    #[error("unknown piece")]
-    UnknownPiece,
+    #[error("unknown piece: {0}")]
+    UnknownPiece(char),
     #[error("invalid side to move")]
     InvalidSideToMove,
     #[error("invalid castle")]
@@ -288,7 +369,7 @@ impl Position {
         let iter = &mut str_ref.chars().peekable();
         for rank in core::ranks().rev() {
             let mut file = 0;
-            while file <= 8 {
+            while file <= 7 {
                 let c = peek(iter)?;
                 // digits 1 through 8 indicate empty squares.
                 if c.is_digit(10) {
@@ -310,7 +391,7 @@ impl Position {
                 let piece = if let Ok(piece) = Piece::try_from(c) {
                     piece
                 } else {
-                    return Err(FenParseError::UnknownPiece);
+                    return Err(FenParseError::UnknownPiece(c));
                 };
 
                 let square = Square::of(rank, File::try_from(file as u8).unwrap());
@@ -558,4 +639,509 @@ impl Position {
         buf
     }
     */
+}
+
+impl fmt::Display for Position {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        for rank in core::ranks().rev() {
+            for file in core::files() {
+                let sq = Square::of(rank, file);
+                if let Some(piece) = self.piece_at(sq) {
+                    write!(f, " {} ", piece)?;
+                } else {
+                    write!(f, " . ")?;
+                }
+            }
+
+            writeln!(f, "| {}", rank)?;
+        }
+
+        for _ in core::files() {
+            write!(f, "---")?;
+        }
+
+        writeln!(f)?;
+        for file in core::files() {
+            write!(f, " {} ", file)?;
+        }
+
+        writeln!(f)?;
+        Ok(())
+    }
+}
+
+impl Default for Position {
+    fn default() -> Self {
+        Position::new()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    mod fen {
+        use std::convert::TryFrom;
+
+        use crate::core::*;
+        use crate::position::{FenParseError, Position};
+
+        #[test]
+        fn fen_smoke() {
+            let pos = Position::from_fen("8/8/8/8/8/8/8/8 w - - 0 0").unwrap();
+
+            // white's turn to move.
+            assert_eq!(Color::White, pos.side_to_move());
+
+            // no castling.
+            assert!(!pos.can_castle_kingside(Color::White));
+            assert!(!pos.can_castle_kingside(Color::Black));
+            assert!(!pos.can_castle_queenside(Color::White));
+            assert!(!pos.can_castle_queenside(Color::Black));
+
+            // no en passant.
+            assert!(pos.en_passant_square().is_none());
+
+            // both clocks are zero.
+            assert_eq!(0, pos.halfmove_clock());
+            assert_eq!(0, pos.fullmove_clock());
+        }
+
+        #[test]
+        fn starting_position() {
+            let pos =
+                Position::from_fen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
+                    .unwrap();
+
+            let check_square = |square: &'static str, piece: Piece| {
+                assert!(square.len() == 2);
+                let chars: Vec<_> = square.chars().collect();
+                let file = File::try_from(chars[0]).unwrap();
+                let rank = Rank::try_from(chars[1]).unwrap();
+                let square = Square::of(rank, file);
+                let piece_on_square = pos.piece_at(square).unwrap();
+                assert_eq!(piece.kind, piece_on_square.kind);
+                assert_eq!(piece.color, piece_on_square.color);
+            };
+
+            let expected_vacant_squares = SquareSet::all().rank(RANK_3)
+                | SquareSet::all().rank(RANK_4)
+                | SquareSet::all().rank(RANK_5)
+                | SquareSet::all().rank(RANK_6);
+
+            let check_vacant = |square: Square| {
+                assert!(pos.piece_at(square).is_none());
+            };
+
+            check_square(
+                "a1",
+                Piece {
+                    kind: PieceKind::Rook,
+                    color: Color::White,
+                },
+            );
+            check_square(
+                "b1",
+                Piece {
+                    kind: PieceKind::Knight,
+                    color: Color::White,
+                },
+            );
+            check_square(
+                "c1",
+                Piece {
+                    kind: PieceKind::Bishop,
+                    color: Color::White,
+                },
+            );
+            check_square(
+                "d1",
+                Piece {
+                    kind: PieceKind::Queen,
+                    color: Color::White,
+                },
+            );
+            check_square(
+                "e1",
+                Piece {
+                    kind: PieceKind::King,
+                    color: Color::White,
+                },
+            );
+            check_square(
+                "f1",
+                Piece {
+                    kind: PieceKind::Bishop,
+                    color: Color::White,
+                },
+            );
+            check_square(
+                "g1",
+                Piece {
+                    kind: PieceKind::Knight,
+                    color: Color::White,
+                },
+            );
+            check_square(
+                "h1",
+                Piece {
+                    kind: PieceKind::Rook,
+                    color: Color::White,
+                },
+            );
+            check_square(
+                "a2",
+                Piece {
+                    kind: PieceKind::Pawn,
+                    color: Color::White,
+                },
+            );
+            check_square(
+                "b2",
+                Piece {
+                    kind: PieceKind::Pawn,
+                    color: Color::White,
+                },
+            );
+            check_square(
+                "c2",
+                Piece {
+                    kind: PieceKind::Pawn,
+                    color: Color::White,
+                },
+            );
+            check_square(
+                "d2",
+                Piece {
+                    kind: PieceKind::Pawn,
+                    color: Color::White,
+                },
+            );
+            check_square(
+                "e2",
+                Piece {
+                    kind: PieceKind::Pawn,
+                    color: Color::White,
+                },
+            );
+            check_square(
+                "f2",
+                Piece {
+                    kind: PieceKind::Pawn,
+                    color: Color::White,
+                },
+            );
+            check_square(
+                "g2",
+                Piece {
+                    kind: PieceKind::Pawn,
+                    color: Color::White,
+                },
+            );
+            check_square(
+                "h2",
+                Piece {
+                    kind: PieceKind::Pawn,
+                    color: Color::White,
+                },
+            );
+
+            for sq in expected_vacant_squares {
+                let sq_actual = Square::try_from(sq).unwrap();
+                check_vacant(sq_actual);
+            }
+
+            check_square(
+                "a7",
+                Piece {
+                    kind: PieceKind::Pawn,
+                    color: Color::Black,
+                },
+            );
+            check_square(
+                "b7",
+                Piece {
+                    kind: PieceKind::Pawn,
+                    color: Color::Black,
+                },
+            );
+            check_square(
+                "c7",
+                Piece {
+                    kind: PieceKind::Pawn,
+                    color: Color::Black,
+                },
+            );
+            check_square(
+                "d7",
+                Piece {
+                    kind: PieceKind::Pawn,
+                    color: Color::Black,
+                },
+            );
+            check_square(
+                "e7",
+                Piece {
+                    kind: PieceKind::Pawn,
+                    color: Color::Black,
+                },
+            );
+            check_square(
+                "f7",
+                Piece {
+                    kind: PieceKind::Pawn,
+                    color: Color::Black,
+                },
+            );
+            check_square(
+                "g7",
+                Piece {
+                    kind: PieceKind::Pawn,
+                    color: Color::Black,
+                },
+            );
+            check_square(
+                "h7",
+                Piece {
+                    kind: PieceKind::Pawn,
+                    color: Color::Black,
+                },
+            );
+            check_square(
+                "a8",
+                Piece {
+                    kind: PieceKind::Rook,
+                    color: Color::Black,
+                },
+            );
+            check_square(
+                "b8",
+                Piece {
+                    kind: PieceKind::Knight,
+                    color: Color::Black,
+                },
+            );
+            check_square(
+                "c8",
+                Piece {
+                    kind: PieceKind::Bishop,
+                    color: Color::Black,
+                },
+            );
+            check_square(
+                "d8",
+                Piece {
+                    kind: PieceKind::Queen,
+                    color: Color::Black,
+                },
+            );
+            check_square(
+                "e8",
+                Piece {
+                    kind: PieceKind::King,
+                    color: Color::Black,
+                },
+            );
+            check_square(
+                "f8",
+                Piece {
+                    kind: PieceKind::Bishop,
+                    color: Color::Black,
+                },
+            );
+            check_square(
+                "g8",
+                Piece {
+                    kind: PieceKind::Knight,
+                    color: Color::Black,
+                },
+            );
+            check_square(
+                "h8",
+                Piece {
+                    kind: PieceKind::Rook,
+                    color: Color::Black,
+                },
+            );
+
+            assert!(pos.can_castle_kingside(Color::White));
+            assert!(pos.can_castle_kingside(Color::Black));
+            assert!(pos.can_castle_queenside(Color::White));
+            assert!(pos.can_castle_queenside(Color::Black));
+        }
+
+        #[test]
+        fn empty() {
+            let err = Position::from_fen("").unwrap_err();
+            assert_eq!(FenParseError::UnexpectedEnd, err);
+        }
+
+        #[test]
+        fn unknown_piece() {
+            let err = Position::from_fen("z7/8/8/8/8/8/8/8 w - - 0 0").unwrap_err();
+            assert_eq!(FenParseError::UnknownPiece('z'), err);
+        }
+
+        #[test]
+        fn invalid_digit() {
+            let err = Position::from_fen("9/8/8/8/8/8/8/8 w - - 0 0").unwrap_err();
+            assert_eq!(FenParseError::InvalidDigit, err);
+        }
+
+        #[test]
+        fn not_sum_to_8() {
+            let err = Position::from_fen("pppp5/8/8/8/8/8/8/8 w - - 0 0").unwrap_err();
+            assert_eq!(FenParseError::FileDoesNotSumToEight, err);
+        }
+
+        #[test]
+        fn bad_side_to_move() {
+            let err = Position::from_fen("8/8/8/8/8/8/8/8 c - - 0 0").unwrap_err();
+            assert_eq!(FenParseError::InvalidSideToMove, err);
+        }
+
+        #[test]
+        fn bad_castle_status() {
+            let err = Position::from_fen("8/8/8/8/8/8/8/8 w a - 0 0").unwrap_err();
+            assert_eq!(FenParseError::InvalidCastle, err);
+        }
+
+        #[test]
+        fn bad_en_passant() {
+            let err = Position::from_fen("8/8/8/8/8/8/8/8 w - 88 0 0").unwrap_err();
+            assert_eq!(FenParseError::InvalidEnPassant, err);
+        }
+
+        #[test]
+        fn empty_halfmove() {
+            let err = Position::from_fen("8/8/8/8/8/8/8/8 w - - q 0").unwrap_err();
+            assert_eq!(FenParseError::EmptyHalfmove, err);
+        }
+
+        #[test]
+        fn invalid_halfmove() {
+            let err = Position::from_fen("8/8/8/8/8/8/8/8 w - - 4294967296 0").unwrap_err();
+            assert_eq!(FenParseError::InvalidHalfmove, err);
+        }
+
+        #[test]
+        fn empty_fullmove() {
+            let err = Position::from_fen("8/8/8/8/8/8/8/8 w - - 0 q").unwrap_err();
+            assert_eq!(FenParseError::EmptyFullmove, err);
+        }
+
+        #[test]
+        fn fullmove_early_end() {
+            let err = Position::from_fen("8/8/8/8/8/8/8/8 w - - 0").unwrap_err();
+            assert_eq!(FenParseError::UnexpectedEnd, err);
+        }
+
+        #[test]
+        fn invalid_fullmove() {
+            let err = Position::from_fen("8/8/8/8/8/8/8/8 w - - 0 4294967296").unwrap_err();
+            assert_eq!(FenParseError::InvalidFullmove, err);
+        }
+
+        /*
+        #[test]
+        fn uci_nullmove() {
+            let pos = Position::from_start_position();
+            assert_eq!(Move::null(), pos.move_from_uci("0000").unwrap());
+        }
+
+        #[test]
+        fn uci_sliding_moves() {
+            let pos = Position::from_fen("8/3q4/8/8/8/3R4/8/8 w - - 0 1").unwrap();
+            assert_eq!(
+                Move::quiet(Square::D3, Square::D5),
+                pos.move_from_uci("d3d5").unwrap()
+            );
+            assert_eq!(
+                Move::capture(Square::D3, Square::D7),
+                pos.move_from_uci("d3d7").unwrap()
+            );
+        }
+
+        #[test]
+        fn uci_pawn_moves() {
+            let pos = Position::from_fen("8/8/8/8/8/4p3/3P4/8 w - c3 0 1").unwrap();
+            assert_eq!(
+                Move::quiet(Square::D2, Square::D3),
+                pos.move_from_uci("d2d3").unwrap()
+            );
+            assert_eq!(
+                Move::double_pawn_push(Square::D2, Square::D4),
+                pos.move_from_uci("d2d4").unwrap()
+            );
+            assert_eq!(
+                Move::capture(Square::D2, Square::E3),
+                pos.move_from_uci("d2e3").unwrap()
+            );
+            assert_eq!(
+                Move::quiet(Square::D2, Square::D3),
+                pos.move_from_uci("d2d3").unwrap()
+            );
+            assert_eq!(
+                Move::en_passant(Square::D2, Square::C3),
+                pos.move_from_uci("d2c3").unwrap()
+            );
+        }
+
+        #[test]
+        fn uci_king_moves() {
+            let pos = Position::from_fen("8/8/8/8/8/8/3r4/R3K2R w - - 0 1").unwrap();
+            assert_eq!(
+                Move::kingside_castle(Square::E1, Square::G1),
+                pos.move_from_uci("e1g1").unwrap(),
+            );
+            assert_eq!(
+                Move::queenside_castle(Square::E1, Square::C1),
+                pos.move_from_uci("e1c1").unwrap(),
+            );
+            assert_eq!(
+                Move::quiet(Square::E1, Square::E2),
+                pos.move_from_uci("e1e2").unwrap(),
+            );
+            assert_eq!(
+                Move::capture(Square::E1, Square::D2),
+                pos.move_from_uci("e1d2").unwrap(),
+            );
+        }
+
+        #[test]
+        fn uci_promotion() {
+            let pos = Position::from_fen("5n2/4P3/8/8/8/8/8/8 w - - 0 1").unwrap();
+            assert_eq!(
+                Move::promotion(Square::E7, Square::E8, PieceKind::Knight),
+                pos.move_from_uci("e7e8n").unwrap()
+            );
+            assert_eq!(
+                Move::promotion(Square::E7, Square::E8, PieceKind::Bishop),
+                pos.move_from_uci("e7e8b").unwrap()
+            );
+            assert_eq!(
+                Move::promotion(Square::E7, Square::E8, PieceKind::Rook),
+                pos.move_from_uci("e7e8r").unwrap()
+            );
+            assert_eq!(
+                Move::promotion(Square::E7, Square::E8, PieceKind::Queen),
+                pos.move_from_uci("e7e8q").unwrap()
+            );
+            assert_eq!(
+                Move::promotion_capture(Square::E7, Square::F8, PieceKind::Knight),
+                pos.move_from_uci("e7f8n").unwrap()
+            );
+            assert_eq!(
+                Move::promotion_capture(Square::E7, Square::F8, PieceKind::Bishop),
+                pos.move_from_uci("e7f8b").unwrap()
+            );
+            assert_eq!(
+                Move::promotion_capture(Square::E7, Square::F8, PieceKind::Rook),
+                pos.move_from_uci("e7f8r").unwrap()
+            );
+            assert_eq!(
+                Move::promotion_capture(Square::E7, Square::F8, PieceKind::Queen),
+                pos.move_from_uci("e7f8q").unwrap()
+            );
+        }
+        */
+    }
 }
