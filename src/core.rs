@@ -14,8 +14,8 @@ mod types;
 
 pub use squareset::{SquareSet, SquareSetIterator};
 pub use types::{
-    files, piece_kinds, ranks, squares, AllFiles, AllRanks, AllSquares, CastleStatus, Color, File,
-    Piece, PieceKind, PieceParseError, Rank, Square, SquareParseError,
+    files, piece_kinds, ranks, squares, AllFiles, AllRanks, AllSquares, CastleStatus, Color,
+    Direction, File, Piece, PieceKind, PieceParseError, Rank, Square, SquareParseError,
 };
 
 pub use types::{

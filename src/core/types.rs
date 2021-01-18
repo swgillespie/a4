@@ -58,6 +58,12 @@ impl Square {
     pub const fn of(rank: Rank, file: File) -> Square {
         Square(rank.0 * 8 + file.0)
     }
+
+    /// Returns the closest square in the given direction. Invalid if the requested direction goes off of the
+    /// board.
+    pub const fn towards(self, dir: Direction) -> Square {
+        Square((self.0 as i32 + dir.as_vector()) as u8)
+    }
 }
 
 impl TryFrom<u8> for Square {
@@ -429,6 +435,34 @@ impl fmt::Display for Piece {
         };
 
         write!(f, "{}", c)
+    }
+}
+
+#[repr(u8)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq)]
+pub enum Direction {
+    North,
+    NorthEast,
+    East,
+    SouthEast,
+    South,
+    SouthWest,
+    West,
+    NorthWest,
+}
+
+impl Direction {
+    pub const fn as_vector(self) -> i32 {
+        match self {
+            Direction::North => 8,
+            Direction::NorthEast => 9,
+            Direction::East => 1,
+            Direction::SouthEast => -7,
+            Direction::South => -8,
+            Direction::SouthWest => -9,
+            Direction::West => -1,
+            Direction::NorthWest => 7,
+        }
     }
 }
 

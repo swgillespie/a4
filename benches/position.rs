@@ -23,19 +23,6 @@ fn criterion_benchmark(c: &mut Criterion) {
             }
         });
     });
-
-    c.bench_function("quiet move makeunmake 10x", |b| {
-        let pos = Position::from_fen("8/8/4b3/8/2B5/8/8/8 w - - 0 1").unwrap();
-        let mov = Move::quiet(core::C4, core::D5);
-        b.iter(|| {
-            let mut pos = black_box(&pos).clone();
-            let mov = black_box(mov);
-            for _ in 0..10 {
-                pos.make_move(mov);
-                pos.unmake_move(mov);
-            }
-        })
-    });
 }
 
 criterion_group!(benches, criterion_benchmark);

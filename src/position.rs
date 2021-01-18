@@ -6,71 +6,42 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
-use crate::core::{
-    self, CastleStatus, Color, File, Move, Piece, PieceKind, Rank, Square, SquareSet,
-};
+use crate::core::{self, *};
 use std::convert::TryFrom;
 use std::fmt::{self, Write};
 use thiserror::Error;
 
-/// Information that can't be recovered normally when unmaking a move. When making or unmaking a move, this information
-/// is cloned instead of incrementally updated.
-///
-/// Because this structure is cloned, care must be taken to make this structure as small as possible.
+/// A position, representing a chess game that has progressed up to this point. A Position encodes the complete state
+/// of the game such that the entire game up until this point can be recovered and reconstructed efficiently.
 #[derive(Clone, Debug)]
-struct IrreversibleInformation {
-    /// The move that led to the game state changing. While assigned to `current_information`, it is None. For any move
-    /// in the move history, it is non-None.
-    mov: Option<Move>,
+pub struct Position {
+    /// SquareSets for each piece and color combination (6 pieces, 2 colors = 12 sets).
+    sets_by_piece: [SquareSet; 12],
+    /// Squaresets for each color.
+    sets_by_color: [SquareSet; 2],
+    /// The en-passant square, if the previous move was a double pawn push.
+    en_passant_square: Option<Square>,
     /// The halfmove clock, or the progress to a draw by the 50-move Rule.
     halfmove_clock: u16,
     /// The fullmove clock, or number of times white has moved this game.
     fullmove_clock: u16,
     /// Castle status for both players.
     castle_status: CastleStatus,
-    /// The en-passant square, if the previous move was a double-pawn push.
-    en_passant_square: Option<Square>,
-    /// The piece kind that was captured in the previous move, if the previous move was a capture.
-    last_capture: Option<PieceKind>,
-}
-
-/// A position, representing a chess game that has progressed up to this point. A Position encodes the complete state
-/// of the game such that the entire game up until this point can be recovered and reconstructed efficiently.
-///
-/// The primary mutable operations on a position are `make` and `unmake`, which apply and un-apply a move to the board
-/// state, respectively.
-///
-/// Almost everything about `Position` is performance-critical.
-#[derive(Clone, Debug)]
-pub struct Position {
-    /// SquareSets for each piece and color combination (6 pieces, 2 colors = 12 sets).
-    sets_by_piece: [SquareSet; 12],
-
-    /// Squaresets for each color.
-    sets_by_color: [SquareSet; 2],
-
-    /// The set of irreversible information for the current position.
-    current_information: IrreversibleInformation,
-
-    /// The list of irreversible informations for all previous positions in this game. Using this, the complete history
-    /// of the game can be recovered.
-    previous_information: Vec<IrreversibleInformation>,
-
     /// Color whose turn it is to move.
     side_to_move: Color,
 }
 
 impl Position {
     pub fn en_passant_square(&self) -> Option<Square> {
-        self.current_information.en_passant_square
+        self.en_passant_square
     }
 
     pub fn halfmove_clock(&self) -> u16 {
-        self.current_information.halfmove_clock
+        self.halfmove_clock
     }
 
     pub fn fullmove_clock(&self) -> u16 {
-        self.current_information.fullmove_clock
+        self.fullmove_clock
     }
 
     pub fn side_to_move(&self) -> Color {
@@ -79,27 +50,15 @@ impl Position {
 
     pub fn can_castle_kingside(&self, color: Color) -> bool {
         match color {
-            Color::White => self
-                .current_information
-                .castle_status
-                .contains(CastleStatus::WHITE_KINGSIDE),
-            Color::Black => self
-                .current_information
-                .castle_status
-                .contains(CastleStatus::BLACK_KINGSIDE),
+            Color::White => self.castle_status.contains(CastleStatus::WHITE_KINGSIDE),
+            Color::Black => self.castle_status.contains(CastleStatus::BLACK_KINGSIDE),
         }
     }
 
     pub fn can_castle_queenside(&self, color: Color) -> bool {
         match color {
-            Color::White => self
-                .current_information
-                .castle_status
-                .contains(CastleStatus::WHITE_QUEENSIDE),
-            Color::Black => self
-                .current_information
-                .castle_status
-                .contains(CastleStatus::BLACK_QUEENSIDE),
+            Color::White => self.castle_status.contains(CastleStatus::WHITE_QUEENSIDE),
+            Color::Black => self.castle_status.contains(CastleStatus::BLACK_QUEENSIDE),
         }
     }
 
@@ -145,15 +104,10 @@ impl Position {
         Position {
             sets_by_piece: [SquareSet::empty(); 12],
             sets_by_color: [SquareSet::empty(); 2],
-            current_information: IrreversibleInformation {
-                mov: None,
-                halfmove_clock: 0,
-                fullmove_clock: 0,
-                castle_status: CastleStatus::BLACK | CastleStatus::WHITE,
-                en_passant_square: None,
-                last_capture: None,
-            },
-            previous_information: vec![],
+            halfmove_clock: 0,
+            fullmove_clock: 0,
+            castle_status: CastleStatus::BLACK | CastleStatus::WHITE,
+            en_passant_square: None,
             side_to_move: Color::White,
         }
     }
@@ -214,89 +168,148 @@ impl Position {
 impl Position {
     /// Makes a move on the position, updating all internal state to reflect the effects of the move.
     pub fn make_move(&mut self, mov: Move) {
-        // Position works by incrementally updating the lion's share of state while cloning and persisting the things
-        // that can't be incrementally updated.
-        //
-        // First thing we do: stash away this move's irreversible state. From here on out we will be destructively
-        // modifiying all state in the position.
-        self.current_information.mov = Some(mov);
-        self.previous_information
-            .push(self.current_information.clone());
-
+        // Quick out for null moves:
+        //  1. EP is not legal next turn.
+        //  2. Halfmove clock always increases.
+        //  3. Fullmove clock increases if Black makes the null move.
         if mov.is_null() {
-            // Quick out for null moves:
-            //  1. EP is not legal next turn.
-            //  2. Halfmove clock always increases.
-            //  3. Fullmove clock increases if Black is the one making the null move.
-            self.current_information.en_passant_square = None;
-            self.current_information.halfmove_clock += 1;
+            self.en_passant_square = None;
             self.side_to_move = self.side_to_move.toggle();
             if self.side_to_move == Color::White {
-                self.current_information.fullmove_clock += 1;
+                self.fullmove_clock += 1;
             }
-
             return;
         }
 
         let moving_piece = self
             .piece_at(mov.source())
-            .expect("no piece at move source");
+            .expect("invalid move: no piece at source square");
+
+        // If this move is a capture, we need to remove the captured piece from the board before we
+        // proceed.
         if mov.is_capture() {
-            // Captures imply that there's an enemy piece at the target square that we must remove.
-            let captured_piece = self
-                .piece_at(mov.destination())
-                .expect("no piece at capture target square");
-            // Record the type of piece we're capturing, so we can accurately unmake this move later.
-            self.current_information.last_capture = Some(captured_piece.kind);
-            self.remove_piece(mov.destination())
-                .expect("no piece at capture target square");
+            // The target square is often the destination square of the move, except in the case of
+            // en-passant where the target square lies on an adjacent file.
+            let target_square = if !mov.is_en_passant() {
+                mov.destination()
+            } else {
+                // En-passant moves are the only case when the piece being captured does
+                // not lie on the same square as the move destination.
+                let ep_dir = if self.side_to_move == Color::White {
+                    Direction::South
+                } else {
+                    Direction::North
+                };
+
+                let ep_square = self
+                    .en_passant_square
+                    .expect("invalid move: EP without EP-square");
+                ep_square.towards(ep_dir)
+            };
+
+            // Remove the piece from the board - it has been captured.
+            self.remove_piece(target_square)
+                .expect("invalid move: no piece at capture target");
+
+            // If this piece is a rook on its starting square, invalidate the castle for the other
+            // player.
+            if target_square == kingside_rook(self.side_to_move.toggle()) {
+                self.castle_status &= !kingside_castle_mask(self.side_to_move.toggle());
+            } else if target_square == queenside_rook(self.side_to_move.toggle()) {
+                self.castle_status &= !queenside_castle_mask(self.side_to_move.toggle());
+            }
         }
+
+        // The move destination square is now guaranteed to be empty. Next we need to handle moves
+        // that end up in places other than the destination square.
+        if mov.is_castle() {
+            // Castles are encoded using the king's start and stop position. Notably, the rook is
+            // not at the move's destination square.
+            //
+            // Castles are also interesting in that two pieces move, so we'll handle the move of
+            // the rook here and handle the movement of the king later on in the function.
+            let (post_castle_dir, pre_castle_dir, num_squares) = if mov.is_kingside_castle() {
+                (Direction::West, Direction::East, 1)
+            } else {
+                (Direction::East, Direction::West, 2)
+            };
+
+            let new_rook_square = mov.destination().towards(post_castle_dir);
+            let mut rook_square = mov.destination();
+            for _ in 0..num_squares {
+                rook_square = rook_square.towards(pre_castle_dir);
+            }
+
+            let rook = self
+                .piece_at(rook_square)
+                .expect("invalid move: castle without rook");
+            self.remove_piece(rook_square).unwrap();
+            self.add_piece(new_rook_square, rook)
+                .expect("invalid move: piece at rook target square");
+        }
+
+        // Now, we're going to add the moving piece to the destination square. Unless this is a
+        // promotion, the piece that we add to the destination is the piece that is currently at
+        // the source square.
+        let piece_to_add = if mov.is_promotion() {
+            Piece {
+                kind: mov.promotion_piece(),
+                color: self.side_to_move,
+            }
+        } else {
+            moving_piece
+        };
 
         self.remove_piece(mov.source())
-            .expect("no piece at move source");
-        self.add_piece(mov.destination(), moving_piece).expect(
-            "piece present at move destination, should have been removed already if capture",
-        );
-        self.side_to_move = self.side_to_move.toggle();
-        if self.side_to_move == Color::White {
-            self.current_information.fullmove_clock += 1;
-        }
-    }
-
-    pub fn unmake_move(&mut self, mov: Move) {
-        // Almost all of our state will be re-calculated by incrementally unmaking the given move on our current state.
-        // The bits that can't be inferred from our current state are stored in the `previous_information` vector,
-        // which we'll pop and slam into `current_information`.
-        //
-        // First, we do two checks to make sure that what we're doing isn't totally invalid:
-        // 1. There needs to be at least one move to unmake
-        assert!(!self.previous_information.is_empty());
-        // 2. The move we're unmaking needs to be the most recently applied move.
-        assert!(self.previous_information.last().unwrap().mov.unwrap() == mov);
-
-        // Restore the previous move's information into our current information slot.
-        let last_capture = self.current_information.last_capture.clone();
-        self.current_information = self.previous_information.pop().unwrap();
-        // Clear out the move; we're unmaking it and we'll overwrite it later when we make another move.
-        self.current_information.mov = None;
-
-        // The rest of unmake_move proceeds as the reverse of make_move, for the most part.
-        let moved_piece = self
-            .piece_at(mov.destination())
-            .expect("no piece at move destination");
-        self.remove_piece(mov.destination())
-            .expect("no piece at move destination");
-        if mov.is_capture() {
-            // Captures must replace the captured piece at the destination square.
-            let piece = Piece {
-                color: self.side_to_move,
-                kind: last_capture.expect("last capture not recorded for capture unmake"),
+            .expect("invalid move: no piece at source square");
+        self.add_piece(mov.destination(), piece_to_add)
+            .expect("invalid move: piece at destination square");
+        if mov.is_double_pawn_push() {
+            // Double pawn pushes set the en-passant square.
+            let ep_dir = if self.side_to_move == Color::White {
+                Direction::South
+            } else {
+                Direction::North
             };
-            self.add_piece(mov.destination(), piece).unwrap();
+
+            let ep_square = mov.destination().towards(ep_dir);
+            self.en_passant_square = Some(ep_square);
+        } else {
+            // All other moves clear the en-passant square.
+            self.en_passant_square = None;
         }
-        self.add_piece(mov.source(), moved_piece)
-            .expect("piece at move source");
+
+        // Re-calculate our castle status. Side to move may have invalidated their castle rights
+        // by moving their rooks or king.
+        if moving_piece.kind == PieceKind::Rook {
+            // Moving a rook invalidates the castle on that rook's side of the board.
+
+            if self.can_castle_queenside(self.side_to_move)
+                && mov.source() == queenside_rook(self.side_to_move)
+            {
+                // Move of the queenside rook. Can't castle queenside anymore.
+                self.castle_status &= !queenside_castle_mask(self.side_to_move);
+            } else if self.can_castle_kingside(self.side_to_move)
+                && mov.source() == kingside_rook(self.side_to_move)
+            {
+                // Move of the kingside rook. Can't castle kingside anymore.
+                self.castle_status &= !kingside_castle_mask(self.side_to_move);
+            }
+        } else if moving_piece.kind == PieceKind::King {
+            // Moving a king invalides the castle on both sides of the board.
+            self.castle_status &= !castle_mask(self.side_to_move);
+        }
+
         self.side_to_move = self.side_to_move.toggle();
+        if mov.is_capture() || moving_piece.kind == PieceKind::Pawn {
+            self.halfmove_clock = 0;
+        } else {
+            self.halfmove_clock += 1;
+        }
+
+        if self.side_to_move == Color::White {
+            self.fullmove_clock += 1;
+        }
     }
 }
 
@@ -514,13 +527,13 @@ impl Position {
         eat(iter, ' ')?;
         pos.side_to_move = eat_side_to_move(iter)?;
         eat(iter, ' ')?;
-        pos.current_information.castle_status = eat_castle_status(iter)?;
+        pos.castle_status = eat_castle_status(iter)?;
         eat(iter, ' ')?;
-        pos.current_information.en_passant_square = eat_en_passant(iter)?;
+        pos.en_passant_square = eat_en_passant(iter)?;
         eat(iter, ' ')?;
-        pos.current_information.halfmove_clock = eat_halfmove(iter)?;
+        pos.halfmove_clock = eat_halfmove(iter)?;
         eat(iter, ' ')?;
-        pos.current_information.fullmove_clock = eat_fullmove(iter)?;
+        pos.fullmove_clock = eat_fullmove(iter)?;
         Ok(pos)
     }
 
@@ -618,6 +631,49 @@ impl fmt::Display for Position {
 impl Default for Position {
     fn default() -> Self {
         Position::new()
+    }
+}
+
+#[allow(dead_code)]
+fn king_start(color: Color) -> Square {
+    match color {
+        Color::White => E1,
+        Color::Black => E8,
+    }
+}
+
+fn kingside_rook(color: Color) -> Square {
+    match color {
+        Color::White => H1,
+        Color::Black => H8,
+    }
+}
+
+fn kingside_castle_mask(color: Color) -> CastleStatus {
+    match color {
+        Color::White => CastleStatus::WHITE_KINGSIDE,
+        Color::Black => CastleStatus::BLACK_KINGSIDE,
+    }
+}
+
+fn queenside_rook(color: Color) -> Square {
+    match color {
+        Color::White => A1,
+        Color::Black => A8,
+    }
+}
+
+fn queenside_castle_mask(color: Color) -> CastleStatus {
+    match color {
+        Color::White => CastleStatus::WHITE_QUEENSIDE,
+        Color::Black => CastleStatus::BLACK_QUEENSIDE,
+    }
+}
+
+fn castle_mask(color: Color) -> CastleStatus {
+    match color {
+        Color::White => CastleStatus::WHITE,
+        Color::Black => CastleStatus::BLACK,
     }
 }
 
@@ -991,153 +1047,236 @@ mod tests {
             let pos = Position::from_fen(str).unwrap();
             assert_eq!(pos.as_fen(), str);
         }
-
-        /*
-        #[test]
-        fn uci_nullmove() {
-            let pos = Position::from_start_position();
-            assert_eq!(Move::null(), pos.move_from_uci("0000").unwrap());
-        }
-
-        #[test]
-        fn uci_sliding_moves() {
-            let pos = Position::from_fen("8/3q4/8/8/8/3R4/8/8 w - - 0 1").unwrap();
-            assert_eq!(
-                Move::quiet(Square::D3, Square::D5),
-                pos.move_from_uci("d3d5").unwrap()
-            );
-            assert_eq!(
-                Move::capture(Square::D3, Square::D7),
-                pos.move_from_uci("d3d7").unwrap()
-            );
-        }
-
-        #[test]
-        fn uci_pawn_moves() {
-            let pos = Position::from_fen("8/8/8/8/8/4p3/3P4/8 w - c3 0 1").unwrap();
-            assert_eq!(
-                Move::quiet(Square::D2, Square::D3),
-                pos.move_from_uci("d2d3").unwrap()
-            );
-            assert_eq!(
-                Move::double_pawn_push(Square::D2, Square::D4),
-                pos.move_from_uci("d2d4").unwrap()
-            );
-            assert_eq!(
-                Move::capture(Square::D2, Square::E3),
-                pos.move_from_uci("d2e3").unwrap()
-            );
-            assert_eq!(
-                Move::quiet(Square::D2, Square::D3),
-                pos.move_from_uci("d2d3").unwrap()
-            );
-            assert_eq!(
-                Move::en_passant(Square::D2, Square::C3),
-                pos.move_from_uci("d2c3").unwrap()
-            );
-        }
-
-        #[test]
-        fn uci_king_moves() {
-            let pos = Position::from_fen("8/8/8/8/8/8/3r4/R3K2R w - - 0 1").unwrap();
-            assert_eq!(
-                Move::kingside_castle(Square::E1, Square::G1),
-                pos.move_from_uci("e1g1").unwrap(),
-            );
-            assert_eq!(
-                Move::queenside_castle(Square::E1, Square::C1),
-                pos.move_from_uci("e1c1").unwrap(),
-            );
-            assert_eq!(
-                Move::quiet(Square::E1, Square::E2),
-                pos.move_from_uci("e1e2").unwrap(),
-            );
-            assert_eq!(
-                Move::capture(Square::E1, Square::D2),
-                pos.move_from_uci("e1d2").unwrap(),
-            );
-        }
-
-        #[test]
-        fn uci_promotion() {
-            let pos = Position::from_fen("5n2/4P3/8/8/8/8/8/8 w - - 0 1").unwrap();
-            assert_eq!(
-                Move::promotion(Square::E7, Square::E8, PieceKind::Knight),
-                pos.move_from_uci("e7e8n").unwrap()
-            );
-            assert_eq!(
-                Move::promotion(Square::E7, Square::E8, PieceKind::Bishop),
-                pos.move_from_uci("e7e8b").unwrap()
-            );
-            assert_eq!(
-                Move::promotion(Square::E7, Square::E8, PieceKind::Rook),
-                pos.move_from_uci("e7e8r").unwrap()
-            );
-            assert_eq!(
-                Move::promotion(Square::E7, Square::E8, PieceKind::Queen),
-                pos.move_from_uci("e7e8q").unwrap()
-            );
-            assert_eq!(
-                Move::promotion_capture(Square::E7, Square::F8, PieceKind::Knight),
-                pos.move_from_uci("e7f8n").unwrap()
-            );
-            assert_eq!(
-                Move::promotion_capture(Square::E7, Square::F8, PieceKind::Bishop),
-                pos.move_from_uci("e7f8b").unwrap()
-            );
-            assert_eq!(
-                Move::promotion_capture(Square::E7, Square::F8, PieceKind::Rook),
-                pos.move_from_uci("e7f8r").unwrap()
-            );
-            assert_eq!(
-                Move::promotion_capture(Square::E7, Square::F8, PieceKind::Queen),
-                pos.move_from_uci("e7f8q").unwrap()
-            );
-        }
-        */
     }
 
-    mod make_unmake {
+    mod make {
         use crate::core::*;
-        use crate::position::Position;
+        use crate::Position;
 
-        // White pawn on e3, white to move, white moves to e4. It should now be black's turn and there should be
-        // a white pawn on e4. Unmake the move, it should be white's turn to move and a white pawn should be on e3.
         #[test]
-        fn basic_movement() {
-            let mut pos = Position::from_fen("8/8/8/8/8/4P3/8/8 w - - 0 1").unwrap();
-            assert!(pos.piece_at(E3).is_some());
-            let mov = Move::quiet(E3, E4);
-            pos.make_move(mov);
-            assert!(pos.piece_at(E3).is_none());
-            assert!(pos.piece_at(E4).is_some());
-            let piece = pos.piece_at(E4).unwrap();
-            assert_eq!(piece.kind, PieceKind::Pawn);
-            assert_eq!(piece.color, Color::White);
-            assert_eq!(pos.side_to_move(), Color::Black);
-            pos.unmake_move(mov);
-            assert!(pos.side_to_move() == Color::White);
-            assert!(pos.piece_at(E4).is_none());
-            assert!(pos.piece_at(E3).is_some());
-            let unmake_piece = pos.piece_at(E3).unwrap();
-            assert_eq!(unmake_piece.kind, PieceKind::Pawn);
-            assert_eq!(unmake_piece.color, Color::White);
+        fn smoke_test_opening_pawn() {
+            let mut pos =
+                Position::from_fen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 2 1")
+                    .unwrap();
+
+            // nothing fancy, move a pawn up one.
+            pos.make_move(Move::quiet(E2, E3));
+
+            // it should now be Black's turn to move.
+            assert_eq!(Color::Black, pos.side_to_move());
+
+            // the fullmove clock shouldn't have incremented
+            // (it only increments every Black move)
+            assert_eq!(1, pos.fullmove_clock());
+
+            // a pawn moved, so the halfmove clock should be zero.
+            assert_eq!(0, pos.halfmove_clock());
+
+            // there should be a pawn on e3
+            let pawn = pos.piece_at(E3).unwrap();
+            assert_eq!(PieceKind::Pawn, pawn.kind);
+            assert_eq!(Color::White, pawn.color);
+
+            // there should not be a pawn on e2
+            let not_pawn = pos.piece_at(E2);
+            assert!(not_pawn.is_none());
         }
 
         #[test]
-        fn basic_captures() {
-            let mut pos = Position::from_fen("8/8/4b3/8/2B5/8/8/8 w - - 0 1").unwrap();
-            let mov = Move::capture(C4, E6);
-            pos.make_move(mov);
-            assert!(pos.piece_at(C4).is_none());
-            let moved_piece = pos.piece_at(E6).unwrap();
-            assert_eq!(moved_piece.kind, PieceKind::Bishop);
-            assert_eq!(moved_piece.color, Color::White);
-            pos.unmake_move(mov);
-            assert_eq!(pos.piece_at(C4).unwrap(), moved_piece);
-            let captured_piece = pos.piece_at(E6).unwrap();
-            assert_eq!(captured_piece.kind, PieceKind::Bishop);
-            assert_eq!(captured_piece.color, Color::Black);
+        fn en_passant_reset() {
+            // EP square at e3, black to move
+            let mut pos = Position::from_fen("8/8/8/8/4Pp2/8/8/8 b - e3 0 1").unwrap();
+
+            // black not taking EP opportunity
+            pos.make_move(Move::quiet(F4, F3));
+
+            // EP no longer possible.
+            assert_eq!(Color::White, pos.side_to_move());
+            assert_eq!(None, pos.en_passant_square());
+        }
+
+        #[test]
+        fn double_pawn_push_sets_ep() {
+            // white to move
+            let mut pos = Position::from_fen("8/8/8/8/8/8/4P3/8 w - - 0 1").unwrap();
+
+            // white double-pawn pushes
+            pos.make_move(Move::double_pawn_push(E2, E4));
+
+            // now black to move, with EP square set
+            assert_eq!(Color::Black, pos.side_to_move());
+            assert_eq!(Some(E3), pos.en_passant_square());
+        }
+
+        #[test]
+        fn basic_capture() {
+            let mut pos = Position::from_fen("8/8/8/8/5p2/4P3/8/8 w - - 2 1").unwrap();
+            pos.make_move(Move::capture(E3, F4));
+
+            // There should be a white pawn on F4
+            let piece = pos.piece_at(F4).unwrap();
+            assert_eq!(PieceKind::Pawn, piece.kind);
+            assert_eq!(Color::White, piece.color);
+
+            // There should be no piece on E3
+            let other_piece = pos.piece_at(E3);
+            assert!(other_piece.is_none());
+
+            // The halfmove clock should reset (capture)
+            assert_eq!(0, pos.halfmove_clock());
+        }
+
+        #[test]
+        fn non_pawn_quiet_move() {
+            let mut pos = Position::from_fen("8/8/8/8/8/8/4B3/8 w - - 5 2").unwrap();
+            pos.make_move(Move::quiet(E2, G4));
+
+            // the halfmove clock should not be reset.
+            assert_eq!(6, pos.halfmove_clock());
+        }
+
+        #[test]
+        fn moving_king_castle_status() {
+            let mut pos = Position::from_fen("8/8/8/8/8/8/8/4K2R w KQ - 0 1").unwrap();
+
+            // white's turn to move, white moves its king.
+            pos.make_move(Move::quiet(E1, E2));
+
+            // white can't castle anymore.
+            assert!(!pos.can_castle_kingside(Color::White));
+            assert!(!pos.can_castle_queenside(Color::White));
+        }
+
+        #[test]
+        fn moving_kingside_rook_castle_status() {
+            let mut pos = Position::from_fen("8/8/8/8/8/8/8/4K2R w KQ - 0 1").unwrap();
+
+            // white's turn to move, white moves its kingside rook.
+            pos.make_move(Move::quiet(H1, G1));
+
+            // white can't castle kingside anymore
+            assert!(!pos.can_castle_kingside(Color::White));
+            assert!(pos.can_castle_queenside(Color::White));
+        }
+
+        #[test]
+        fn moving_queenside_rook_castle_status() {
+            let mut pos = Position::from_fen("8/8/8/8/8/8/8/R3K3 w KQ - 0 1").unwrap();
+
+            // white's turn to move, white moves its queenside rook.
+            pos.make_move(Move::quiet(A1, B1));
+
+            // white can't castle queenside anymore
+            assert!(!pos.can_castle_queenside(Color::White));
+            assert!(pos.can_castle_kingside(Color::White));
+        }
+
+        #[test]
+        fn rook_capture_castle_status() {
+            // tests that we can't capture if there's no rook on the target
+            // square, even if the rooks themselves never moved (i.e. they
+            // were captured on their starting square)
+            let mut pos = Position::from_fen("8/8/8/8/8/7r/4P3/R3K2R b KQ - 0 1").unwrap();
+
+            // black to move, black captures the rook at H1
+            pos.make_move(Move::capture(H3, H1));
+
+            // white to move, white pushes the pawn
+            pos.make_move(Move::double_pawn_push(E2, E4));
+
+            // black to move, black moves the rook
+            pos.make_move(Move::quiet(H1, H5));
+
+            // white moves the queenside rook to the kingside rook
+            // start location
+            pos.make_move(Move::quiet(A1, A2));
+            pos.make_move(Move::quiet(H5, H6));
+            pos.make_move(Move::quiet(A2, H2));
+            pos.make_move(Move::quiet(H6, H7));
+            pos.make_move(Move::quiet(H2, H1));
+
+            // white shouldn't be able to castle kingside, despite
+            // there being a rook on the kingside rook square
+            // and us never moving the kingside rook
+            assert!(!pos.can_castle_kingside(Color::White));
+        }
+
+        #[test]
+        fn en_passant_capture() {
+            // tests that we remove an ep-captured piece from its
+            // actual location and not try to remove the EP-square
+            let mut pos = Position::from_fen("8/8/8/3pP3/8/8/8/8 w - d6 0 1").unwrap();
+
+            // white to move, white EP-captures the pawn
+            pos.make_move(Move::en_passant(E5, D6));
+
+            // there should not be a piece at D5 anymore
+            let black_pawn = pos.piece_at(D5);
+            assert!(black_pawn.is_none());
+
+            // the white pawn should be at the EP-square
+            let white_pawn = pos.piece_at(D6).unwrap();
+            assert_eq!(Color::White, white_pawn.color);
+            assert_eq!(PieceKind::Pawn, white_pawn.kind);
+        }
+
+        #[test]
+        fn basic_promotion() {
+            let mut pos = Position::from_fen("8/4P3/8/8/8/8/8/8 w - - 0 1").unwrap();
+
+            // white to move, white promotes the pawn on e7
+            pos.make_move(Move::promotion(E7, E8, PieceKind::Queen));
+
+            // there should be a queen on e8
+            let queen = pos.piece_at(E8).unwrap();
+            assert_eq!(Color::White, queen.color);
+            assert_eq!(PieceKind::Queen, queen.kind);
+        }
+
+        #[test]
+        fn basic_promote_capture() {
+            let mut pos = Position::from_fen("5b2/4P3/8/8/8/8/8/8 w - - 0 1").unwrap();
+
+            // white to move, white promote-captures the pawn on e7 and captures
+            // the bishop
+            pos.make_move(Move::promotion_capture(E7, F8, PieceKind::Queen));
+
+            // there should be a white queen on f8
+            let queen = pos.piece_at(F8).unwrap();
+            assert_eq!(Color::White, queen.color);
+            assert_eq!(PieceKind::Queen, queen.kind);
+        }
+
+        #[test]
+        fn queenside_castle() {
+            let mut pos = Position::from_fen("8/8/8/8/8/8/8/R3K3 w Q - 0 1").unwrap();
+
+            // white to move, white castles queenside
+            pos.make_move(Move::queenside_castle(E1, C1));
+
+            let rook = pos.piece_at(D1).unwrap();
+            assert_eq!(Color::White, rook.color);
+            assert_eq!(PieceKind::Rook, rook.kind);
+
+            let king = pos.piece_at(C1).unwrap();
+            assert_eq!(Color::White, king.color);
+            assert_eq!(PieceKind::King, king.kind);
+        }
+
+        #[test]
+        fn kingside_castle() {
+            let mut pos = Position::from_fen("8/8/8/8/8/8/8/4K2R w K - 0 1").unwrap();
+
+            // white to move, white castles kingside
+            pos.make_move(Move::kingside_castle(E1, G1));
+
+            let rook = pos.piece_at(F1).unwrap();
+            assert_eq!(Color::White, rook.color);
+            assert_eq!(PieceKind::Rook, rook.kind);
+
+            let king = pos.piece_at(G1).unwrap();
+            assert_eq!(Color::White, king.color);
+            assert_eq!(PieceKind::King, king.kind);
         }
     }
 }
