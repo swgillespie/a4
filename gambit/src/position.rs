@@ -19,11 +19,19 @@ use thiserror::Error;
 /// Because this structure is cloned, care must be taken to make this structure as small as possible.
 #[derive(Clone, Debug)]
 struct IrreversibleInformation {
+    /// The move that led to the game state changing. While assigned to `current_information`, it is None. For any move
+    /// in the move history, it is non-None.
     mov: Option<Move>,
+    /// The halfmove clock, or the progress to a draw by the 50-move Rule.
     halfmove_clock: u16,
+    /// The fullmove clock, or number of times white has moved this game.
     fullmove_clock: u16,
+    /// Castle status for both players.
     castle_status: CastleStatus,
+    /// The en-passant square, if the previous move was a double-pawn push.
     en_passant_square: Option<Square>,
+    /// The piece kind that was captured in the previous move, if the previous move was a capture.
+    last_capture: Option<PieceKind>,
 }
 
 /// A position, representing a chess game that has progressed up to this point. A Position encodes the complete state
@@ -143,6 +151,7 @@ impl Position {
                 fullmove_clock: 0,
                 castle_status: CastleStatus::BLACK | CastleStatus::WHITE,
                 en_passant_square: None,
+                last_capture: None,
             },
             previous_information: vec![],
             side_to_move: Color::White,
@@ -232,6 +241,17 @@ impl Position {
         let moving_piece = self
             .piece_at(mov.source())
             .expect("no piece at move source");
+        if mov.is_capture() {
+            // Captures imply that there's an enemy piece at the target square that we must remove.
+            let captured_piece = self
+                .piece_at(mov.destination())
+                .expect("no piece at capture target square");
+            // Record the type of piece we're capturing, so we can accurately unmake this move later.
+            self.current_information.last_capture = Some(captured_piece.kind);
+            self.remove_piece(mov.destination())
+                .expect("no piece at capture target square");
+        }
+
         self.remove_piece(mov.source())
             .expect("no piece at move source");
         self.add_piece(mov.destination(), moving_piece).expect(
@@ -255,6 +275,7 @@ impl Position {
         assert!(self.previous_information.last().unwrap().mov.unwrap() == mov);
 
         // Restore the previous move's information into our current information slot.
+        let last_capture = self.current_information.last_capture.clone();
         self.current_information = self.previous_information.pop().unwrap();
         // Clear out the move; we're unmaking it and we'll overwrite it later when we make another move.
         self.current_information.mov = None;
@@ -265,6 +286,14 @@ impl Position {
             .expect("no piece at move destination");
         self.remove_piece(mov.destination())
             .expect("no piece at move destination");
+        if mov.is_capture() {
+            // Captures must replace the captured piece at the destination square.
+            let piece = Piece {
+                color: self.side_to_move,
+                kind: last_capture.expect("last capture not recorded for capture unmake"),
+            };
+            self.add_piece(mov.destination(), piece).unwrap();
+        }
         self.add_piece(mov.source(), moved_piece)
             .expect("piece at move source");
         self.side_to_move = self.side_to_move.toggle();
@@ -1252,6 +1281,22 @@ mod tests {
             let unmake_piece = pos.piece_at(E3).unwrap();
             assert_eq!(unmake_piece.kind, PieceKind::Pawn);
             assert_eq!(unmake_piece.color, Color::White);
+        }
+
+        #[test]
+        fn basic_captures() {
+            let mut pos = Position::from_fen("8/8/4b3/8/2B5/8/8/8 w - - 0 1").unwrap();
+            let mov = Move::capture(C4, E6);
+            pos.make_move(mov);
+            assert!(pos.piece_at(C4).is_none());
+            let moved_piece = pos.piece_at(E6).unwrap();
+            assert_eq!(moved_piece.kind, PieceKind::Bishop);
+            assert_eq!(moved_piece.color, Color::White);
+            pos.unmake_move(mov);
+            assert_eq!(pos.piece_at(C4).unwrap(), moved_piece);
+            let captured_piece = pos.piece_at(E6).unwrap();
+            assert_eq!(captured_piece.kind, PieceKind::Bishop);
+            assert_eq!(captured_piece.color, Color::Black);
         }
     }
 }
