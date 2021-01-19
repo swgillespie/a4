@@ -30,11 +30,11 @@ impl SquareSet {
         self.0 & (1u64 << square.0) != 0
     }
 
-    pub const fn insert(&mut self, square: Square) {
+    pub fn insert(&mut self, square: Square) {
         self.0 |= 1u64 << square.0;
     }
 
-    pub const fn remove(&mut self, square: Square) {
+    pub fn remove(&mut self, square: Square) {
         self.0 &= !(1u64 << square.0);
     }
 
