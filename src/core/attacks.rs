@@ -272,3 +272,14 @@ pub fn queen_attacks(sq: Square, occupancy: SquareSet) -> SquareSet {
 pub fn king_attacks(sq: Square) -> SquareSet {
     KING_TABLE.attacks(sq)
 }
+
+pub fn attacks(kind: PieceKind, color: Color, sq: Square, occupancy: SquareSet) -> SquareSet {
+    match kind {
+        PieceKind::Pawn => pawn_attacks(sq, color),
+        PieceKind::Knight => knight_attacks(sq),
+        PieceKind::Bishop => bishop_attacks(sq, occupancy),
+        PieceKind::Rook => rook_attacks(sq, occupancy),
+        PieceKind::Queen => queen_attacks(sq, occupancy),
+        PieceKind::King => king_attacks(sq),
+    }
+}

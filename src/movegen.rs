@@ -152,8 +152,31 @@ pub fn generate_pawn_moves(us: Color, pos: &Position, moves: &mut Vec<Move>) {
     }
 }
 
+pub fn generate_moves_for_kind(us: Color, pos: &Position, kind: PieceKind, moves: &mut Vec<Move>) {
+    debug_assert!(
+        kind != PieceKind::King && kind != PieceKind::Pawn,
+        "kings and pawns have their own movegen routines"
+    );
+
+    let all_pieces = pos.pieces(Color::White) | pos.pieces(Color::Black);
+    let enemy_pieces = pos.pieces(us.toggle());
+    for piece in pos.pieces_of_kind(us, kind) {
+        for atk in attacks(kind, us, piece, all_pieces) {
+            if enemy_pieces.contains(atk) {
+                moves.push(Move::capture(piece, atk));
+            } else {
+                moves.push(Move::quiet(piece, atk));
+            }
+        }
+    }
+}
+
 pub fn generate_moves(us: Color, pos: &Position, moves: &mut Vec<Move>) {
     generate_pawn_moves(us, pos, moves);
+    generate_moves_for_kind(us, pos, PieceKind::Bishop, moves);
+    generate_moves_for_kind(us, pos, PieceKind::Knight, moves);
+    generate_moves_for_kind(us, pos, PieceKind::Rook, moves);
+    generate_moves_for_kind(us, pos, PieceKind::Queen, moves);
 }
 
 #[cfg(test)]
@@ -326,6 +349,45 @@ mod tests {
                     // this can happen if we are sloppy about validating the legality
                     // of EP-moves
                     Move::en_passant(F2, E7),
+                ],
+            );
+        }
+    }
+
+    mod bishops {
+        use super::*;
+
+        #[test]
+        fn smoke_test() {
+            assert_moves_generated(
+                "8/8/8/8/3B4/8/8/8 w - - 0 1",
+                &[
+                    Move::quiet(D4, E5),
+                    Move::quiet(D4, F6),
+                    Move::quiet(D4, G7),
+                    Move::quiet(D4, H8),
+                    Move::quiet(D4, E3),
+                    Move::quiet(D4, F2),
+                    Move::quiet(D4, G1),
+                    Move::quiet(D4, C3),
+                    Move::quiet(D4, B2),
+                    Move::quiet(D4, A1),
+                    Move::quiet(D4, C5),
+                    Move::quiet(D4, B6),
+                    Move::quiet(D4, A7),
+                ],
+            );
+        }
+
+        #[test]
+        fn smoke_capture() {
+            assert_moves_generated(
+                "8/8/8/2p1p3/3B4/2p1p3/8/8 w - - 0 1",
+                &[
+                    Move::capture(D4, E5),
+                    Move::capture(D4, E3),
+                    Move::capture(D4, C5),
+                    Move::capture(D4, C3),
                 ],
             );
         }
