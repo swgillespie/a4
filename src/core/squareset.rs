@@ -6,7 +6,8 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
-use crate::core::{self, File, Rank, Square};
+use crate::core::{self, Direction, File, Rank, Square};
+use std::fmt;
 use std::ops::BitOr;
 
 /// A set of squares on the chessboard. The implementation of SquareSet is designed to mirror
@@ -64,14 +65,14 @@ impl SquareSet {
 
     pub const fn rank(self, rank: Rank) -> SquareSet {
         let rank_set = match rank {
-            core::RANK_1 => SquareSet(0x00000000000000FF),
-            core::RANK_2 => SquareSet(0x000000000000FF00),
-            core::RANK_3 => SquareSet(0x0000000000FF0000),
-            core::RANK_4 => SquareSet(0x00000000FF000000),
-            core::RANK_5 => SquareSet(0x000000FF00000000),
-            core::RANK_6 => SquareSet(0x0000FF0000000000),
-            core::RANK_7 => SquareSet(0x00FF000000000000),
-            core::RANK_8 => SquareSet(0xFF00000000000000),
+            core::RANK_1 => SS_RANK_1,
+            core::RANK_2 => SS_RANK_2,
+            core::RANK_3 => SS_RANK_3,
+            core::RANK_4 => SS_RANK_4,
+            core::RANK_5 => SS_RANK_5,
+            core::RANK_6 => SS_RANK_6,
+            core::RANK_7 => SS_RANK_7,
+            core::RANK_8 => SS_RANK_8,
             _ => unreachable!(),
         };
 
@@ -80,18 +81,32 @@ impl SquareSet {
 
     pub const fn file(self, file: File) -> SquareSet {
         let file_set = match file {
-            core::FILE_A => SquareSet(0x00000000000000FF),
-            core::FILE_B => SquareSet(0x0202020202020202),
-            core::FILE_C => SquareSet(0x0404040404040404),
-            core::FILE_D => SquareSet(0x0808080808080808),
-            core::FILE_E => SquareSet(0x1010101010101010),
-            core::FILE_F => SquareSet(0x2020202020202020),
-            core::FILE_G => SquareSet(0x4040404040404040),
-            core::FILE_H => SquareSet(0x8080808080808080),
+            core::FILE_A => SS_FILE_A,
+            core::FILE_B => SS_FILE_B,
+            core::FILE_C => SS_FILE_C,
+            core::FILE_D => SS_FILE_D,
+            core::FILE_E => SS_FILE_E,
+            core::FILE_F => SS_FILE_F,
+            core::FILE_G => SS_FILE_G,
+            core::FILE_H => SS_FILE_H,
             _ => unreachable!(),
         };
 
         self.and(file_set)
+    }
+
+    /// Shifts all squares in the SquareSet one square in the given direction.
+    pub const fn shift(self, direction: Direction) -> SquareSet {
+        match direction {
+            Direction::North => SquareSet(self.0 << 8),
+            Direction::NorthEast => SquareSet(self.and(SS_FILE_H.not()).0 << 9),
+            Direction::East => SquareSet(self.and(SS_FILE_H.not()).0 << 1),
+            Direction::SouthEast => SquareSet(self.and(SS_FILE_H.not()).0 >> 7),
+            Direction::South => SquareSet(self.0 >> 8),
+            Direction::SouthWest => SquareSet(self.and(SS_FILE_A.not()).0 >> 9),
+            Direction::West => SquareSet(self.and(SS_FILE_A.not()).0 >> 1),
+            Direction::NorthWest => SquareSet(self.and(SS_FILE_A.not()).0 << 7),
+        }
     }
 
     pub fn bits(self) -> u64 {
@@ -116,6 +131,52 @@ impl IntoIterator for SquareSet {
     }
 }
 
+const SS_RANK_1: SquareSet = SquareSet(0x00000000000000FF);
+const SS_RANK_2: SquareSet = SquareSet(0x000000000000FF00);
+const SS_RANK_3: SquareSet = SquareSet(0x0000000000FF0000);
+const SS_RANK_4: SquareSet = SquareSet(0x00000000FF000000);
+const SS_RANK_5: SquareSet = SquareSet(0x000000FF00000000);
+const SS_RANK_6: SquareSet = SquareSet(0x0000FF0000000000);
+const SS_RANK_7: SquareSet = SquareSet(0x00FF000000000000);
+const SS_RANK_8: SquareSet = SquareSet(0xFF00000000000000);
+const SS_FILE_A: SquareSet = SquareSet(0x0101010101010101);
+const SS_FILE_B: SquareSet = SquareSet(0x0202020202020202);
+const SS_FILE_C: SquareSet = SquareSet(0x0404040404040404);
+const SS_FILE_D: SquareSet = SquareSet(0x0808080808080808);
+const SS_FILE_E: SquareSet = SquareSet(0x1010101010101010);
+const SS_FILE_F: SquareSet = SquareSet(0x2020202020202020);
+const SS_FILE_G: SquareSet = SquareSet(0x4040404040404040);
+const SS_FILE_H: SquareSet = SquareSet(0x8080808080808080);
+
+impl fmt::Display for SquareSet {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        for rank in core::ranks().rev() {
+            for file in core::files() {
+                let sq = Square::of(rank, file);
+                if self.contains(sq) {
+                    write!(f, " 1 ")?;
+                } else {
+                    write!(f, " . ")?;
+                }
+            }
+
+            writeln!(f, "| {}", rank)?;
+        }
+
+        for _ in core::files() {
+            write!(f, "---")?;
+        }
+
+        writeln!(f)?;
+        for file in core::files() {
+            write!(f, " {} ", file)?;
+        }
+
+        writeln!(f)?;
+        Ok(())
+    }
+}
+
 /// An iterator over squares stored in a [`SquareSet`], designed to be very efficient for modern processors.
 pub struct SquareSetIterator(u64);
 
@@ -136,34 +197,60 @@ impl Iterator for SquareSetIterator {
 #[cfg(test)]
 mod tests {
     use super::SquareSet;
-    use crate::core;
+    use crate::core::*;
 
     #[test]
     fn test_set_clear() {
         let mut set = SquareSet::empty();
-        assert!(!set.contains(core::A1));
-        set.insert(core::A1);
-        assert!(set.contains(core::A1));
-        set.remove(core::A1);
-        assert!(!set.contains(core::A1));
+        assert!(!set.contains(A1));
+        set.insert(A1);
+        assert!(set.contains(A1));
+        set.remove(A1);
+        assert!(!set.contains(A1));
     }
 
     #[test]
     fn count() {
         let mut set = SquareSet::empty();
-        set.insert(core::A3);
-        set.insert(core::A4);
-        set.insert(core::A5);
+        set.insert(A3);
+        set.insert(A4);
+        set.insert(A5);
         assert_eq!(set.len(), 3);
     }
 
     #[test]
     fn iter() {
         let mut set = SquareSet::empty();
-        set.insert(core::A3);
-        set.insert(core::A4);
-        set.insert(core::A5);
+        set.insert(A3);
+        set.insert(A4);
+        set.insert(A5);
         let squares: Vec<_> = set.into_iter().collect();
-        assert_eq!(squares, vec![core::A3, core::A4, core::A5]);
+        assert_eq!(squares, vec![A3, A4, A5]);
+    }
+
+    #[test]
+    fn shift_up() {
+        let rank_1 = SquareSet::all().rank(RANK_1);
+        let rank_2 = rank_1.shift(Direction::North);
+        assert_eq!(rank_2, SquareSet::all().rank(RANK_2))
+    }
+
+    #[test]
+    fn shift_left() {
+        let file_c = SquareSet::all().file(FILE_C);
+        let file_b = file_c.shift(Direction::West);
+        println!("{}", file_c);
+        println!("{}", file_b);
+        assert_eq!(file_b, SquareSet::all().file(FILE_B));
+    }
+
+    #[test]
+    fn shift_upright() {
+        let mut set = SquareSet::empty();
+        set.insert(H6);
+        let result = set.shift(Direction::NorthEast);
+        println!("{}", set);
+        println!("{}", result);
+        assert!(result.is_empty());
     }
 }
