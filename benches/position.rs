@@ -32,6 +32,29 @@ fn criterion_benchmark(c: &mut Criterion) {
             movegen::generate_pawn_moves(black_box(Color::Black), black_box(&pos), &mut moves);
         });
     });
+
+    c.bench_function("kiwipete-movegen-all", |b| {
+        let pos = Position::from_fen(
+            "r3k2r/p1ppqpb1/bn2pnp1/3PN3/Pp2P3/2N2Q1p/1PPBBPPP/R3K2R b KQkq a3 0 1",
+        )
+        .unwrap();
+        b.iter(|| {
+            let mut moves = Vec::new();
+            movegen::generate_moves(black_box(Color::Black), black_box(&pos), &mut moves);
+        });
+    });
+
+    c.bench_function("kiwipete-movegen-quiet", |b| {
+        let pos = Position::from_fen(
+            "r3k2r/p1ppqpb1/bn2pnp1/3PN3/Pp2P3/2N2Q1p/1PPBBPPP/R3K2R b KQkq a3 0 1",
+        )
+        .unwrap();
+        b.iter(|| {
+            let mut moves = Vec::new();
+            movegen::generate_moves(black_box(Color::Black), black_box(&pos), &mut moves);
+            moves.retain(|m| m.is_quiet());
+        });
+    });
 }
 
 criterion_group!(benches, criterion_benchmark);
