@@ -171,12 +171,79 @@ pub fn generate_moves_for_kind(us: Color, pos: &Position, kind: PieceKind, moves
     }
 }
 
+pub fn generate_king_moves(us: Color, pos: &Position, moves: &mut Vec<Move>) {
+    let enemy_pieces = pos.pieces(us.toggle());
+    let allied_pieces = pos.pieces(us);
+    let pieces = enemy_pieces.or(allied_pieces);
+    let king = if let Some(king) = pos.king(us) {
+        king
+    } else {
+        return;
+    };
+    for target in king_attacks(king) {
+        if enemy_pieces.contains(target) {
+            moves.push(Move::capture(king, target));
+        } else if !allied_pieces.contains(target) {
+            moves.push(Move::quiet(king, target));
+        }
+    }
+
+    // Generate castling moves, if we are allowed to castle.
+    if pos.is_check(us) {
+        // No castling out of check.
+        return;
+    }
+
+    if pos.can_castle_kingside(us) {
+        let starting_rook = if us == Color::White { H1 } else { H8 };
+
+        if let Some(piece) = pos.piece_at(starting_rook) {
+            if piece.kind == PieceKind::Rook && piece.color == us {
+                let one = king.towards(Direction::East);
+                let two = one.towards(Direction::East);
+                if !pieces.contains(one) && !pieces.contains(two) {
+                    // The king moves across both squares one and two and it is illegal
+                    // to castle through check. We can only proceed if no enemy piece is
+                    // attacking the squares the king travels upon.
+                    if pos.squares_attacking(us.toggle(), one).is_empty()
+                        && pos.squares_attacking(us.toggle(), two).is_empty()
+                    {
+                        moves.push(Move::kingside_castle(king, two));
+                    }
+                }
+            }
+        }
+    }
+
+    if pos.can_castle_queenside(us) {
+        let starting_rook = if us == Color::White { A1 } else { A8 };
+
+        if let Some(piece) = pos.piece_at(starting_rook) {
+            if piece.kind == PieceKind::Rook && piece.color == us {
+                let one = king.towards(Direction::West);
+                let two = one.towards(Direction::West);
+                let three = two.towards(Direction::West);
+                if !pieces.contains(one) && !pieces.contains(two) && !pieces.contains(three) {
+                    // Square three can be checked, but it can't be occupied. The rook
+                    // travels across square three, but the king does not.
+                    if pos.squares_attacking(us.toggle(), one).is_empty()
+                        && pos.squares_attacking(us.toggle(), two).is_empty()
+                    {
+                        moves.push(Move::queenside_castle(king, two));
+                    }
+                }
+            }
+        }
+    }
+}
+
 pub fn generate_moves(us: Color, pos: &Position, moves: &mut Vec<Move>) {
     generate_pawn_moves(us, pos, moves);
     generate_moves_for_kind(us, pos, PieceKind::Bishop, moves);
     generate_moves_for_kind(us, pos, PieceKind::Knight, moves);
     generate_moves_for_kind(us, pos, PieceKind::Rook, moves);
     generate_moves_for_kind(us, pos, PieceKind::Queen, moves);
+    generate_king_moves(us, pos, moves);
 }
 
 #[cfg(test)]
@@ -238,12 +305,12 @@ mod tests {
         use super::*;
 
         #[test]
-        fn white_pawn_smoke_test() {
+        fn white_pawn_smoke_contains() {
             assert_moves_generated("8/8/8/8/5P2/8/8/8 w - - 0 1", &[Move::quiet(F4, F5)]);
         }
 
         #[test]
-        fn white_pawn_multiple_smoke_test() {
+        fn white_pawn_multiple_smoke_contains() {
             assert_moves_generated(
                 "8/8/8/6P1/2P5/4P3/8/8 w - - 0 1",
                 &[
@@ -358,7 +425,7 @@ mod tests {
         use super::*;
 
         #[test]
-        fn smoke_test() {
+        fn smoke_contains() {
             assert_moves_generated(
                 "8/8/8/8/3B4/8/8/8 w - - 0 1",
                 &[
@@ -390,6 +457,118 @@ mod tests {
                     Move::capture(D4, C3),
                 ],
             );
+        }
+    }
+
+    mod kings {
+        use super::*;
+
+        #[test]
+        fn smoke_test() {
+            assert_moves_generated(
+                "8/8/8/8/4K3/8/8/8 w - - 0 1",
+                &[
+                    Move::quiet(E4, E5),
+                    Move::quiet(E4, F5),
+                    Move::quiet(E4, F4),
+                    Move::quiet(E4, F3),
+                    Move::quiet(E4, E3),
+                    Move::quiet(E4, D3),
+                    Move::quiet(E4, D4),
+                    Move::quiet(E4, D5),
+                ],
+            );
+        }
+
+        #[test]
+        fn position_4_check_block() {
+            assert_moves_contains(
+                "r2q1rk1/pP1p2pp/Q4n2/bbp1p3/Np6/1B3NBn/pPPP1PPP/R3K2R b KQ - 0 1",
+                &[
+                    Move::quiet(C5, C4),
+                    Move::double_pawn_push(D7, D5),
+                    Move::quiet(B5, C4),
+                    Move::quiet(F6, D5),
+                    Move::quiet(F8, F7),
+                    Move::quiet(G8, H8),
+                ],
+            );
+        }
+
+        #[test]
+        fn kingside_castle() {
+            assert_moves_contains(
+                "8/8/8/8/8/8/8/4K2R w K - 0 1",
+                &[Move::kingside_castle(E1, G1)],
+            );
+        }
+
+        #[test]
+        fn queenside_castle() {
+            assert_moves_contains(
+                "8/8/8/8/8/8/8/R3K3 w Q - 0 1",
+                &[Move::queenside_castle(E1, C1)],
+            );
+        }
+
+        #[test]
+        fn kingside_castle_neg() {
+            assert_moves_does_not_contain(
+                "8/8/8/8/8/8/8/4K2R w Q - 0 1",
+                &[Move::kingside_castle(E1, G1)],
+            );
+        }
+
+        #[test]
+        fn queenside_castle_neg() {
+            assert_moves_does_not_contain(
+                "8/8/8/8/8/8/8/R3K3 w K - 0 1",
+                &[Move::queenside_castle(E1, C1)],
+            );
+        }
+
+        #[test]
+        fn castle_through_check() {
+            assert_moves_does_not_contain(
+                "8/8/8/8/5r2/8/8/4K2R w - - 0 1",
+                &[Move::kingside_castle(E1, G1)],
+            );
+        }
+
+        #[test]
+        fn kingside_castle_when_space_occupied() {
+            assert_moves_does_not_contain(
+                "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                &[Move::kingside_castle(E1, G1)],
+            );
+        }
+
+        #[test]
+        fn queenside_castle_when_space_occupied() {
+            assert_moves_does_not_contain(
+                "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                &[Move::queenside_castle(E1, C1)],
+            );
+        }
+
+        #[test]
+        fn kiwipete_bug_2() {
+            assert_moves_contains(
+                "r3k2r/p1pNqpb1/bn2pnp1/3P4/1p2P3/2N2Q1p/PPPBBPPP/R3K2R b KQkq - 0 1",
+                &[Move::queenside_castle(E8, C8)],
+            );
+        }
+
+        #[test]
+        fn kiwipete_bug_3() {
+            assert_moves_does_not_contain(
+                "2kr3r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/5Q1p/PPPBBPPP/RN2K2R w KQ - 2 2",
+                &[
+                    // there's a knight on b1, this blocks castling even though it
+                    // doesn't block the king's movement
+                    Move::queenside_castle(E1, C1),
+                ],
+            )
         }
     }
 }

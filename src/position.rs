@@ -94,8 +94,11 @@ impl Position {
         self.pieces_of_kind(color, PieceKind::Queen)
     }
 
-    pub fn kings(&self, color: Color) -> SquareSet {
-        self.pieces_of_kind(color, PieceKind::King)
+    pub fn king(&self, color: Color) -> Option<Square> {
+        let kings = self.pieces_of_kind(color, PieceKind::King);
+        assert!(kings.len() <= 1);
+        // TODO(swgillespie) this is pretty inefficient
+        kings.into_iter().next()
     }
 }
 
@@ -158,6 +161,82 @@ impl Position {
 
         // If we get here, we failed to update a bitboard somewhere.
         unreachable!()
+    }
+
+    pub fn squares_attacking(&self, to_move: Color, target: Square) -> SquareSet {
+        // TODO(swgillespie) This function and king move generation need to be rewritten for efficiency
+
+        let mut attacks = SquareSet::empty();
+
+        // Pretend that there's a "super-piece" at the target square and see if it hits anything.
+        // This covers all pieces except for kings and pawns.
+        let occupancy = self.pieces(Color::White) | self.pieces(Color::Black);
+
+        // Queen attacks cover bishops, rooks, and queens, so check that first.
+        let sliding_pieces = self.pieces_of_kind(to_move, PieceKind::Queen)
+            | self.pieces_of_kind(to_move, PieceKind::Rook)
+            | self.pieces_of_kind(to_move, PieceKind::Bishop);
+        let sliding_attacks = queen_attacks(target, occupancy).and(sliding_pieces);
+        if !sliding_attacks.is_empty() {
+            // Hit - there's something that might be attacking via a slide. However, since we're
+            // modeling a superpiece, we need to check that the attacking pieces actually can legally
+            // attack this square.
+            for attacker in sliding_attacks {
+                let piece = self
+                    .piece_at(attacker)
+                    .expect("attack table produced piece not on board?");
+                if core::attacks(piece.kind, piece.color, attacker, occupancy).contains(target) {
+                    attacks.insert(attacker);
+                }
+            }
+        }
+
+        // Knight attacks are straightforward since knight moves are symmetric.
+        let knight_attacks = knight_attacks(target).and(self.knights(to_move));
+        if !knight_attacks.is_empty() {
+            attacks = attacks | knight_attacks;
+        }
+
+        // For pawns, there are only a few places a pawn could be to legally attack this square. In all cases,
+        // the capturing pawn has to be on the rank immediately above (or below) the square we're looking at.
+        //
+        // A correlary to this is that pieces on the bottom (or top) ranks can't be attacked by pawns.
+        let cant_be_attacked_by_pawns_rank = if to_move == Color::White {
+            RANK_1
+        } else {
+            RANK_8
+        };
+
+        if target.rank() != cant_be_attacked_by_pawns_rank {
+            let pawn_attack_rank = if to_move == Color::White {
+                target.towards(Direction::South).rank()
+            } else {
+                target.towards(Direction::North).rank()
+            };
+
+            for pawn in self.pawns(to_move) & SquareSet::all().rank(pawn_attack_rank) {
+                if pawn_attacks(pawn, to_move).contains(target) {
+                    attacks.insert(pawn);
+                }
+            }
+        }
+
+        // There's only one king, so it's cheap to check.
+        if let Some(king) = self.king(to_move) {
+            if king_attacks(king).contains(target) {
+                attacks.insert(king);
+            }
+        }
+
+        attacks
+    }
+
+    pub fn is_check(&self, us: Color) -> bool {
+        if let Some(king) = self.king(us) {
+            !self.squares_attacking(us.toggle(), king).is_empty()
+        } else {
+            false
+        }
     }
 }
 
