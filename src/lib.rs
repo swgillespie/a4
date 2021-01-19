@@ -16,7 +16,6 @@
 #![allow(incomplete_features)]
 
 pub mod core;
-mod movegen;
 mod position;
 
 pub use position::Position;
