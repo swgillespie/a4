@@ -7,20 +7,29 @@
 // except according to those terms.
 
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use gambit::core::{self, Move};
+use gambit::core::{self, Color, Move};
+use gambit::movegen;
 use gambit::Position;
 
 fn criterion_benchmark(c: &mut Criterion) {
-    c.bench_function("quiet move clonemake 10x", |b| {
+    c.bench_function("quiet-move-clonemake", |b| {
         let pos = Position::from_fen("8/8/4b3/8/2B5/8/8/8 w - - 0 1").unwrap();
         let mov = Move::quiet(core::C4, core::D5);
         b.iter(|| {
-            let pos = black_box(&pos).clone();
+            let mut pos = black_box(&pos).clone();
             let mov = black_box(mov);
-            for _ in 0..10 {
-                let mut new = pos.clone();
-                new.make_move(mov);
-            }
+            pos.make_move(mov);
+        });
+    });
+
+    c.bench_function("pawn-movegen", |b| {
+        let pos = Position::from_fen(
+            "r3k2r/p1ppqpb1/bn2pnp1/3PN3/Pp2P3/2N2Q1p/1PPBBPPP/R3K2R b KQkq a3 0 1",
+        )
+        .unwrap();
+        b.iter(|| {
+            let mut moves = Vec::new();
+            movegen::generate_pawn_moves(black_box(Color::Black), black_box(&pos), &mut moves);
         });
     });
 }

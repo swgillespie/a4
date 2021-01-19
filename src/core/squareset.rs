@@ -184,22 +184,22 @@ impl fmt::Display for SquareSet {
     }
 }
 
-const SS_RANK_1: SquareSet = SquareSet(0x00000000000000FF);
-const SS_RANK_2: SquareSet = SquareSet(0x000000000000FF00);
-const SS_RANK_3: SquareSet = SquareSet(0x0000000000FF0000);
-const SS_RANK_4: SquareSet = SquareSet(0x00000000FF000000);
-const SS_RANK_5: SquareSet = SquareSet(0x000000FF00000000);
-const SS_RANK_6: SquareSet = SquareSet(0x0000FF0000000000);
-const SS_RANK_7: SquareSet = SquareSet(0x00FF000000000000);
-const SS_RANK_8: SquareSet = SquareSet(0xFF00000000000000);
-const SS_FILE_A: SquareSet = SquareSet(0x0101010101010101);
-const SS_FILE_B: SquareSet = SquareSet(0x0202020202020202);
-const SS_FILE_C: SquareSet = SquareSet(0x0404040404040404);
-const SS_FILE_D: SquareSet = SquareSet(0x0808080808080808);
-const SS_FILE_E: SquareSet = SquareSet(0x1010101010101010);
-const SS_FILE_F: SquareSet = SquareSet(0x2020202020202020);
-const SS_FILE_G: SquareSet = SquareSet(0x4040404040404040);
-const SS_FILE_H: SquareSet = SquareSet(0x8080808080808080);
+pub const SS_RANK_1: SquareSet = SquareSet(0x00000000000000FF);
+pub const SS_RANK_2: SquareSet = SquareSet(0x000000000000FF00);
+pub const SS_RANK_3: SquareSet = SquareSet(0x0000000000FF0000);
+pub const SS_RANK_4: SquareSet = SquareSet(0x00000000FF000000);
+pub const SS_RANK_5: SquareSet = SquareSet(0x000000FF00000000);
+pub const SS_RANK_6: SquareSet = SquareSet(0x0000FF0000000000);
+pub const SS_RANK_7: SquareSet = SquareSet(0x00FF000000000000);
+pub const SS_RANK_8: SquareSet = SquareSet(0xFF00000000000000);
+pub const SS_FILE_A: SquareSet = SquareSet(0x0101010101010101);
+pub const SS_FILE_B: SquareSet = SquareSet(0x0202020202020202);
+pub const SS_FILE_C: SquareSet = SquareSet(0x0404040404040404);
+pub const SS_FILE_D: SquareSet = SquareSet(0x0808080808080808);
+pub const SS_FILE_E: SquareSet = SquareSet(0x1010101010101010);
+pub const SS_FILE_F: SquareSet = SquareSet(0x2020202020202020);
+pub const SS_FILE_G: SquareSet = SquareSet(0x4040404040404040);
+pub const SS_FILE_H: SquareSet = SquareSet(0x8080808080808080);
 
 /// An iterator over squares stored in a [`SquareSet`], designed to be very efficient for modern processors.
 pub struct SquareSetIterator(u64);
@@ -263,8 +263,6 @@ mod tests {
     fn shift_left() {
         let file_c = SquareSet::all().file(FILE_C);
         let file_b = file_c.shift(Direction::West);
-        println!("{}", file_c);
-        println!("{}", file_b);
         assert_eq!(file_b, SquareSet::all().file(FILE_B));
     }
 
@@ -273,8 +271,6 @@ mod tests {
         let mut set = SquareSet::empty();
         set.insert(H6);
         let result = set.shift(Direction::NorthEast);
-        println!("{}", set);
-        println!("{}", result);
         assert!(result.is_empty());
     }
 }

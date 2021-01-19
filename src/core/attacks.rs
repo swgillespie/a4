@@ -8,20 +8,11 @@
 use crate::core::*;
 use lazy_static::lazy_static;
 
-const BB_RANK_1: SquareSet = SquareSet::all().rank(RANK_1);
-const BB_RANK_2: SquareSet = SquareSet::all().rank(RANK_2);
-const BB_RANK_7: SquareSet = SquareSet::all().rank(RANK_7);
-const BB_RANK_8: SquareSet = SquareSet::all().rank(RANK_8);
-const BB_FILE_A: SquareSet = SquareSet::all().file(FILE_A);
-const BB_FILE_B: SquareSet = SquareSet::all().file(FILE_A);
-const BB_FILE_G: SquareSet = SquareSet::all().file(FILE_A);
-const BB_FILE_H: SquareSet = SquareSet::all().file(FILE_H);
+const SS_RANK_12: SquareSet = SS_RANK_1.or(SS_RANK_2);
+const SS_RANK_78: SquareSet = SS_RANK_7.or(SS_RANK_8);
 
-const BB_RANK_12: SquareSet = BB_RANK_1.or(BB_RANK_2);
-const BB_RANK_78: SquareSet = BB_RANK_7.or(BB_RANK_8);
-
-const BB_FILE_AB: SquareSet = BB_FILE_A.or(BB_FILE_B);
-const BB_FILE_GH: SquareSet = BB_FILE_G.or(BB_FILE_H);
+const SS_FILE_AB: SquareSet = SS_FILE_A.or(SS_FILE_B);
+const SS_FILE_GH: SquareSet = SS_FILE_G.or(SS_FILE_H);
 
 struct KingTable {
     table: [SquareSet; 64],
@@ -35,30 +26,30 @@ impl KingTable {
 
         for sq in squares() {
             let mut board = SquareSet::empty();
-            if !BB_RANK_8.contains(sq) {
+            if !SS_RANK_8.contains(sq) {
                 board.insert(sq.plus(8));
-                if !BB_FILE_A.contains(sq) {
+                if !SS_FILE_A.contains(sq) {
                     board.insert(sq.plus(7));
                 }
-                if !BB_FILE_H.contains(sq) {
+                if !SS_FILE_H.contains(sq) {
                     board.insert(sq.plus(9));
                 }
             }
 
-            if !BB_RANK_1.contains(sq) {
+            if !SS_RANK_1.contains(sq) {
                 board.insert(sq.plus(-8));
-                if !BB_FILE_A.contains(sq) {
+                if !SS_FILE_A.contains(sq) {
                     board.insert(sq.plus(-9));
                 }
-                if !BB_FILE_H.contains(sq) {
+                if !SS_FILE_H.contains(sq) {
                     board.insert(sq.plus(-7));
                 }
             }
 
-            if !BB_FILE_A.contains(sq) {
+            if !SS_FILE_A.contains(sq) {
                 board.insert(sq.plus(-1));
             }
-            if !BB_FILE_H.contains(sq) {
+            if !SS_FILE_H.contains(sq) {
                 board.insert(sq.plus(1));
             }
 
@@ -87,8 +78,8 @@ impl PawnTable {
             for color in colors() {
                 let mut board = SquareSet::empty();
                 let (promo_rank, up_left, up_right) = match color {
-                    Color::White => (BB_RANK_8, 7, 9),
-                    Color::Black => (BB_RANK_1, -9, -7),
+                    Color::White => (SS_RANK_8, 7, 9),
+                    Color::Black => (SS_RANK_1, -9, -7),
                 };
 
                 if promo_rank.contains(sq) {
@@ -98,10 +89,10 @@ impl PawnTable {
                     continue;
                 }
 
-                if !BB_FILE_A.contains(sq) {
+                if !SS_FILE_A.contains(sq) {
                     board.insert(sq.plus(up_left));
                 }
-                if !BB_FILE_H.contains(sq) {
+                if !SS_FILE_H.contains(sq) {
                     board.insert(sq.plus(up_right));
                 }
 
@@ -129,28 +120,28 @@ impl KnightTable {
 
         for sq in squares() {
             let mut board = SquareSet::empty();
-            if !BB_FILE_A.contains(sq) && !BB_RANK_78.contains(sq) {
+            if !SS_FILE_A.contains(sq) && !SS_RANK_78.contains(sq) {
                 board.insert(sq.plus(15));
             }
-            if !BB_FILE_H.contains(sq) && !BB_RANK_78.contains(sq) {
+            if !SS_FILE_H.contains(sq) && !SS_RANK_78.contains(sq) {
                 board.insert(sq.plus(17));
             }
-            if !BB_FILE_GH.contains(sq) && !BB_RANK_8.contains(sq) {
+            if !SS_FILE_GH.contains(sq) && !SS_RANK_8.contains(sq) {
                 board.insert(sq.plus(10));
             }
-            if !BB_FILE_GH.contains(sq) && !BB_RANK_1.contains(sq) {
+            if !SS_FILE_GH.contains(sq) && !SS_RANK_1.contains(sq) {
                 board.insert(sq.plus(-6));
             }
-            if !BB_FILE_H.contains(sq) && !BB_RANK_12.contains(sq) {
+            if !SS_FILE_H.contains(sq) && !SS_RANK_12.contains(sq) {
                 board.insert(sq.plus(-15));
             }
-            if !BB_FILE_A.contains(sq) && !BB_RANK_12.contains(sq) {
+            if !SS_FILE_A.contains(sq) && !SS_RANK_12.contains(sq) {
                 board.insert(sq.plus(-17));
             }
-            if !BB_FILE_AB.contains(sq) && !BB_RANK_1.contains(sq) {
+            if !SS_FILE_AB.contains(sq) && !SS_RANK_1.contains(sq) {
                 board.insert(sq.plus(-10));
             }
-            if !BB_FILE_AB.contains(sq) && !BB_RANK_8.contains(sq) {
+            if !SS_FILE_AB.contains(sq) && !SS_RANK_8.contains(sq) {
                 board.insert(sq.plus(6));
             }
             kt.table[sq.0 as usize] = board;
@@ -196,14 +187,14 @@ impl RayTable {
                 rt.table[sq.0 as usize][dir as usize] = entry;
             };
 
-            populate_dir(Direction::North, BB_RANK_8);
-            populate_dir(Direction::NorthEast, BB_RANK_8.or(BB_FILE_H));
-            populate_dir(Direction::East, BB_FILE_H);
-            populate_dir(Direction::SouthEast, BB_RANK_1.or(BB_FILE_H));
-            populate_dir(Direction::South, BB_RANK_1);
-            populate_dir(Direction::SouthWest, BB_RANK_1.or(BB_FILE_A));
-            populate_dir(Direction::West, BB_FILE_A);
-            populate_dir(Direction::NorthWest, BB_RANK_8.or(BB_FILE_A));
+            populate_dir(Direction::North, SS_RANK_8);
+            populate_dir(Direction::NorthEast, SS_RANK_8.or(SS_FILE_H));
+            populate_dir(Direction::East, SS_FILE_H);
+            populate_dir(Direction::SouthEast, SS_RANK_1.or(SS_FILE_H));
+            populate_dir(Direction::South, SS_RANK_1);
+            populate_dir(Direction::SouthWest, SS_RANK_1.or(SS_FILE_A));
+            populate_dir(Direction::West, SS_FILE_A);
+            populate_dir(Direction::NorthWest, SS_RANK_8.or(SS_FILE_A));
         }
         rt
     }

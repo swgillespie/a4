@@ -8,7 +8,7 @@
 use crate::core::*;
 use crate::Position;
 
-fn generate_pawn_moves(us: Color, pos: &Position, moves: &mut Vec<Move>) {
+pub fn generate_pawn_moves(us: Color, pos: &Position, moves: &mut Vec<Move>) {
     let them = us.toggle();
     let their_pieces = pos.pieces(them);
     let our_pieces = pos.pieces(us);
@@ -20,8 +20,8 @@ fn generate_pawn_moves(us: Color, pos: &Position, moves: &mut Vec<Move>) {
             Direction::South,
             Direction::NorthWest,
             Direction::NorthEast,
-            SquareSet::all().rank(RANK_8),
-            SquareSet::all().rank(RANK_2),
+            SS_RANK_8,
+            SS_RANK_2,
         )
     } else {
         (
@@ -29,13 +29,12 @@ fn generate_pawn_moves(us: Color, pos: &Position, moves: &mut Vec<Move>) {
             Direction::North,
             Direction::SouthWest,
             Direction::SouthEast,
-            SquareSet::all().rank(RANK_1),
-            SquareSet::all().rank(RANK_7),
+            SS_RANK_1,
+            SS_RANK_7,
         )
     };
     let rank_below_promo = promo_rank.shift(down);
     let our_pawns = pos.pawns(us);
-
     // Single and double pawn pushes, not counting promotions.
     {
         let single_pushes = our_pawns
@@ -110,26 +109,45 @@ fn generate_pawn_moves(us: Color, pos: &Position, moves: &mut Vec<Move>) {
         }
 
         for target in up_promo {
-            moves.push(Move::promotion_capture(
+            moves.push(Move::promotion(
                 target.towards(up.reverse()),
                 target,
                 PieceKind::Bishop,
             ));
-            moves.push(Move::promotion_capture(
+            moves.push(Move::promotion(
                 target.towards(up.reverse()),
                 target,
                 PieceKind::Knight,
             ));
-            moves.push(Move::promotion_capture(
+            moves.push(Move::promotion(
                 target.towards(up.reverse()),
                 target,
                 PieceKind::Rook,
             ));
-            moves.push(Move::promotion_capture(
+            moves.push(Move::promotion(
                 target.towards(up.reverse()),
                 target,
                 PieceKind::Queen,
             ));
+        }
+    }
+
+    // Non-promotion captures, including en-passant.
+    let non_f7_pawns = our_pawns.and(!pawns_near_promo);
+    {
+        let up_left_cap = non_f7_pawns.shift(up_left).and(their_pieces);
+        let up_right_cap = non_f7_pawns.shift(up_right).and(their_pieces);
+        for target in up_left_cap {
+            moves.push(Move::capture(target.towards(up_left.reverse()), target));
+        }
+        for target in up_right_cap {
+            moves.push(Move::capture(target.towards(up_right.reverse()), target));
+        }
+
+        if let Some(ep_square) = pos.en_passant_square() {
+            for source in pawn_attacks(ep_square, them).and(our_pawns) {
+                moves.push(Move::en_passant(source, ep_square));
+            }
         }
     }
 }
@@ -153,9 +171,9 @@ mod tests {
         let hash: HashSet<_> = mov_vec.iter().collect();
         for mov in hash {
             if !moves.contains(&mov) {
-                println!("move {} was not found in collection: ", mov);
+                println!("move {:?} was not found in collection: ", mov);
                 for m in moves {
-                    println!("   > {}", m);
+                    println!("   > {:?}", m);
                 }
 
                 println!("{}", pos);
@@ -245,6 +263,69 @@ mod tests {
                     Move::quiet(C2, C3),
                     Move::double_pawn_push(C2, C4),
                     Move::quiet(E3, E4),
+                ],
+            );
+        }
+
+        #[test]
+        fn pawn_promo_smoke() {
+            assert_moves_generated(
+                "8/3P4/8/8/8/8/8/8 w - - 0 1",
+                &[
+                    Move::promotion(D7, D8, PieceKind::Bishop),
+                    Move::promotion(D7, D8, PieceKind::Knight),
+                    Move::promotion(D7, D8, PieceKind::Rook),
+                    Move::promotion(D7, D8, PieceKind::Queen),
+                ],
+            )
+        }
+
+        #[test]
+        fn pawn_promo_blocked() {
+            assert_moves_does_not_contain(
+                "3n4/3P4/8/8/8/8/8/8 w - - 0 1",
+                &[
+                    Move::promotion(D7, D8, PieceKind::Bishop),
+                    Move::promotion(D7, D8, PieceKind::Knight),
+                    Move::promotion(D7, D8, PieceKind::Rook),
+                    Move::promotion(D7, D8, PieceKind::Queen),
+                ],
+            )
+        }
+
+        #[test]
+        fn pawn_promo_captures() {
+            assert_moves_generated(
+                "2nnn3/3P4/8/8/8/8/8/8 w - - 0 1",
+                &[
+                    Move::promotion_capture(D7, C8, PieceKind::Bishop),
+                    Move::promotion_capture(D7, C8, PieceKind::Knight),
+                    Move::promotion_capture(D7, C8, PieceKind::Rook),
+                    Move::promotion_capture(D7, C8, PieceKind::Queen),
+                    Move::promotion_capture(D7, E8, PieceKind::Bishop),
+                    Move::promotion_capture(D7, E8, PieceKind::Knight),
+                    Move::promotion_capture(D7, E8, PieceKind::Rook),
+                    Move::promotion_capture(D7, E8, PieceKind::Queen),
+                ],
+            )
+        }
+
+        #[test]
+        fn kiwipete_bug_1() {
+            assert_moves_contains(
+                "r3k2r/p1ppqpb1/bn2pnp1/3PN3/Pp2P3/2N2Q1p/1PPBBPPP/R3K2R b KQkq a3 0 1",
+                &[Move::en_passant(B4, A3)],
+            );
+        }
+
+        #[test]
+        fn illegal_en_passant() {
+            assert_moves_does_not_contain(
+                "8/8/4p3/8/8/8/5P2/8 w - e7 0 1",
+                &[
+                    // this can happen if we are sloppy about validating the legality
+                    // of EP-moves
+                    Move::en_passant(F2, E7),
                 ],
             );
         }

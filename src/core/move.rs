@@ -236,7 +236,7 @@ impl fmt::Display for Move {
 
 impl fmt::Debug for Move {
     fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
-        write!(f, "{}", self.as_uci())
+        write!(f, "{} (0x{:x})", self.as_uci(), self.0)
     }
 }
 

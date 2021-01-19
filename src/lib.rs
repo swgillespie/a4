@@ -15,7 +15,7 @@
 #![feature(const_panic)]
 
 pub mod core;
-mod movegen;
+pub mod movegen;
 mod position;
 
 pub use position::Position;
