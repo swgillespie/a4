@@ -13,7 +13,7 @@ fn generate_pawn_moves(us: Color, pos: &Position, moves: &mut Vec<Move>) {
     let their_pieces = pos.pieces(them);
     let our_pieces = pos.pieces(us);
     let all_pieces = their_pieces.or(our_pieces);
-    let empty_squares = all_pieces.not();
+    let empty_squares = !all_pieces;
     let (up, down, up_left, up_right, promo_rank, start_rank) = if us == Color::White {
         (
             Direction::North,
@@ -39,7 +39,7 @@ fn generate_pawn_moves(us: Color, pos: &Position, moves: &mut Vec<Move>) {
     // Single and double pawn pushes, not counting promotions.
     {
         let single_pushes = our_pawns
-            .and(rank_below_promo.not())
+            .and(!rank_below_promo)
             .shift(up)
             .and(empty_squares);
         let double_pushes = single_pushes

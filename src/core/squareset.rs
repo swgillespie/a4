@@ -8,7 +8,7 @@
 
 use crate::core::{self, Direction, File, Rank, Square};
 use std::fmt;
-use std::ops::BitOr;
+use std::ops;
 
 /// A set of squares on the chessboard. The implementation of SquareSet is designed to mirror
 /// [`std::collections::HashSet`], but is specifically designed to store squares efficiently on modern processors.
@@ -114,11 +114,35 @@ impl SquareSet {
     }
 }
 
-impl BitOr for SquareSet {
+impl ops::BitOr for SquareSet {
     type Output = Self;
 
     fn bitor(self, rhs: Self) -> Self::Output {
         self.or(rhs)
+    }
+}
+
+impl ops::Not for SquareSet {
+    type Output = Self;
+
+    fn not(self) -> Self::Output {
+        self.not()
+    }
+}
+
+impl ops::BitAnd for SquareSet {
+    type Output = Self;
+
+    fn bitand(self, rhs: Self) -> Self::Output {
+        self.and(rhs)
+    }
+}
+
+impl ops::BitXor for SquareSet {
+    type Output = Self;
+
+    fn bitxor(self, rhs: Self) -> Self::Output {
+        self.xor(rhs)
     }
 }
 
@@ -130,23 +154,6 @@ impl IntoIterator for SquareSet {
         SquareSetIterator(self.0)
     }
 }
-
-const SS_RANK_1: SquareSet = SquareSet(0x00000000000000FF);
-const SS_RANK_2: SquareSet = SquareSet(0x000000000000FF00);
-const SS_RANK_3: SquareSet = SquareSet(0x0000000000FF0000);
-const SS_RANK_4: SquareSet = SquareSet(0x00000000FF000000);
-const SS_RANK_5: SquareSet = SquareSet(0x000000FF00000000);
-const SS_RANK_6: SquareSet = SquareSet(0x0000FF0000000000);
-const SS_RANK_7: SquareSet = SquareSet(0x00FF000000000000);
-const SS_RANK_8: SquareSet = SquareSet(0xFF00000000000000);
-const SS_FILE_A: SquareSet = SquareSet(0x0101010101010101);
-const SS_FILE_B: SquareSet = SquareSet(0x0202020202020202);
-const SS_FILE_C: SquareSet = SquareSet(0x0404040404040404);
-const SS_FILE_D: SquareSet = SquareSet(0x0808080808080808);
-const SS_FILE_E: SquareSet = SquareSet(0x1010101010101010);
-const SS_FILE_F: SquareSet = SquareSet(0x2020202020202020);
-const SS_FILE_G: SquareSet = SquareSet(0x4040404040404040);
-const SS_FILE_H: SquareSet = SquareSet(0x8080808080808080);
 
 impl fmt::Display for SquareSet {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -176,6 +183,23 @@ impl fmt::Display for SquareSet {
         Ok(())
     }
 }
+
+const SS_RANK_1: SquareSet = SquareSet(0x00000000000000FF);
+const SS_RANK_2: SquareSet = SquareSet(0x000000000000FF00);
+const SS_RANK_3: SquareSet = SquareSet(0x0000000000FF0000);
+const SS_RANK_4: SquareSet = SquareSet(0x00000000FF000000);
+const SS_RANK_5: SquareSet = SquareSet(0x000000FF00000000);
+const SS_RANK_6: SquareSet = SquareSet(0x0000FF0000000000);
+const SS_RANK_7: SquareSet = SquareSet(0x00FF000000000000);
+const SS_RANK_8: SquareSet = SquareSet(0xFF00000000000000);
+const SS_FILE_A: SquareSet = SquareSet(0x0101010101010101);
+const SS_FILE_B: SquareSet = SquareSet(0x0202020202020202);
+const SS_FILE_C: SquareSet = SquareSet(0x0404040404040404);
+const SS_FILE_D: SquareSet = SquareSet(0x0808080808080808);
+const SS_FILE_E: SquareSet = SquareSet(0x1010101010101010);
+const SS_FILE_F: SquareSet = SquareSet(0x2020202020202020);
+const SS_FILE_G: SquareSet = SquareSet(0x4040404040404040);
+const SS_FILE_H: SquareSet = SquareSet(0x8080808080808080);
 
 /// An iterator over squares stored in a [`SquareSet`], designed to be very efficient for modern processors.
 pub struct SquareSetIterator(u64);
