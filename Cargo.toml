@@ -8,6 +8,7 @@ edition = "2018"
 thiserror = "1.0.23" 
 bitflags = "1.2.1"
 lazy_static = "1.4.0"
+structopt = "0.3.21"
 
 [dev-dependencies]
 criterion = "0.3"

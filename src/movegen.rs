@@ -164,7 +164,7 @@ pub fn generate_moves_for_kind(us: Color, pos: &Position, kind: PieceKind, moves
         for atk in attacks(kind, us, piece, all_pieces) {
             if enemy_pieces.contains(atk) {
                 moves.push(Move::capture(piece, atk));
-            } else {
+            } else if !all_pieces.contains(atk) {
                 moves.push(Move::quiet(piece, atk));
             }
         }
@@ -457,6 +457,14 @@ mod tests {
                     Move::capture(D4, C3),
                 ],
             );
+        }
+
+        #[test]
+        fn moving_through_pieces() {
+            assert_moves_does_not_contain(
+                "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                &[Move::quiet(C1, B2), Move::capture(C1, B2)],
+            )
         }
     }
 

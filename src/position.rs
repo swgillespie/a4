@@ -238,6 +238,18 @@ impl Position {
             false
         }
     }
+
+    /// Legality test for moves that are already known to be pseudolegal. This is strictly faster
+    /// than `is_legal`, since `is_legal` also needs to check for pseudo-legality. This method is
+    /// useful for legality testing moves coming out of the move generator, which is known to
+    /// produce only pseudolegal moves.
+    pub fn is_legal_given_pseudolegal(&self, mov: Move) -> bool {
+        // The below implementation is naive and simple, but correct. There's lots of room for performance wins here.
+        let mut new_pos = self.clone();
+        let side = self.side_to_move();
+        new_pos.make_move(mov);
+        !new_pos.is_check(side)
+    }
 }
 
 //
