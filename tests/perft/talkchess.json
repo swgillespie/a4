@@ -1,0 +1,11 @@
+{
+  "__comment__": "Originally reported on Talkchess, this position has found bugs in many engines.",
+  "kind": "perft",
+  "fen": "rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8",
+  "counts": {
+    "1": 44,
+    "2": 1486,
+    "3": 62379,
+    "4": 2103487
+  }
+}
