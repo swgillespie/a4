@@ -15,6 +15,7 @@
 #![feature(const_panic)]
 
 pub mod core;
+mod eval;
 pub mod movegen;
 mod position;
 
