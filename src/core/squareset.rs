@@ -23,7 +23,7 @@ impl SquareSet {
 
     /// Creates a new SquareSet with all squares present in the set.
     pub const fn all() -> SquareSet {
-        SquareSet(0xFFFFFFFFFFFF)
+        SquareSet(0xFFFFFFFFFFFFFFFF)
     }
 
     /// Tests whether or not the given square is contained within this SquareSet.
@@ -250,6 +250,12 @@ mod tests {
         set.insert(A5);
         let squares: Vec<_> = set.into_iter().collect();
         assert_eq!(squares, vec![A3, A4, A5]);
+    }
+
+    #[test]
+    fn rank() {
+        let set = SquareSet::all();
+        assert!(!set.rank(RANK_7).is_empty());
     }
 
     #[test]

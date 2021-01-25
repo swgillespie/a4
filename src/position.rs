@@ -213,7 +213,6 @@ impl Position {
             } else {
                 target.towards(Direction::North).rank()
             };
-
             for pawn in self.pawns(to_move) & SquareSet::all().rank(pawn_attack_rank) {
                 if pawn_attacks(pawn, to_move).contains(target) {
                     attacks.insert(pawn);
@@ -1137,6 +1136,18 @@ mod tests {
             let str = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
             let pos = Position::from_fen(str).unwrap();
             assert_eq!(pos.as_fen(), str);
+        }
+    }
+
+    mod legality {
+        use crate::core::*;
+        use crate::Position;
+
+        #[test]
+        fn king_pawn_check() {
+            let pos = Position::from_fen("8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1").unwrap();
+            let mov = Move::quiet(A5, B6);
+            assert!(!pos.is_legal_given_pseudolegal(mov));
         }
     }
 
