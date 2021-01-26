@@ -7,7 +7,6 @@
 // except according to those terms.
 use std::fmt;
 use std::i16;
-use std::intrinsics::unlikely;
 use std::ops;
 
 const VALUE_MATED: i16 = i16::MIN / 2 + 1;
@@ -49,7 +48,7 @@ impl Value {
     fn add(self, other: Value) -> Value {
         debug_assert!(self.0 > VALUE_MATED && self.0 < VALUE_MATE);
         let mut next = self.0 + other.0;
-        if unlikely(next <= VALUE_MATED || next >= VALUE_MATE) {
+        if next <= VALUE_MATED || next >= VALUE_MATE {
             if next <= VALUE_MATED {
                 next = VALUE_MATED + 1;
             } else {

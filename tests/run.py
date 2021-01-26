@@ -78,7 +78,7 @@ def main():
     if fails:
         print("=====================================")
     print(f"{len(passes)}/{len(tests)} passed")
-    sys.exit(len(passes) == len(tests))
+    sys.exit(0 if len(passes) == len(tests) else 1)
 
 
 if __name__ == "__main__":

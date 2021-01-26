@@ -63,7 +63,7 @@ impl SquareSet {
         SquareSet(self.0 ^ other.0)
     }
 
-    pub const fn rank(self, rank: Rank) -> SquareSet {
+    pub fn rank(self, rank: Rank) -> SquareSet {
         let rank_set = match rank {
             core::RANK_1 => SS_RANK_1,
             core::RANK_2 => SS_RANK_2,
@@ -79,7 +79,7 @@ impl SquareSet {
         self.and(rank_set)
     }
 
-    pub const fn file(self, file: File) -> SquareSet {
+    pub fn file(self, file: File) -> SquareSet {
         let file_set = match file {
             core::FILE_A => SS_FILE_A,
             core::FILE_B => SS_FILE_B,
