@@ -12,8 +12,6 @@
 //! positions, reading and writing common Chess formats, and manipulating board positions. As an executable, `gambit`
 //! is capable of playing chess via the `UCI` protocol.
 
-#![feature(const_panic, core_intrinsics)]
-
 pub mod core;
 pub mod eval;
 pub mod movegen;
