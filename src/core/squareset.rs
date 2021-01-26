@@ -201,6 +201,14 @@ pub const SS_FILE_F: SquareSet = SquareSet(0x2020202020202020);
 pub const SS_FILE_G: SquareSet = SquareSet(0x4040404040404040);
 pub const SS_FILE_H: SquareSet = SquareSet(0x8080808080808080);
 
+pub const SS_RANKS: [SquareSet; 8] = [
+    SS_RANK_1, SS_RANK_2, SS_RANK_3, SS_RANK_4, SS_RANK_5, SS_RANK_6, SS_RANK_7, SS_RANK_8,
+];
+
+pub const SS_FILES: [SquareSet; 8] = [
+    SS_FILE_A, SS_FILE_B, SS_FILE_C, SS_FILE_D, SS_FILE_E, SS_FILE_F, SS_FILE_G, SS_FILE_H,
+];
+
 /// An iterator over squares stored in a [`SquareSet`], designed to be very efficient for modern processors.
 pub struct SquareSetIterator(u64);
 

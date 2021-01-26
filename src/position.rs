@@ -1149,6 +1149,13 @@ mod tests {
             let mov = Move::quiet(A5, B6);
             assert!(!pos.is_legal_given_pseudolegal(mov));
         }
+
+        #[test]
+        fn rook_pin() {
+            let pos = Position::from_fen("8/8/4r3/8/8/4B3/4K3/8 b - - 0 1").unwrap();
+            let mov = Move::capture(E6, E3);
+            assert!(pos.is_legal_given_pseudolegal(mov));
+        }
     }
 
     mod make {

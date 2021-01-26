@@ -6,6 +6,9 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
-mod score;
+mod analysis;
+mod eval;
+mod value;
 
-pub use score::Value;
+pub use eval::evaluate;
+pub use value::Value;
