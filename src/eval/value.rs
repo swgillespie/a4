@@ -11,6 +11,7 @@ use std::ops;
 
 const VALUE_MATED: i16 = i16::MIN / 2 + 1;
 const VALUE_MATE: i16 = i16::MAX / 2;
+const MATE_DISTANCE_MAX: i16 = 50;
 
 /// A Value is the static value given to a position by evaluation of the game board. It is a single number, in
 /// centipawns, that represents the engine's assessment of a particular position. The number is positive if the engine
@@ -24,8 +25,6 @@ const VALUE_MATE: i16 = i16::MAX / 2;
 /// of valid scores:
 ///   1. VALUE_MATED: `i16::MIN/2 + 1` (-16383)
 ///   2. VALUE_MATE: `i16::MAX/2` (16383)
-/// Anything larger than VALUE_MATE is a winning score that is `score - VALUE_MATE` ply away from checkmate.
-/// Anything less than VALUE_MATED is a losing score that is `VALUE_MATED - score` ply from checkmate.
 ///
 /// Because of this constrained value, we must take care that the addition or subtraction of scores do not cross these
 /// thresholds. This check is dynamic.
@@ -34,11 +33,13 @@ pub struct Value(i16);
 
 impl Value {
     pub fn mate_in(ply: i16) -> Value {
-        Value(VALUE_MATE + ply)
+        debug_assert!(ply < MATE_DISTANCE_MAX);
+        Value(VALUE_MATE + MATE_DISTANCE_MAX - ply)
     }
 
     pub fn mated_in(ply: i16) -> Value {
-        Value(VALUE_MATED - ply)
+        debug_assert!(ply < MATE_DISTANCE_MAX);
+        Value(VALUE_MATED - MATE_DISTANCE_MAX + ply)
     }
 
     pub fn new(evaluation: i16) -> Value {
@@ -139,5 +140,10 @@ mod tests {
         let mut v = Value::new(VALUE_MATED + 1);
         v = v - 3;
         assert_eq!(v.0, VALUE_MATED + 1);
+    }
+
+    #[test]
+    fn mated_in_4_is_better_than_mated_in_3() {
+        assert!(Value::mated_in(4) > Value::mated_in(3))
     }
 }
