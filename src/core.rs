@@ -6,7 +6,7 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
-//! Module `core` contains core datatypes and data structures used pervasively throughout `gambit`.
+//! Module `core` contains core datatypes and data structures used pervasively throughout `a4`.
 
 mod attacks;
 mod r#move;

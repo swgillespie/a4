@@ -1,7 +1,7 @@
 use structopt::StructOpt;
 
-use gambit::movegen;
-use gambit::Position;
+use a4::movegen;
+use a4::Position;
 
 #[derive(Debug, StructOpt)]
 struct Options {

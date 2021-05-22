@@ -6,10 +6,10 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
-//! The `gambit` chess engine and library, at your service!
+//! The `a4` chess engine and library, at your service!
 //!
-//! `gambit` aims to be a one-stop shop for Chess programming in Rust. As a library, `gambit` is capable of analyzing
-//! positions, reading and writing common Chess formats, and manipulating board positions. As an executable, `gambit`
+//! `a4` aims to be a one-stop shop for Chess programming in Rust. As a library, `a4` is capable of analyzing
+//! positions, reading and writing common Chess formats, and manipulating board positions. As an executable, `a4`
 //! is capable of playing chess via the `UCI` protocol.
 
 pub mod core;

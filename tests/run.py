@@ -31,7 +31,7 @@ def run_perft_test(test):
     count = int(
         subprocess.check_output(
             [
-                "./target/release/gambit-perft",
+                "./target/release/a4-perft",
                 test["fen"],
                 "--depth",
                 str(test["depth"]),

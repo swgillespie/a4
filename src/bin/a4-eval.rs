@@ -8,8 +8,8 @@
 
 use structopt::StructOpt;
 
-use gambit::eval;
-use gambit::Position;
+use a4::eval;
+use a4::Position;
 
 #[derive(Debug, StructOpt)]
 struct Options {
