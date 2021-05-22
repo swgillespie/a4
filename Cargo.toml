@@ -1,5 +1,5 @@
 [package]
-name = "gambit"
+name = "a4"
 version = "0.1.0"
 authors = ["Sean Gillespie <sean@swgillespie.me>"]
 edition = "2018"

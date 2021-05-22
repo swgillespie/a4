@@ -17,7 +17,7 @@ const SPECIAL_0_BIT: u16 = 0x0002;
 const SPECIAL_1_BIT: u16 = 0x0001;
 const ATTR_MASK: u16 = 0x000F;
 
-/// A move, recognized by the gambit engine. It is designed to be as
+/// A move, recognized by the a4 engine. It is designed to be as
 /// compact as possible.
 /// ## Encoding
 /// The encoding of a move is done via this breakdown:

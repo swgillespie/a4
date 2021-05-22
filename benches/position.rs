@@ -7,9 +7,9 @@
 // except according to those terms.
 
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use gambit::core::{self, Color, Move};
-use gambit::movegen;
-use gambit::Position;
+use a4::core::{self, Color, Move};
+use a4::movegen;
+use a4::Position;
 
 fn criterion_benchmark(c: &mut Criterion) {
     c.bench_function("quiet-move-clonemake", |b| {
