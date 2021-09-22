@@ -16,6 +16,6 @@ pub mod core;
 pub mod eval;
 pub mod movegen;
 mod position;
-mod search;
+pub mod search;
 
 pub use position::Position;
