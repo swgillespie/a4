@@ -6,10 +6,10 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
-use criterion::{black_box, criterion_group, criterion_main, Criterion};
 use a4::core::{self, Color, Move};
 use a4::movegen;
 use a4::Position;
+use criterion::{black_box, criterion_group, criterion_main, Criterion};
 
 fn criterion_benchmark(c: &mut Criterion) {
     c.bench_function("quiet-move-clonemake", |b| {
