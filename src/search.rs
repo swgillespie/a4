@@ -14,6 +14,7 @@ struct Searcher {
     nodes_evaluated: u32,
 }
 
+#[derive(Copy, Clone, Debug)]
 pub struct SearchResult {
     pub best_move: Move,
     pub best_score: Value,
