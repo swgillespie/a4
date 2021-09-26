@@ -86,7 +86,7 @@ impl Searcher {
         alpha
     }
 
-    fn quiesce(&mut self, pos: &Position, alpha: Value, beta: Value) -> Value {
+    fn quiesce(&mut self, pos: &Position, _alpha: Value, _beta: Value) -> Value {
         self.nodes_evaluated += 1;
         let value = evaluate(pos);
         if pos.side_to_move() == Color::Black {
