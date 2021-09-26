@@ -8,11 +8,6 @@ struct Options {
     /// FEN representation of the position to analyze.
     #[structopt(name = "FEN")]
     fen: String,
-
-    /// If set, use the position's legality test to test for legal moves instead of looking for check. Probably faster,
-    /// useful for finding bugs in the legality tester.
-    #[structopt(long)]
-    use_legality_test: bool,
 }
 
 fn main() {
