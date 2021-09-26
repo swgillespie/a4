@@ -20,5 +20,6 @@ pub mod movegen;
 mod position;
 pub mod search;
 mod threads;
+pub mod uci;
 
 pub use position::Position;
