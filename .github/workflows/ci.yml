@@ -29,5 +29,5 @@ jobs:
         run: cargo test --verbose
       - name: Build Release
         run: cargo build --release
-      - name: Run perft tests
-        run: python3 ./tests/run.py
+      - name: Run external tests
+        run: python3 -m a4.tests
