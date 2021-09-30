@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "a4"
+version = "0.1.0"
+description = "Python support code for the a4 chess engine"
+authors = ["Sean Gillespie <sean@swgillespie.me>"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+
+[tool.poetry.dev-dependencies]
+black = "^21.9b0"
+mypy = "^0.910"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
