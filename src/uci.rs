@@ -9,7 +9,8 @@
 //! An implementation of the UCI protocol for a4, driving our internal search routines.
 //! See [here](http://wbec-ridderkerk.nl/html/UCIProtocol.html) for full documentation on the protocol.
 
-use crate::threads;
+use crate::{threads, Position};
+use anyhow::anyhow;
 use std::io::{self, BufRead};
 
 pub fn run() -> io::Result<()> {
@@ -21,6 +22,10 @@ pub fn run() -> io::Result<()> {
         let (&command, arguments) = components.split_first().unwrap_or((&"", &[]));
         match (command, arguments) {
             ("uci", []) => handle_uci(),
+            ("isready", []) => handle_isready(),
+            ("position", args) => handle_position(args),
+            ("a4_start", []) => handle_a4_start(),
+            ("a4_stop", []) => handle_a4_stop(),
             _ => println!("unrecognized command: {} {:?}", command, arguments),
         }
     }
@@ -37,4 +42,51 @@ fn handle_uci() {
     );
     println!("id author {}", env!("CARGO_PKG_AUTHORS"));
     println!("uciok");
+}
+
+fn handle_isready() {
+    // TODO(swgillespie) ask the main thread if it's idle and all worker threads are idle?
+    println!("readyok");
+}
+
+fn handle_position(args: &[&str]) {
+    let mut position = Position::new();
+    let mut iter = args.iter().cloned();
+    let result: anyhow::Result<()> = try {
+        loop {
+            match iter.next() {
+                Some("fen") => {
+                    let fen = iter.next().ok_or_else(|| anyhow!("FEN string expected"))?;
+                    position = Position::from_fen(fen)?;
+                }
+                Some("startpos") => {
+                    position = Position::from_start_position();
+                }
+                Some("moves") => {
+                    // TODO(swgillespie) parse moves into UCI and apply them to the position
+                }
+                Some(tok) => {
+                    Err(anyhow!("unknown token: {}", tok))?;
+                }
+                None => break,
+            }
+        }
+    };
+
+    match result {
+        Ok(()) => threads::get().main_thread().set_position(position),
+        Err(e) => println!("invalid position command: {}", e),
+    }
+}
+
+// Temporary extensions to UCI to test out our thread harness.
+
+fn handle_a4_start() {
+    let threads = threads::get();
+    threads.main_thread().search();
+}
+
+fn handle_a4_stop() {
+    let threads = threads::get();
+    threads.main_thread().stop();
 }
