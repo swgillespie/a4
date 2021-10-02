@@ -7,7 +7,14 @@
 // except according to those terms.
 
 use a4::uci;
+use tracing::Level;
+use tracing_subscriber::FmtSubscriber;
 
 fn main() {
+    let subscriber = FmtSubscriber::builder()
+        .with_max_level(Level::TRACE)
+        .finish();
+    tracing::subscriber::set_global_default(subscriber).expect("setting default subscriber failed");
+
     uci::run().expect("fatal error while running UCI server");
 }

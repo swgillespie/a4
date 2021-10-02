@@ -5,10 +5,13 @@ authors = ["Sean Gillespie <sean@swgillespie.me>"]
 edition = "2018"
 
 [dependencies]
+anyhow = "1.0.44"
 thiserror = "1.0.23" 
 bitflags = "1.2.1"
 lazy_static = "1.4.0"
 structopt = "0.3.21"
+tracing = "0.1.28"
+tracing-subscriber = "0.2.24"
 
 [dev-dependencies]
 criterion = "0.3"
