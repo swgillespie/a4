@@ -9,11 +9,12 @@
 //! An implementation of the UCI protocol for a4, driving our internal search routines.
 //! See [here](http://wbec-ridderkerk.nl/html/UCIProtocol.html) for full documentation on the protocol.
 
-use crate::{threads, Position};
+use crate::{core::Move, threads, Position};
 use anyhow::anyhow;
 use std::io::{self, BufRead};
 
 pub fn run() -> io::Result<()> {
+    threads::initialize();
     let stdin = io::stdin();
     let locked_stdin = stdin.lock();
     for maybe_line in locked_stdin.lines() {
@@ -22,10 +23,14 @@ pub fn run() -> io::Result<()> {
         let (&command, arguments) = components.split_first().unwrap_or((&"", &[]));
         match (command, arguments) {
             ("uci", []) => handle_uci(),
+            ("debug", ["on"]) => {}
+            ("debug", ["off"]) => {}
             ("isready", []) => handle_isready(),
+            ("ucinewgame", []) => handle_ucinewgame(),
             ("position", args) => handle_position(args),
             ("a4_start", []) => handle_a4_start(),
             ("a4_stop", []) => handle_a4_stop(),
+            ("quit", []) => return Ok(()),
             _ => println!("unrecognized command: {} {:?}", command, arguments),
         }
     }
@@ -34,7 +39,6 @@ pub fn run() -> io::Result<()> {
 }
 
 fn handle_uci() {
-    threads::initialize();
     println!(
         "id name {} {}",
         env!("CARGO_PKG_NAME"),
@@ -63,7 +67,11 @@ fn handle_position(args: &[&str]) {
                     position = Position::from_start_position();
                 }
                 Some("moves") => {
-                    // TODO(swgillespie) parse moves into UCI and apply them to the position
+                    while let Some(mov_str) = iter.next() {
+                        let mov = Move::from_uci(&position, mov_str)
+                            .ok_or_else(|| anyhow!("invalid move: {}", mov_str))?;
+                        position.make_move(mov);
+                    }
                 }
                 Some(tok) => {
                     Err(anyhow!("unknown token: {}", tok))?;
@@ -77,6 +85,11 @@ fn handle_position(args: &[&str]) {
         Ok(()) => threads::get().main_thread().set_position(position),
         Err(e) => println!("invalid position command: {}", e),
     }
+}
+
+fn handle_ucinewgame() {
+    threads::get().main_thread().set_position(Position::new());
+    // TODO(swgillespie) clear transposition tables, when they exist
 }
 
 // Temporary extensions to UCI to test out our thread harness.
