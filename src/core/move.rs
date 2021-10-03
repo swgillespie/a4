@@ -6,7 +6,8 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
-use crate::core::{PieceKind, Square};
+use crate::{core::*, Position};
+use std::convert::TryFrom;
 use std::fmt::{self, Write};
 
 const SOURCE_MASK: u16 = 0xFC00;
@@ -226,6 +227,162 @@ impl Move {
 
         buf
     }
+
+    /// Parses the UCI representation of a move into a Move.
+    pub fn from_uci(pos: &Position, move_str: &str) -> Option<Move> {
+        // UCI encodes a move as the source square, followed by the destination
+        // square, and optionally followed by the promotion piece if necessary.
+        let move_chrs: Vec<_> = move_str.chars().collect();
+        if move_chrs.len() < 4 {
+            // It's not a valid move encoding at all if it's this short.
+            return None;
+        }
+
+        // A particular quirk of UCI is that null moves are encoded as 0000.
+        if move_str == "0000" {
+            return Some(Move::null());
+        }
+
+        let source_file = File::try_from(move_chrs[0]).ok()?;
+        let source_rank = Rank::try_from(move_chrs[1]).ok()?;
+        let dest_file = File::try_from(move_chrs[2]).ok()?;
+        let dest_rank = Rank::try_from(move_chrs[3]).ok()?;
+        let maybe_promotion_piece = if move_chrs.len() == 5 {
+            Some(move_chrs[4])
+        } else {
+            None
+        };
+
+        let source = Square::of(source_rank, source_file);
+        let dest = Square::of(dest_rank, dest_file);
+
+        // This method is annoyingly complex, so read this here first!
+        //
+        // We're going to assume that a move is quiet if it's not any other category
+        // of move. This means that we might not produce a legal move, but it's up
+        // to the legality tests later on to make sure that this move is legit.
+        //
+        // There are a bunch of cases here that we have to handle. They are encoded
+        // in this decision tree:
+        // 1. Is the moving piece a pawn?
+        //   1.1. Is the moving square two squares straight ahead? => DoublePawnPush
+        //   1.2. Is the moving square a legal attack for a pawn?
+        //     1.2.1. Is the destination square on a promotion rank? =>
+        //     PromotionCapture
+        //     1.2.2. Is the destination square the en-passant square?
+        //     => EnPassant
+        //     1.2.3. else => Capture
+        //   1.3. Is the destination square on a promotion rank? =? Promotion
+        //   1.4. else => Quiet
+        // 2. Is the moving piece a king?
+        //   2.1. Is the target the square to the right of the kingside rook? =>
+        //   KingsideCastle
+        //   2.2. Is the target the square to the right of the queenside rook? =>
+        //   QueensideCastle
+        //   2.3. Is there piece on the target square? => Capture
+        //   2.4. else => Quiet
+        // 3. Is there a piece on the target square? => Capture
+        // 4. else => Quiet
+        //
+        // Whew!
+        let dest_piece = pos.piece_at(dest);
+        let moving_piece = pos.piece_at(source)?;
+
+        // 1. Is the moving piece a pawn?
+        if moving_piece.kind == PieceKind::Pawn {
+            let (pawn_dir, promo_rank, start_rank) = match pos.side_to_move() {
+                Color::White => (Direction::North, SS_RANK_8, SS_RANK_2),
+                Color::Black => (Direction::South, SS_RANK_1, SS_RANK_7),
+            };
+
+            // 1.1. Is the moving square two squares straight ahead?
+            if start_rank.contains(source) {
+                let double_pawn_square = source.towards(pawn_dir).towards(pawn_dir);
+                if double_pawn_square == dest {
+                    return Some(Move::double_pawn_push(source, dest));
+                }
+            }
+
+            // 1.2. Is the moving square a legal attack for a pawn?
+            if attacks::pawn_attacks(source, pos.side_to_move()).contains(dest) {
+                // 1.2.1. Is the destination square on a promotion rank?
+                if promo_rank.contains(dest) {
+                    let promo_piece = maybe_promotion_piece?;
+                    let kind = match promo_piece {
+                        'n' => PieceKind::Knight,
+                        'b' => PieceKind::Bishop,
+                        'r' => PieceKind::Rook,
+                        'q' => PieceKind::Queen,
+                        _ => return None,
+                    };
+
+                    return Some(Move::promotion_capture(source, dest, kind));
+                }
+
+                // 1.2.2. Is the destination square the en-passant square?
+                if Some(dest) == pos.en_passant_square() {
+                    return Some(Move::en_passant(source, dest));
+                }
+
+                // 1.2.3. Else, it's a capture.
+                return Some(Move::capture(source, dest));
+            }
+
+            // 1.3. Is the destination square on a promotion rank?
+            if promo_rank.contains(dest) {
+                let promo_piece = maybe_promotion_piece?;
+                let kind = match promo_piece {
+                    'n' => PieceKind::Knight,
+                    'b' => PieceKind::Bishop,
+                    'r' => PieceKind::Rook,
+                    'q' => PieceKind::Queen,
+                    _ => return None,
+                };
+
+                return Some(Move::promotion(source, dest, kind));
+            }
+
+            // 1.4. Else, it's a quiet move.
+            return Some(Move::quiet(source, dest));
+        }
+
+        // 2. Is the moving piece a king?
+        if moving_piece.kind == PieceKind::King {
+            let (kingside_rook_adjacent, queenside_rook_adjacent, king_start) =
+                match pos.side_to_move() {
+                    Color::White => (G1, C1, E1),
+                    Color::Black => (G8, C8, E8),
+                };
+
+            if king_start == source {
+                // 2.1. Is the target of the square to the left of the kingside rook?
+                if kingside_rook_adjacent == dest {
+                    return Some(Move::kingside_castle(source, dest));
+                }
+
+                // 2.2. Is the target the square to the right of the queenside rook?
+                if queenside_rook_adjacent == dest {
+                    return Some(Move::queenside_castle(source, dest));
+                }
+            }
+
+            // 2.3. Is there a piece on the target square?
+            if dest_piece.is_some() {
+                return Some(Move::capture(source, dest));
+            }
+
+            // 2.4. Else, it's quiet.
+            return Some(Move::quiet(source, dest));
+        }
+
+        // 3. Is there a piece on the target square?
+        if dest_piece.is_some() {
+            return Some(Move::capture(source, dest));
+        }
+
+        // 4. Else, it's quiet.
+        return Some(Move::quiet(source, dest));
+    }
 }
 
 impl fmt::Display for Move {
@@ -244,6 +401,7 @@ impl fmt::Debug for Move {
 mod tests {
     use super::Move;
     use crate::core::*;
+    use crate::Position;
 
     #[test]
     fn quiet() {
@@ -370,5 +528,86 @@ mod tests {
     fn uci_kingside_castle() {
         let mv = Move::kingside_castle(E1, G1);
         assert_eq!("e1g1", mv.as_uci());
+    }
+
+    #[test]
+    fn uci_nullmove() {
+        let pos = Position::from_start_position();
+        assert_eq!(Move::null(), Move::from_uci(&pos, "0000").unwrap());
+    }
+
+    #[test]
+    fn uci_sliding_moves() {
+        let pos = Position::from_fen("8/3q4/8/8/8/3R4/8/8 w - - 0 1").unwrap();
+        assert_eq!(Move::quiet(D3, D5), Move::from_uci(&pos, "d3d5").unwrap());
+        assert_eq!(Move::capture(D3, D7), Move::from_uci(&pos, "d3d7").unwrap());
+    }
+
+    #[test]
+    fn uci_pawn_moves() {
+        let pos = Position::from_fen("8/8/8/8/8/4p3/3P4/8 w - c3 0 1").unwrap();
+        assert_eq!(Move::quiet(D2, D3), Move::from_uci(&pos, "d2d3").unwrap());
+        assert_eq!(
+            Move::double_pawn_push(D2, D4),
+            Move::from_uci(&pos, "d2d4").unwrap()
+        );
+        assert_eq!(Move::capture(D2, E3), Move::from_uci(&pos, "d2e3").unwrap());
+        assert_eq!(Move::quiet(D2, D3), Move::from_uci(&pos, "d2d3").unwrap());
+        assert_eq!(
+            Move::en_passant(D2, C3),
+            Move::from_uci(&pos, "d2c3").unwrap()
+        );
+    }
+
+    #[test]
+    fn uci_king_moves() {
+        let pos = Position::from_fen("8/8/8/8/8/8/3r4/R3K2R w - - 0 1").unwrap();
+        assert_eq!(
+            Move::kingside_castle(E1, G1),
+            Move::from_uci(&pos, "e1g1").unwrap(),
+        );
+        assert_eq!(
+            Move::queenside_castle(E1, C1),
+            Move::from_uci(&pos, "e1c1").unwrap(),
+        );
+        assert_eq!(Move::quiet(E1, E2), Move::from_uci(&pos, "e1e2").unwrap(),);
+        assert_eq!(Move::capture(E1, D2), Move::from_uci(&pos, "e1d2").unwrap(),);
+    }
+
+    #[test]
+    fn uci_promotion() {
+        let pos = Position::from_fen("5n2/4P3/8/8/8/8/8/8 w - - 0 1").unwrap();
+        assert_eq!(
+            Move::promotion(E7, E8, PieceKind::Knight),
+            Move::from_uci(&pos, "e7e8n").unwrap()
+        );
+        assert_eq!(
+            Move::promotion(E7, E8, PieceKind::Bishop),
+            Move::from_uci(&pos, "e7e8b").unwrap()
+        );
+        assert_eq!(
+            Move::promotion(E7, E8, PieceKind::Rook),
+            Move::from_uci(&pos, "e7e8r").unwrap()
+        );
+        assert_eq!(
+            Move::promotion(E7, E8, PieceKind::Queen),
+            Move::from_uci(&pos, "e7e8q").unwrap()
+        );
+        assert_eq!(
+            Move::promotion_capture(E7, F8, PieceKind::Knight),
+            Move::from_uci(&pos, "e7f8n").unwrap()
+        );
+        assert_eq!(
+            Move::promotion_capture(E7, F8, PieceKind::Bishop),
+            Move::from_uci(&pos, "e7f8b").unwrap()
+        );
+        assert_eq!(
+            Move::promotion_capture(E7, F8, PieceKind::Rook),
+            Move::from_uci(&pos, "e7f8r").unwrap()
+        );
+        assert_eq!(
+            Move::promotion_capture(E7, F8, PieceKind::Queen),
+            Move::from_uci(&pos, "e7f8q").unwrap()
+        );
     }
 }
