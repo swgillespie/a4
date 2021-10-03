@@ -5,28 +5,65 @@
 // <LICENSE-MIT or http://opensource.org/licenses/MIT>, at your
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
+
 use crate::core::*;
 use crate::eval::{evaluate, Value};
 use crate::movegen;
 use crate::Position;
+use std::sync::atomic::AtomicBool;
+use std::sync::atomic::Ordering;
+use std::time::{Duration, Instant};
+use thiserror::Error;
 
-struct Searcher {
-    nodes_evaluated: u32,
+/// Options for a search.
+#[derive(Default)]
+pub struct SearchOptions<'a> {
+    /// Maximum amount of time to dedicate to this search.
+    pub time_limit: Option<Duration>,
+
+    /// Maximum amount of nodes to evaluate.
+    pub node_limit: Option<u64>,
+
+    /// Reference to a hard stop flag, which (if set) should immediately terminate the search.
+    pub hard_stop: Option<&'a AtomicBool>,
+
+    /// Maximum depth to search.
+    pub depth: u32,
+}
+
+#[derive(Copy, Clone, Debug, Error)]
+enum AlphaBetaError {
+    #[error("time limit exhausted")]
+    TimeExhausted,
+    #[error("node limit exhausted")]
+    NodeLimitExhausted,
+    #[error("stop requested")]
+    StopRequested,
+}
+
+struct Searcher<'a, 'b> {
+    search_start_time: Instant,
+    nodes_evaluated: u64,
+    options: &'a SearchOptions<'b>,
 }
 
 #[derive(Copy, Clone, Debug)]
 pub struct SearchResult {
     pub best_move: Move,
     pub best_score: Value,
-    pub nodes_evaluated: u32,
+    pub nodes_evaluated: u64,
 }
 
-impl Searcher {
-    fn new() -> Searcher {
-        Searcher { nodes_evaluated: 0 }
+impl<'a: 'b, 'b> Searcher<'a, 'b> {
+    fn new(options: &'a SearchOptions) -> Searcher<'a, 'b> {
+        Searcher {
+            nodes_evaluated: 0,
+            search_start_time: Instant::now(),
+            options,
+        }
     }
 
-    fn search(&mut self, pos: &Position, depth: u32) -> SearchResult {
+    fn search(&mut self, pos: &Position, options: &SearchOptions) -> SearchResult {
         let mut best_move = Move::null();
         let mut seen_a_legal_move = false;
         let mut best_score = Value::mated_in(1);
@@ -39,9 +76,16 @@ impl Searcher {
                 continue;
             }
 
+            if self.can_continue_search().is_err() {
+                break;
+            }
+
             let mut child_pos = pos.clone();
             child_pos.make_move(mov);
-            let score = -self.alpha_beta(pos, -beta, -alpha, depth - 1);
+            let score = match self.alpha_beta(pos, -beta, -alpha, options.depth - 1) {
+                Ok(score) => -score,
+                Err(_) => break,
+            };
             if score > alpha {
                 alpha = score;
             }
@@ -59,7 +103,17 @@ impl Searcher {
         }
     }
 
-    fn alpha_beta(&mut self, pos: &Position, mut alpha: Value, beta: Value, depth: u32) -> Value {
+    fn alpha_beta(
+        &mut self,
+        pos: &Position,
+        mut alpha: Value,
+        beta: Value,
+        depth: u32,
+    ) -> Result<Value, AlphaBetaError> {
+        // Two places that we check for search termination, inserted in the same place that a compiler would insert safepoints for preemption:
+        //   1. Function entry blocks, so we can cut off trees that we are about to search if we are out of time
+        //   2. Loop back edges, so we can cut off trees that we are partially in the process of searching
+        self.can_continue_search()?;
         if depth == 0 {
             return self.quiesce(pos, alpha, beta);
         }
@@ -73,30 +127,59 @@ impl Searcher {
 
             let mut child_pos = pos.clone();
             child_pos.make_move(mov);
-            let score = -self.alpha_beta(pos, -beta, -alpha, depth - 1);
+            let score = -self.alpha_beta(pos, -beta, -alpha, depth - 1)?;
             if score >= beta {
-                return beta;
+                return Ok(beta);
             }
 
             if score > alpha {
                 alpha = score;
             }
+
+            self.can_continue_search()?;
         }
 
-        alpha
+        Ok(alpha)
     }
 
-    fn quiesce(&mut self, pos: &Position, _alpha: Value, _beta: Value) -> Value {
+    fn quiesce(
+        &mut self,
+        pos: &Position,
+        _alpha: Value,
+        _beta: Value,
+    ) -> Result<Value, AlphaBetaError> {
         self.nodes_evaluated += 1;
         let value = evaluate(pos);
         if pos.side_to_move() == Color::Black {
-            -value
+            Ok(-value)
         } else {
-            value
+            Ok(value)
         }
+    }
+
+    fn can_continue_search(&self) -> Result<(), AlphaBetaError> {
+        if let Some(limit) = self.options.time_limit {
+            if Instant::now().saturating_duration_since(self.search_start_time) > limit {
+                return Err(AlphaBetaError::TimeExhausted);
+            }
+        }
+
+        if let Some(limit) = self.options.node_limit {
+            if self.nodes_evaluated > limit {
+                return Err(AlphaBetaError::NodeLimitExhausted);
+            }
+        }
+
+        if let Some(ptr) = self.options.hard_stop {
+            if ptr.load(Ordering::Acquire) {
+                return Err(AlphaBetaError::StopRequested);
+            }
+        }
+
+        Ok(())
     }
 }
 
-pub fn search(pos: &Position, depth: u32) -> SearchResult {
-    Searcher::new().search(pos, depth)
+pub fn search(pos: &Position, options: &SearchOptions) -> SearchResult {
+    Searcher::new(options).search(pos, options)
 }

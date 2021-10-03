@@ -31,6 +31,12 @@ const MATE_DISTANCE_MAX: i16 = 50;
 #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Value(i16);
 
+pub enum UnpackedValue {
+    MateIn(u16),
+    MatedIn(u16),
+    Value(i16),
+}
+
 impl Value {
     pub fn mate_in(ply: i16) -> Value {
         debug_assert!(ply < MATE_DISTANCE_MAX);
@@ -44,6 +50,15 @@ impl Value {
 
     pub fn new(evaluation: i16) -> Value {
         Value(evaluation)
+    }
+
+    /// Unpacks a Value from its efficient representation to a matchable representation.
+    pub fn unpack(self) -> UnpackedValue {
+        match self.0 {
+            v if v > VALUE_MATE => UnpackedValue::MateIn((v - VALUE_MATE) as u16),
+            v if v < VALUE_MATED => UnpackedValue::MatedIn((VALUE_MATED - v) as u16),
+            v => UnpackedValue::Value(v),
+        }
     }
 
     fn add(self, other: Value) -> Value {
@@ -104,10 +119,10 @@ impl ops::Neg for Value {
 
 impl fmt::Debug for Value {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self.0 {
-            v if v > VALUE_MATE => write!(f, "#{}", v - VALUE_MATE),
-            v if v < VALUE_MATED => write!(f, "#-{}", (VALUE_MATED - v)),
-            v => write!(f, "{}", v),
+        match self.unpack() {
+            UnpackedValue::MateIn(moves) => write!(f, "#{}", moves),
+            UnpackedValue::MatedIn(moves) => write!(f, "#-{}", moves),
+            UnpackedValue::Value(value) => write!(f, "{}", value),
         }
     }
 }

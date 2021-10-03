@@ -9,9 +9,12 @@
 //! An implementation of the UCI protocol for a4, driving our internal search routines.
 //! See [here](http://wbec-ridderkerk.nl/html/UCIProtocol.html) for full documentation on the protocol.
 
-use crate::{core::Move, threads, Position};
+use crate::{core::Move, threads, threads::SearchRequest, Position};
 use anyhow::anyhow;
-use std::io::{self, BufRead};
+use std::{
+    io::{self, BufRead},
+    time::Duration,
+};
 
 pub fn run() -> io::Result<()> {
     threads::initialize();
@@ -28,8 +31,8 @@ pub fn run() -> io::Result<()> {
             ("isready", []) => handle_isready(),
             ("ucinewgame", []) => handle_ucinewgame(),
             ("position", args) => handle_position(args),
-            ("a4_start", []) => handle_a4_start(),
-            ("a4_stop", []) => handle_a4_stop(),
+            ("go", args) => handle_go(args),
+            ("stop", []) => handle_stop(),
             ("quit", []) => return Ok(()),
             _ => println!("unrecognized command: {} {:?}", command, arguments),
         }
@@ -46,6 +49,10 @@ fn handle_uci() {
     );
     println!("id author {}", env!("CARGO_PKG_AUTHORS"));
     println!("uciok");
+}
+
+fn handle_stop() {
+    threads::get().main_thread().stop();
 }
 
 fn handle_isready() {
@@ -87,19 +94,95 @@ fn handle_position(args: &[&str]) {
     }
 }
 
+fn handle_go(args: &[&str]) {
+    let mut iter = args.iter().cloned();
+    let mut options: SearchRequest = Default::default();
+    let result: anyhow::Result<()> = try {
+        loop {
+            match iter.next() {
+                Some("searchmoves") => {
+                    // TODO(swgillespie) restricting the initial set of search moves
+                }
+                Some("ponder") => {
+                    // TODO(swgillespie) pondering
+                }
+                Some("wtime") => {
+                    let _time: u64 = iter
+                        .next()
+                        .ok_or_else(|| anyhow!("expected duration after wtime"))?
+                        .parse()?;
+                    // TODO(swgillespie) clock management
+                }
+                Some("btime") => {
+                    let _time: u64 = iter
+                        .next()
+                        .ok_or_else(|| anyhow!("expected duration after btime"))?
+                        .parse()?;
+                    // TODO(swgillespie) clock management
+                }
+                Some("winc") => {
+                    let _inc: u64 = iter
+                        .next()
+                        .ok_or_else(|| anyhow!("expected duration after winc"))?
+                        .parse()?;
+                    // TODO(swgillespie) clock management
+                }
+                Some("binc") => {
+                    let _inc: u64 = iter
+                        .next()
+                        .ok_or_else(|| anyhow!("expected duration after binc"))?
+                        .parse()?;
+                    // TODO(swgillespie) clock management
+                }
+                Some("movestogo") => {
+                    let _movestogo: u64 = iter
+                        .next()
+                        .ok_or_else(|| anyhow!("expected move count after movestogo"))?
+                        .parse()?;
+                    // TODO(swgillespie) clock management
+                }
+                Some("depth") => {
+                    let maxdepth: u32 = iter
+                        .next()
+                        .ok_or_else(|| anyhow!("expected move count after movestogo"))?
+                        .parse()?;
+                    options.depth = Some(maxdepth);
+                }
+                Some("nodes") => {
+                    let nodes: u64 = iter
+                        .next()
+                        .ok_or_else(|| anyhow!("expected node count after nodes"))?
+                        .parse()?;
+                    options.node_limit = Some(nodes);
+                }
+                Some("mate") => {
+                    // TODO(swgillespie) mate search
+                }
+                Some("movetime") => {
+                    let msec: u64 = iter
+                        .next()
+                        .ok_or_else(|| anyhow!("expected msec count after movetime"))?
+                        .parse()?;
+                    options.time_limit = Some(Duration::from_millis(msec));
+                }
+                Some("infinite") => {
+                    options.time_limit = None;
+                }
+                Some(tok) => Err(anyhow!("unexpected token: {}", tok))?,
+                None => break,
+            }
+        }
+    };
+
+    match result {
+        Ok(()) => {
+            threads::get().main_thread().search(options);
+        }
+        Err(e) => println!("invalid go command: {}", e),
+    }
+}
+
 fn handle_ucinewgame() {
     threads::get().main_thread().set_position(Position::new());
     // TODO(swgillespie) clear transposition tables, when they exist
-}
-
-// Temporary extensions to UCI to test out our thread harness.
-
-fn handle_a4_start() {
-    let threads = threads::get();
-    threads.main_thread().search();
-}
-
-fn handle_a4_stop() {
-    let threads = threads::get();
-    threads.main_thread().stop();
 }

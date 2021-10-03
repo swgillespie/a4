@@ -27,6 +27,8 @@ use std::{
 };
 use tracing::Level;
 
+use crate::eval::UnpackedValue;
+use crate::search::{self, SearchOptions};
 use crate::Position;
 
 /// External interface to the thread pool.
@@ -68,10 +70,22 @@ pub fn get() -> &'static Threads {
     unsafe { THREADS.as_ref().expect("get called before initialize") }
 }
 
+#[derive(Clone, Default)]
+pub struct SearchRequest {
+    /// Maximum amount of time to dedicate to this search.
+    pub time_limit: Option<Duration>,
+
+    /// Maximum amount of nodes to evaluate.
+    pub node_limit: Option<u64>,
+
+    /// Maximum depth to search.
+    pub depth: Option<u32>,
+}
+
 enum Request {
     Ping,
     Shutdown,
-    Search,
+    Search(SearchRequest),
     Stop,
 }
 
@@ -86,6 +100,7 @@ pub struct MainThread {
     request_tx: SyncSender<Request>,
     response_rx: Receiver<Response>,
     position: RwLock<Position>,
+    search: RwLock<Option<SearchRequest>>,
 }
 
 impl MainThread {
@@ -95,6 +110,9 @@ impl MainThread {
         let handle = thread::Builder::new()
             .name("a4 main thread".into())
             .spawn(|| {
+                THREAD_KIND.with(|kind| {
+                    *kind.borrow_mut() = ThreadIdentifier::MainThread;
+                });
                 thread_loop(request_rx, response_tx);
             })
             .expect("failed to spawn main thread");
@@ -104,6 +122,7 @@ impl MainThread {
             request_tx,
             response_rx,
             position: RwLock::new(Position::new()),
+            search: RwLock::new(None),
         }
     }
 
@@ -118,9 +137,9 @@ impl MainThread {
         true
     }
 
-    pub fn search(&self) {
+    pub fn search(&self, req: SearchRequest) {
         self.request_tx
-            .send(Request::Search)
+            .send(Request::Search(req))
             .expect("search failed to send on request tx");
     }
 
@@ -144,6 +163,18 @@ impl MainThread {
     pub fn set_position(&self, pos: Position) {
         *self.position.write().unwrap() = pos;
     }
+
+    pub fn get_position(&self) -> Position {
+        self.position.read().unwrap().clone()
+    }
+
+    pub fn set_search(&self, search: Option<SearchRequest>) {
+        *self.search.write().unwrap() = search;
+    }
+
+    pub fn get_search(&self) -> Option<SearchRequest> {
+        self.search.read().unwrap().clone()
+    }
 }
 
 fn thread_loop(rx: Receiver<Request>, tx: SyncSender<Response>) {
@@ -157,8 +188,9 @@ fn thread_loop(rx: Receiver<Request>, tx: SyncSender<Response>) {
                     tx.send(Response::Shutdown)?;
                     return;
                 }
-                Request::Search => {
+                Request::Search(req) => {
                     tracing::debug!("sending start signal to workers");
+                    current().unwrap_main().set_search(Some(req));
                     for worker in get().worker_threads() {
                         worker.start();
                     }
@@ -167,6 +199,8 @@ fn thread_loop(rx: Receiver<Request>, tx: SyncSender<Response>) {
                     for worker in get().worker_threads() {
                         worker.stop();
                     }
+
+                    current().unwrap_main().set_search(None);
                 }
             }
         }
@@ -233,13 +267,35 @@ fn worker_thread_loop() {
             return;
         }
 
-        tracing::debug!("worker becoming active");
-        while !thread.stop_flag.load(Ordering::Acquire) {
-            println!("doing work!");
-            thread::sleep(Duration::from_secs(1));
+        tracing::debug!("worker becoming active, initiating search");
+        if let Some(search) = get().main_thread().get_search() {
+            let pos = get().main_thread().get_position();
+            let opts = SearchOptions {
+                time_limit: search.time_limit,
+                node_limit: search.node_limit,
+                hard_stop: Some(&thread.stop_flag),
+                depth: search.depth.unwrap_or(10),
+            };
+
+            let result = search::search(&pos, &opts);
+            // Pretty goofy violation here, but it's way easier to just print to stdout here rather than spin up
+            // another thread/channel pair and make the UCI layer do it.
+            println!("info nodes {}", result.nodes_evaluated);
+            match result.best_score.unpack() {
+                UnpackedValue::MateIn(moves) => {
+                    println!("info mate {}", moves)
+                }
+                UnpackedValue::MatedIn(moves) => {
+                    println!("info mate -{}", moves)
+                }
+                UnpackedValue::Value(value) => {
+                    println!("info cp {}", value);
+                }
+            }
+            println!("bestmove {}", result.best_move.as_uci());
         }
 
-        tracing::debug!("worker received stop signal");
+        tracing::debug!("worker received stop signal or completed search");
         thread.stop_flag.store(false, Ordering::Release);
         *idle = true;
     }
