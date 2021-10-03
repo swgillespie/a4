@@ -6,13 +6,14 @@ authors = ["Sean Gillespie <sean@swgillespie.me>"]
 license = "MIT"
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.8"
 chess = "^1.6.1"
 
 [tool.poetry.dev-dependencies]
 black = "^21.9b0"
 mypy = "^0.910"
 pytest = "^6.2.5"
+pytest-asyncio = "^0.15.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
