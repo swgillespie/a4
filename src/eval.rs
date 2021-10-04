@@ -11,4 +11,4 @@ mod eval;
 mod value;
 
 pub use eval::evaluate;
-pub use value::Value;
+pub use value::{UnpackedValue, Value};
