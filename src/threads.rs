@@ -280,18 +280,20 @@ fn worker_thread_loop() {
             let result = search::search(&pos, &opts);
             // Pretty goofy violation here, but it's way easier to just print to stdout here rather than spin up
             // another thread/channel pair and make the UCI layer do it.
+            let nodes_str = format!("nodes {}", result.nodes_evaluated);
             println!("info nodes {}", result.nodes_evaluated);
-            match result.best_score.unpack() {
+            let value_str = match result.best_score.unpack() {
                 UnpackedValue::MateIn(moves) => {
-                    println!("info mate {}", moves)
+                    format!("score mate {}", moves)
                 }
                 UnpackedValue::MatedIn(moves) => {
-                    println!("info mate -{}", moves)
+                    format!("score mate -{}", moves)
                 }
                 UnpackedValue::Value(value) => {
-                    println!("info cp {}", value);
+                    format!("score cp {}", value)
                 }
-            }
+            };
+            println!("info {} {}", nodes_str, value_str);
             println!("bestmove {}", result.best_move.as_uci());
         }
 
