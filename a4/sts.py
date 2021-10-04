@@ -10,6 +10,7 @@ import argparse
 import asyncio
 from typing import List, Mapping, NamedTuple
 from pathlib import Path
+from glob import glob
 
 from chess import Board, Move
 from chess.engine import Limit, UciProtocol
@@ -97,15 +98,26 @@ async def run_single(
             print(".", end="", flush=True)
 
 
-async def run():
-    args = parser.parse_args()
-    tests = collect_tests_from_file("tests/sts/STS1.epd")
+async def run_suite(args: argparse.Namespace, suite: str) -> int:
+    print(f"=> {suite}")
+    tests = collect_tests_from_file(suite)
     sem = asyncio.BoundedSemaphore(int(args.j))
     futures = [
         run_single(sem, test, args.engine, args.engine_strength) for test in tests
     ]
     results = await asyncio.gather(*futures)
     total_score = sum(map(lambda x: x.score, results))
+    print(f"\nScore = {total_score}")
+    return total_score
+
+
+async def run():
+    args = parser.parse_args()
+    suites = sorted(glob("tests/sts/*.epd"))
+    total_score = 0
+    for suite in suites:
+        total_score += await run_suite(args, suite)
+    print("================")
     print(f"\nTotal Score = {total_score}")
     if args.github:
         print(f"::set-output name=Score::{total_score}")
