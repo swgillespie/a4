@@ -1,7 +1,6 @@
 name: STS
 on: workflow_dispatch
 
-name: "a4 STS Strength Test"
 jobs:
   STS:
     runs-on: ubuntu-latest
