@@ -7,8 +7,10 @@
 // except according to those terms.
 
 use crate::core::{self, *};
+use crate::zobrist;
 use std::convert::TryFrom;
 use std::fmt::{self, Write};
+use std::hash::{Hash, Hasher};
 use thiserror::Error;
 
 /// A position, representing a chess game that has progressed up to this point. A Position encodes the complete state
@@ -29,6 +31,8 @@ pub struct Position {
     castle_status: CastleStatus,
     /// Color whose turn it is to move.
     side_to_move: Color,
+    /// The Zobrist hash of this position.
+    zobrist_hash: u64,
 }
 
 impl Position {
@@ -112,6 +116,7 @@ impl Position {
             castle_status: CastleStatus::BLACK | CastleStatus::WHITE,
             en_passant_square: None,
             side_to_move: Color::White,
+            zobrist_hash: 0,
         }
     }
 
@@ -123,6 +128,7 @@ impl Position {
         self.sets_by_color[piece.color as usize].insert(square);
         let offset = if piece.color == Color::White { 0 } else { 6 };
         self.sets_by_piece[piece.kind as usize + offset].insert(square);
+        zobrist::modify_piece(&mut self.zobrist_hash, square, piece);
         Ok(())
     }
 
@@ -140,6 +146,7 @@ impl Position {
             6
         };
         self.sets_by_piece[existing_piece.kind as usize + offset].remove(square);
+        zobrist::modify_piece(&mut self.zobrist_hash, square, existing_piece);
         Ok(())
     }
 
@@ -165,7 +172,6 @@ impl Position {
 
     pub fn squares_attacking(&self, to_move: Color, target: Square) -> SquareSet {
         // TODO(swgillespie) This function and king move generation need to be rewritten for efficiency
-
         let mut attacks = SquareSet::empty();
 
         // Pretend that there's a "super-piece" at the target square and see if it hits anything.
@@ -265,6 +271,7 @@ impl Position {
         if mov.is_null() {
             self.en_passant_square = None;
             self.side_to_move = self.side_to_move.toggle();
+            zobrist::modify_side_to_move(&mut self.zobrist_hash);
             if self.side_to_move == Color::White {
                 self.fullmove_clock += 1;
             }
@@ -305,8 +312,13 @@ impl Position {
             // player.
             if target_square == kingside_rook(self.side_to_move.toggle()) {
                 self.castle_status &= !kingside_castle_mask(self.side_to_move.toggle());
+                zobrist::modify_kingside_castle(&mut self.zobrist_hash, self.side_to_move.toggle());
             } else if target_square == queenside_rook(self.side_to_move.toggle()) {
                 self.castle_status &= !queenside_castle_mask(self.side_to_move.toggle());
+                zobrist::modify_queenside_castle(
+                    &mut self.zobrist_hash,
+                    self.side_to_move.toggle(),
+                );
             }
         }
 
@@ -363,10 +375,16 @@ impl Position {
             };
 
             let ep_square = mov.destination().towards(ep_dir);
+            zobrist::modify_en_passant(
+                &mut self.zobrist_hash,
+                self.en_passant_square,
+                Some(ep_square),
+            );
             self.en_passant_square = Some(ep_square);
         } else {
             // All other moves clear the en-passant square.
             self.en_passant_square = None;
+            zobrist::modify_en_passant(&mut self.zobrist_hash, self.en_passant_square, None);
         }
 
         // Re-calculate our castle status. Side to move may have invalidated their castle rights
@@ -379,18 +397,23 @@ impl Position {
             {
                 // Move of the queenside rook. Can't castle queenside anymore.
                 self.castle_status &= !queenside_castle_mask(self.side_to_move);
+                zobrist::modify_queenside_castle(&mut self.zobrist_hash, self.side_to_move);
             } else if self.can_castle_kingside(self.side_to_move)
                 && mov.source() == kingside_rook(self.side_to_move)
             {
                 // Move of the kingside rook. Can't castle kingside anymore.
                 self.castle_status &= !kingside_castle_mask(self.side_to_move);
+                zobrist::modify_kingside_castle(&mut self.zobrist_hash, self.side_to_move);
             }
         } else if moving_piece.kind == PieceKind::King {
             // Moving a king invalides the castle on both sides of the board.
             self.castle_status &= !castle_mask(self.side_to_move);
+            zobrist::modify_queenside_castle(&mut self.zobrist_hash, self.side_to_move);
+            zobrist::modify_kingside_castle(&mut self.zobrist_hash, self.side_to_move);
         }
 
         self.side_to_move = self.side_to_move.toggle();
+        zobrist::modify_side_to_move(&mut self.zobrist_hash);
         if mov.is_capture() || moving_piece.kind == PieceKind::Pawn {
             self.halfmove_clock = 0;
         } else {
@@ -721,6 +744,15 @@ impl fmt::Display for Position {
 impl Default for Position {
     fn default() -> Self {
         Position::new()
+    }
+}
+
+impl Hash for Position {
+    fn hash<H>(&self, hasher: &mut H)
+    where
+        H: Hasher,
+    {
+        hasher.write_u64(self.zobrist_hash);
     }
 }
 

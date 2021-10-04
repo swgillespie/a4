@@ -21,5 +21,6 @@ mod position;
 pub mod search;
 mod threads;
 pub mod uci;
+mod zobrist;
 
 pub use position::Position;
