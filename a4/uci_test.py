@@ -10,7 +10,8 @@
 Integration tests for the UCI protocol implementation by a4.
 """
 
-from chess.engine import UciProtocol
+from chess.engine import INFO_ALL, Limit, UciProtocol
+from chess import Board
 from a4.uci import popen_debug
 import pytest
 
@@ -39,3 +40,19 @@ async def test_ping(a4_debug: UciProtocol):
 async def test_debug(a4_debug: UciProtocol):
     a4_debug.debug(on=True)
     a4_debug.debug(on=False)
+
+
+@pytest.mark.asyncio
+async def test_analysis(a4_debug: UciProtocol):
+    board = Board()
+    info = await a4_debug.analyse(board, Limit(time=0.1))
+    assert "nodes" in info
+    assert "score" in info
+
+
+@pytest.mark.asyncio
+async def test_play(a4_debug: UciProtocol):
+    board = Board()
+    result = await a4_debug.play(board, Limit(time=0.1), info=INFO_ALL)
+    assert result.move is not None
+    assert "nodes" in result.info

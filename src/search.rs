@@ -13,7 +13,6 @@ use crate::Position;
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::Ordering;
 use std::time::{Duration, Instant};
-use thiserror::Error;
 
 /// Options for a search.
 #[derive(Default)]
@@ -29,16 +28,6 @@ pub struct SearchOptions<'a> {
 
     /// Maximum depth to search.
     pub depth: u32,
-}
-
-#[derive(Copy, Clone, Debug, Error)]
-enum AlphaBetaError {
-    #[error("time limit exhausted")]
-    TimeExhausted,
-    #[error("node limit exhausted")]
-    NodeLimitExhausted,
-    #[error("stop requested")]
-    StopRequested,
 }
 
 struct Searcher<'a, 'b> {
@@ -76,16 +65,13 @@ impl<'a: 'b, 'b> Searcher<'a, 'b> {
                 continue;
             }
 
-            if self.can_continue_search().is_err() {
-                break;
+            if !self.can_continue_search() {
+                // TODO
             }
 
             let mut child_pos = pos.clone();
             child_pos.make_move(mov);
-            let score = match self.alpha_beta(pos, -beta, -alpha, options.depth - 1) {
-                Ok(score) => -score,
-                Err(_) => break,
-            };
+            let score = self.alpha_beta(pos, -beta, -alpha, options.depth - 1);
             if score > alpha {
                 alpha = score;
             }
@@ -103,17 +89,14 @@ impl<'a: 'b, 'b> Searcher<'a, 'b> {
         }
     }
 
-    fn alpha_beta(
-        &mut self,
-        pos: &Position,
-        mut alpha: Value,
-        beta: Value,
-        depth: u32,
-    ) -> Result<Value, AlphaBetaError> {
+    fn alpha_beta(&mut self, pos: &Position, mut alpha: Value, beta: Value, depth: u32) -> Value {
         // Two places that we check for search termination, inserted in the same place that a compiler would insert safepoints for preemption:
         //   1. Function entry blocks, so we can cut off trees that we are about to search if we are out of time
         //   2. Loop back edges, so we can cut off trees that we are partially in the process of searching
-        self.can_continue_search()?;
+        if !self.can_continue_search() {
+            return alpha;
+        }
+
         if depth == 0 {
             return self.quiesce(pos, alpha, beta);
         }
@@ -127,56 +110,53 @@ impl<'a: 'b, 'b> Searcher<'a, 'b> {
 
             let mut child_pos = pos.clone();
             child_pos.make_move(mov);
-            let score = -self.alpha_beta(pos, -beta, -alpha, depth - 1)?;
+            let score = -self.alpha_beta(pos, -beta, -alpha, depth - 1);
             if score >= beta {
-                return Ok(beta);
+                return beta;
             }
 
             if score > alpha {
                 alpha = score;
             }
 
-            self.can_continue_search()?;
+            if !self.can_continue_search() {
+                return alpha;
+            }
         }
 
-        Ok(alpha)
+        alpha
     }
 
-    fn quiesce(
-        &mut self,
-        pos: &Position,
-        _alpha: Value,
-        _beta: Value,
-    ) -> Result<Value, AlphaBetaError> {
+    fn quiesce(&mut self, pos: &Position, _alpha: Value, _beta: Value) -> Value {
         self.nodes_evaluated += 1;
         let value = evaluate(pos);
         if pos.side_to_move() == Color::Black {
-            Ok(-value)
+            -value
         } else {
-            Ok(value)
+            value
         }
     }
 
-    fn can_continue_search(&self) -> Result<(), AlphaBetaError> {
+    fn can_continue_search(&self) -> bool {
         if let Some(limit) = self.options.time_limit {
             if Instant::now().saturating_duration_since(self.search_start_time) > limit {
-                return Err(AlphaBetaError::TimeExhausted);
+                return false;
             }
         }
 
         if let Some(limit) = self.options.node_limit {
             if self.nodes_evaluated > limit {
-                return Err(AlphaBetaError::NodeLimitExhausted);
+                return false;
             }
         }
 
         if let Some(ptr) = self.options.hard_stop {
             if ptr.load(Ordering::Acquire) {
-                return Err(AlphaBetaError::StopRequested);
+                return false;
             }
         }
 
-        Ok(())
+        true
     }
 }
 
