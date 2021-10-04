@@ -19,4 +19,4 @@ jobs:
       - name: Build Release
         run: cargo build --release
       - name: Run STS Tests
-        run: python3 -m a4.sts -j 2 --github
+        run: poetry run python3 -m a4.sts -j 2 --github
