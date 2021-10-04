@@ -68,6 +68,10 @@ impl Square {
     pub const fn towards(self, dir: Direction) -> Square {
         self.plus(dir.as_vector())
     }
+
+    pub const fn as_u8(self) -> u8 {
+        self.0
+    }
 }
 
 impl TryFrom<u8> for Square {
@@ -217,6 +221,12 @@ pub const RANK_8: Rank = Rank(7);
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub struct File(u8);
+
+impl File {
+    pub const fn as_u8(self) -> u8 {
+        self.0
+    }
+}
 
 impl TryFrom<u8> for File {
     type Error = FileParseError;
