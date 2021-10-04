@@ -14,7 +14,7 @@ from pathlib import Path
 from chess import Board, Move
 from chess.engine import Limit, UciProtocol
 
-from a4.uci import popen_release
+from a4.uci import popen
 
 parser = argparse.ArgumentParser(
     description="Power estimation for UCI chess engines via the STS."
@@ -27,6 +27,15 @@ parser.add_argument(
     action="store_true",
     help="Run additional GitHub Actions magic",
     default=False,
+)
+parser.add_argument(
+    "--engine",
+    action="store",
+    default="target/release/a4",
+    help="Engine to test (a4 or stockfish)",
+)
+parser.add_argument(
+    "--engine-strength", default=20, help="Sets the Skill Level UCI option"
 )
 
 
@@ -74,10 +83,14 @@ def collect_tests_from_file(file: Path) -> List[STSTest]:
         return [STSTest.from_epd(line) for line in file]
 
 
-async def run_single(sem: asyncio.BoundedSemaphore, test: STSTest):
+async def run_single(
+    sem: asyncio.BoundedSemaphore, test: STSTest, engine_str: str, strength: int
+):
     async with sem:
-        engine = await popen_release()
+        engine = await popen(engine_str)
         try:
+            if "Skill Level" in engine.options:
+                await engine.configure({"Skill Level": strength})
             return await test.execute(engine)
         finally:
             await engine.quit()
@@ -88,7 +101,9 @@ async def run():
     args = parser.parse_args()
     tests = collect_tests_from_file("tests/sts/STS1.epd")
     sem = asyncio.BoundedSemaphore(int(args.j))
-    futures = [run_single(sem, test) for test in tests]
+    futures = [
+        run_single(sem, test, args.engine, args.engine_strength) for test in tests
+    ]
     results = await asyncio.gather(*futures)
     total_score = sum(map(lambda x: x.score, results))
     print(f"\nTotal Score = {total_score}")
