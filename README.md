@@ -38,3 +38,13 @@ Some technical details and decisions about `a4`, as informed by its previous liv
 
 a4's current state is that it fully implements the game of chess (with lots of tests). Evaluation and search is
 currently in progress. Code for dealing with UCI is likely to be lifted directly from `apollo` v2.
+
+## Strength
+
+Measured via the STS test harness (see `a4/sts.py`)
+
+a4 - 1059
+Stockfish 0 - 4691
+Stockfish 1 - 4567 (lol)
+...
+Stockfish 20 - 11390
