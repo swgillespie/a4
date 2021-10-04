@@ -6,6 +6,7 @@
 # option. This file may not be copied, modified, or distributed
 # except according to those terms.
 
+import argparse
 import asyncio
 from typing import List, Mapping, NamedTuple
 from pathlib import Path
@@ -14,6 +15,19 @@ from chess import Board, Move
 from chess.engine import Limit, UciProtocol
 
 from a4.uci import popen_release
+
+parser = argparse.ArgumentParser(
+    description="Power estimation for UCI chess engines via the STS."
+)
+parser.add_argument(
+    "-j", metavar="JOBS", help="Number of concurrent jobs to launch", default=1
+)
+parser.add_argument(
+    "--github",
+    action="store_true",
+    help="Run additional GitHub Actions magic",
+    default=False,
+)
 
 
 class TestResult(NamedTuple):
@@ -71,12 +85,15 @@ async def run_single(sem: asyncio.BoundedSemaphore, test: STSTest):
 
 
 async def run():
+    args = parser.parse_args()
     tests = collect_tests_from_file("tests/sts/STS1.epd")
-    sem = asyncio.BoundedSemaphore(4)
+    sem = asyncio.BoundedSemaphore(int(args.j))
     futures = [run_single(sem, test) for test in tests]
     results = await asyncio.gather(*futures)
     total_score = sum(map(lambda x: x.score, results))
     print(f"\nTotal Score = {total_score}")
+    if args.github:
+        print(f"::set-output name=Score::{total_score}")
 
 
 def main():
