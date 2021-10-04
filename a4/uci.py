@@ -6,6 +6,7 @@
 # option. This file may not be copied, modified, or distributed
 # except according to those terms.
 
+from subprocess import DEVNULL
 from pathlib import Path
 from chess.engine import UciProtocol, popen_uci
 

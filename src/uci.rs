@@ -62,12 +62,21 @@ fn handle_isready() {
 
 fn handle_position(args: &[&str]) {
     let mut position = Position::new();
-    let mut iter = args.iter().cloned();
+    let mut iter = args.iter().cloned().peekable();
     let result: anyhow::Result<()> = try {
         loop {
             match iter.next() {
                 Some("fen") => {
-                    let fen = iter.next().ok_or_else(|| anyhow!("FEN string expected"))?;
+                    let mut fen_str = Vec::new();
+                    while let Some(next) = iter.peek() {
+                        if *next == "moves" {
+                            break;
+                        }
+
+                        let next = iter.next().unwrap();
+                        fen_str.push(next.to_owned());
+                    }
+                    let fen = fen_str.join(" ");
                     position = Position::from_fen(fen)?;
                 }
                 Some("startpos") => {
