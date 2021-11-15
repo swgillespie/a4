@@ -10,10 +10,16 @@
 a4's test harness, for external testing.
 """
 
+import asyncio
 import json
 import os
 import subprocess
 import sys
+
+from chess import Board, Move
+from chess.engine import Limit, INFO_ALL
+
+from a4.uci import popen_release
 
 
 def collect_tests(dir):
@@ -23,18 +29,35 @@ def collect_tests(dir):
             _, ext = os.path.splitext(file)
             if ext != ".json":
                 continue
-            with open(os.path.join(path, file)) as f:
-                test = json.load(f)
-                if test["kind"] == "perft":
-                    for key, value in test["counts"].items():
-                        tests.append(
-                            {
-                                "kind": "perft",
-                                "fen": test["fen"],
-                                "depth": int(key),
-                                "count": value,
-                            }
-                        )
+            file_tests = load_tests_from_file(os.path.join(path, file))
+            tests.extend(file_tests)
+    return tests
+
+
+def load_tests_from_file(path):
+    tests = []
+    with open(path) as f:
+        test = json.load(f)
+        if test["kind"] == "perft":
+            for key, value in test["counts"].items():
+                tests.append(
+                    {
+                        "path": path,
+                        "kind": "perft",
+                        "fen": test["fen"],
+                        "depth": int(key),
+                        "count": value,
+                    }
+                )
+        elif test["kind"] == "quality":
+            tests.append(
+                {
+                    "path": path,
+                    "kind": "quality",
+                    "fen": test["fen"],
+                    "bestmove": test["bestmove"],
+                }
+            )
     return tests
 
 
@@ -60,12 +83,35 @@ def run_perft_test(test):
     }
 
 
+async def run_quality_test(test):
+    assert test["kind"] == "quality"
+    engine = await popen_release()
+    bestmove = Move.from_uci(test["bestmove"])
+    try:
+        board = Board(test["fen"])
+        info = await engine.play(board, Limit(time=0.5), info=INFO_ALL)
+        return {
+            "test": test,
+            "pass": info.move == bestmove,
+            "expected": bestmove,
+            "actual": info.move,
+        }
+    finally:
+        await engine.quit()
+
+
 def main():
-    tests = collect_tests(os.path.join(os.getcwd(), "tests"))
+    if len(sys.argv) == 2:
+        tests = load_tests_from_file(sys.argv[1])
+    else:
+        tests = collect_tests(os.path.join(os.getcwd(), "tests"))
     passes = []
     fails = []
     for test in tests:
-        result = run_perft_test(test)
+        if test["kind"] == "perft":
+            result = run_perft_test(test)
+        elif test["kind"] == "quality":
+            result = asyncio.run(run_quality_test(test))
         if result["pass"]:
             print(".", end="")
             passes.append(result)
@@ -78,15 +124,25 @@ def main():
         print("=====================================")
         print("Failed Tests:")
     for fail in fails:
-        assert fail["test"]["kind"] == "perft"
-        print(
-            "  perft: {} (depth {}) => {} (expected {})".format(
-                fail["test"]["fen"],
-                fail["test"]["depth"],
-                fail["actual"],
-                fail["expected"],
+        if fail["test"]["kind"] == "perft":
+            print(
+                "  ({}) perft: {} (depth {}) => {} (expected {})".format(
+                    fail["test"]["path"],
+                    fail["test"]["fen"],
+                    fail["test"]["depth"],
+                    fail["actual"],
+                    fail["expected"],
+                )
             )
-        )
+        elif fail["test"]["kind"] == "quality":
+            print(
+                "  ({}) quality: {} => {} (expected {})".format(
+                    fail["test"]["path"],
+                    fail["test"]["fen"],
+                    fail["actual"],
+                    fail["expected"],
+                )
+            )
     if fails:
         print("=====================================")
     print(f"{len(passes)}/{len(tests)} passed")
