@@ -52,6 +52,10 @@ impl Position {
         self.side_to_move
     }
 
+    pub fn zobrist_hash(&self) -> u64 {
+        self.zobrist_hash
+    }
+
     pub fn can_castle_kingside(&self, color: Color) -> bool {
         match color {
             Color::White => self.castle_status.contains(CastleStatus::WHITE_KINGSIDE),

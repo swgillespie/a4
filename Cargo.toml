@@ -6,8 +6,9 @@ edition = "2018"
 
 [dependencies]
 anyhow = "1.0.44"
-thiserror = "1.0.23" 
 bitflags = "1.2.1"
+chashmap = "2.2.2"
+thiserror = "1.0.23" 
 lazy_static = "1.4.0"
 structopt = "0.3.21"
 tracing = "0.1.28"
