@@ -7,6 +7,7 @@
 // except according to those terms.
 
 use crate::core::{self, *};
+use crate::movegen;
 use crate::zobrist;
 use std::convert::TryFrom;
 use std::fmt::{self, Write};
@@ -258,6 +259,19 @@ impl Position {
         let side = self.side_to_move();
         new_pos.make_move(mov);
         !new_pos.is_check(side)
+    }
+
+    /// Legality test for any move. It is generally going to be much faster to use is_legal_given_pseudolegal if you
+    /// already know that the machine is pseudolegal.
+    pub fn is_legal(&self, mov: Move) -> bool {
+        let mut moves = vec![];
+        movegen::generate_moves(self.side_to_move, self, &mut moves);
+        // O(n) scan here; could be O(1) if we collect moves into a set
+        if !moves.contains(&mov) {
+            return false;
+        }
+
+        self.is_legal_given_pseudolegal(mov)
     }
 }
 

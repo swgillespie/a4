@@ -52,6 +52,14 @@ impl Value {
         Value(evaluation)
     }
 
+    pub fn step(self) -> Value {
+        match self.unpack() {
+            UnpackedValue::MateIn(value) => Value::mate_in((value + 1) as i16),
+            UnpackedValue::MatedIn(value) => Value::mated_in((value + 1) as i16),
+            _ => self,
+        }
+    }
+
     /// Unpacks a Value from its efficient representation to a matchable representation.
     pub fn unpack(self) -> UnpackedValue {
         match self.0 {

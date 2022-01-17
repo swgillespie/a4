@@ -9,7 +9,7 @@
 //! An implementation of the UCI protocol for a4, driving our internal search routines.
 //! See [here](http://wbec-ridderkerk.nl/html/UCIProtocol.html) for full documentation on the protocol.
 
-use crate::{core::Move, threads, threads::SearchRequest, Position};
+use crate::{core::Move, table, threads, threads::SearchRequest, Position};
 use anyhow::anyhow;
 use std::{
     io::{self, BufRead},
@@ -18,6 +18,7 @@ use std::{
 
 pub fn run() -> io::Result<()> {
     threads::initialize();
+    table::initialize();
     let stdin = io::stdin();
     let locked_stdin = stdin.lock();
     for maybe_line in locked_stdin.lines() {
@@ -193,5 +194,5 @@ fn handle_go(args: &[&str]) {
 
 fn handle_ucinewgame() {
     threads::get().main_thread().set_position(Position::new());
-    // TODO(swgillespie) clear transposition tables, when they exist
+    table::clear();
 }

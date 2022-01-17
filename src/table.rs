@@ -6,8 +6,6 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
-#![allow(dead_code)]
-
 /// A4's transposition table, which is responsible for memoizing search results
 /// for individual positions.
 ///
@@ -41,6 +39,20 @@ use crate::{core::Move, eval::Value, Position};
 
 /// A read-only reference to an entry in the transposition table.
 pub struct Entry<'a>(ReadGuard<'a, u64, TableEntry>);
+
+impl<'a> Entry<'a> {
+    pub fn best_move(&self) -> Option<Move> {
+        self.0.best_move
+    }
+
+    pub fn depth(&self) -> u32 {
+        self.0.depth
+    }
+
+    pub fn kind(&self) -> NodeKind {
+        self.0.node
+    }
+}
 
 struct Table {
     map: CHashMap<u64, TableEntry>,
@@ -109,7 +121,8 @@ impl Table {
     }
 }
 
-enum NodeKind {
+#[derive(Copy, Clone, Debug, PartialEq, Eq)]
+pub enum NodeKind {
     PV(Value),
     All(Value),
     Cut(Value),
