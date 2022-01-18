@@ -16,7 +16,7 @@ use std::sync::atomic::Ordering;
 use std::time::{Duration, Instant};
 
 /// Options for a search.
-#[derive(Default)]
+#[derive(Default, Debug)]
 pub struct SearchOptions<'a> {
     /// Maximum amount of time to dedicate to this search.
     pub time_limit: Option<Duration>,
@@ -53,7 +53,7 @@ impl<'a: 'b, 'b> Searcher<'a, 'b> {
         }
     }
 
-    fn search(&mut self, pos: &Position, options: &SearchOptions) -> SearchResult {
+    fn search(&mut self, pos: &Position, depth: u32) -> SearchResult {
         let mut best_move = Move::null();
         let mut seen_a_legal_move = false;
         let mut best_score = Value::mated_in(1);
@@ -72,7 +72,7 @@ impl<'a: 'b, 'b> Searcher<'a, 'b> {
 
             let mut child_pos = pos.clone();
             child_pos.make_move(mov);
-            let score = self.alpha_beta(pos, -beta, -alpha, options.depth - 1);
+            let score = self.alpha_beta(&child_pos, -beta, -alpha, depth - 1);
             if score > alpha {
                 alpha = score;
             }
@@ -292,5 +292,46 @@ impl<'a: 'b, 'b> Searcher<'a, 'b> {
 }
 
 pub fn search(pos: &Position, options: &SearchOptions) -> SearchResult {
-    Searcher::new(options).search(pos, options)
+    tracing::info!("initiating search ({:?})", options);
+    let mut current_best_move = Move::null();
+    let mut current_best_score = Value::mated_in(0);
+    let start_time = Instant::now();
+    let mut node_count = 0;
+    for depth in 1..=options.depth {
+        tracing::info!("beginning iterative search of depth {}", depth);
+        let time_since_start = Instant::now().duration_since(start_time);
+        if let Some(limit) = options.time_limit {
+            if limit < time_since_start {
+                break;
+            }
+        }
+        let subsearch_opts = SearchOptions {
+            time_limit: options
+                .time_limit
+                .map(|limit| limit.saturating_sub(time_since_start)),
+            depth,
+            hard_stop: options.hard_stop,
+            node_limit: options
+                .node_limit
+                .map(|limit| limit.saturating_sub(node_count)),
+        };
+
+        let mut searcher = Searcher::new(&subsearch_opts);
+        if !searcher.can_continue_search() {
+            break;
+        }
+
+        let result = searcher.search(pos, depth);
+        node_count += result.nodes_evaluated;
+        current_best_move = result.best_move;
+        current_best_score = result.best_score;
+        let pv = table::get_pv(pos, depth);
+        tracing::info!("pv: {:?}", pv);
+    }
+
+    SearchResult {
+        best_move: current_best_move,
+        best_score: current_best_score,
+        nodes_evaluated: node_count,
+    }
 }

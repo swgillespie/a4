@@ -316,9 +316,15 @@ impl Position {
                     Direction::North
                 };
 
-                let ep_square = self
-                    .en_passant_square
-                    .expect("invalid move: EP without EP-square");
+                let ep_square = if let Some(ep) = self.en_passant_square {
+                    ep
+                } else {
+                    panic!(
+                        "invalid move: EP without EP-square ({}) {}",
+                        mov,
+                        self.as_fen()
+                    );
+                };
                 ep_square.towards(ep_dir)
             };
 

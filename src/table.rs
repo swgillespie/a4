@@ -33,6 +33,7 @@
 ///     a sibling node is a better move and this node does not need to be searched any deeper.
 ///
 use chashmap::{CHashMap, ReadGuard};
+use std::fmt;
 use std::lazy::SyncLazy;
 
 use crate::{core::Move, eval::Value, Position};
@@ -51,6 +52,16 @@ impl<'a> Entry<'a> {
 
     pub fn kind(&self) -> NodeKind {
         self.0.node
+    }
+}
+
+impl fmt::Debug for Entry<'static> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("Entry")
+            .field("best_move", &self.best_move())
+            .field("depth", &self.depth())
+            .field("kind", &self.kind())
+            .finish()
     }
 }
 
@@ -165,4 +176,21 @@ pub fn record_cut(pos: &Position, best_move: Move, depth: u32, value: Value) {
 
 pub fn record_all(pos: &Position, depth: u32, value: Value) {
     TABLE.record_all(pos, depth, value);
+}
+
+/// Looks up the principal variation from the given position to the given depth. This is the line that the engine
+/// is pursuing.
+pub fn get_pv(pos: &Position, depth: u32) -> Vec<Move> {
+    let mut pv = vec![];
+    let mut pv_clone = pos.clone();
+    for _ in 0..depth {
+        if let Some(best_move) = query(pos).and_then(|e| e.best_move()) {
+            pv.push(best_move);
+            pv_clone.make_move(best_move);
+        } else {
+            break;
+        }
+    }
+
+    pv
 }

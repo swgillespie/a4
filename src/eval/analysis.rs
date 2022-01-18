@@ -130,7 +130,7 @@ impl<'a> Analysis<'a> {
 
         assert!(pos.side_to_move() == color);
         let mut moves = Vec::new();
-        movegen::generate_moves(pos.side_to_move(), &self.pos, &mut moves);
+        movegen::generate_moves(pos.side_to_move(), &pos, &mut moves);
         let mut count = 0;
         for &mov in &moves {
             if pos.is_legal_given_pseudolegal(mov) {

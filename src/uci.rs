@@ -35,6 +35,8 @@ pub fn run() -> io::Result<()> {
             ("go", args) => handle_go(args),
             ("stop", []) => handle_stop(),
             ("quit", []) => return Ok(()),
+            // a4 extensions to UCI, for debugging purposes
+            ("table", args) => handle_table(args),
             _ => println!("unrecognized command: {} {:?}", command, arguments),
         }
     }
@@ -195,4 +197,17 @@ fn handle_go(args: &[&str]) {
 fn handle_ucinewgame() {
     threads::get().main_thread().set_position(Position::new());
     table::clear();
+}
+
+fn handle_table(args: &[&str]) {
+    let fen_str = args.join(" ");
+    let pos = if let Ok(pos) = Position::from_fen(fen_str) {
+        pos
+    } else {
+        println!("invalid fen position");
+        return;
+    };
+
+    let entry = table::query(&pos);
+    println!("{:?}", entry);
 }
