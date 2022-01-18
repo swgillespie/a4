@@ -55,13 +55,9 @@ impl<'a> Entry<'a> {
     }
 }
 
-impl fmt::Debug for Entry<'static> {
+impl fmt::Debug for Entry<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.debug_struct("Entry")
-            .field("best_move", &self.best_move())
-            .field("depth", &self.depth())
-            .field("kind", &self.kind())
-            .finish()
+        self.0.fmt(f)
     }
 }
 
@@ -139,6 +135,7 @@ pub enum NodeKind {
     Cut(Value),
 }
 
+#[derive(Clone, Debug, PartialEq, Eq)]
 struct TableEntry {
     pub zobrist_key: u64,
     pub best_move: Option<Move>,
@@ -184,7 +181,7 @@ pub fn get_pv(pos: &Position, depth: u32) -> Vec<Move> {
     let mut pv = vec![];
     let mut pv_clone = pos.clone();
     for _ in 0..depth {
-        if let Some(best_move) = query(pos).and_then(|e| e.best_move()) {
+        if let Some(best_move) = query(&pv_clone).and_then(|e| e.best_move()) {
             pv.push(best_move);
             pv_clone.make_move(best_move);
         } else {

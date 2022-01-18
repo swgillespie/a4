@@ -54,38 +54,16 @@ impl<'a: 'b, 'b> Searcher<'a, 'b> {
     }
 
     fn search(&mut self, pos: &Position, depth: u32) -> SearchResult {
-        let mut best_move = Move::null();
-        let mut seen_a_legal_move = false;
-        let mut best_score = Value::mated_in(1);
-        let mut alpha = best_score;
-        let beta = -best_score;
-        let mut moves = Vec::new();
-        movegen::generate_moves(pos.side_to_move(), pos, &mut moves);
-        for mov in moves {
-            if !pos.is_legal_given_pseudolegal(mov) {
-                continue;
-            }
-
-            if !self.can_continue_search() {
-                // TODO
-            }
-
-            let mut child_pos = pos.clone();
-            child_pos.make_move(mov);
-            let score = self.alpha_beta(&child_pos, -beta, -alpha, depth - 1);
-            if score > alpha {
-                alpha = score;
-            }
-            if score > best_score || !seen_a_legal_move {
-                seen_a_legal_move = true;
-                best_score = score;
-                best_move = mov;
-            }
-        }
-
+        let alpha = Value::mated_in(0);
+        let beta = Value::mate_in(0);
+        let score = self.alpha_beta(pos, alpha, beta, depth);
+        let best_move = table::query(&pos)
+            .expect("t-table miss after search?")
+            .best_move()
+            .expect("search thinks that root node is an all-node?");
         SearchResult {
             best_move,
-            best_score,
+            best_score: score,
             nodes_evaluated: self.nodes_evaluated,
         }
     }
@@ -177,7 +155,7 @@ impl<'a: 'b, 'b> Searcher<'a, 'b> {
             table::record_all(pos, depth, alpha);
         }
 
-        alpha
+        alpha.step()
     }
 
     fn quiesce(&mut self, pos: &Position, _alpha: Value, _beta: Value) -> Value {
