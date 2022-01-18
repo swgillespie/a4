@@ -39,9 +39,14 @@ pub struct Threads {
 
 impl Threads {
     fn new() -> Threads {
+        let mut workers = vec![];
+        for id in 0..num_cpus::get() {
+            workers.push(WorkerThread::new(id));
+        }
+
         Threads {
             main_thread: MainThread::new(),
-            worker_threads: vec![WorkerThread::new()],
+            worker_threads: workers,
         }
     }
 
@@ -218,11 +223,12 @@ pub struct WorkerThread {
 }
 
 impl WorkerThread {
-    pub fn new() -> WorkerThread {
+    pub fn new(id: usize) -> WorkerThread {
         let handle = thread::Builder::new()
             .name("a4 worker thread".into())
-            .spawn(|| {
-                THREAD_KIND.with(|kind| *kind.borrow_mut() = ThreadIdentifier::WorkerThread(0));
+            .spawn(move || {
+                std::thread::sleep(Duration::from_secs(2)); // lmao
+                THREAD_KIND.with(|kind| *kind.borrow_mut() = ThreadIdentifier::WorkerThread(id));
                 worker_thread_loop()
             })
             .expect("failed to spawn main thread");
