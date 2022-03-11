@@ -7,6 +7,7 @@
 // except according to those terms.
 
 use crate::core::{self, *};
+use crate::movegen;
 use crate::zobrist;
 use std::convert::TryFrom;
 use std::fmt::{self, Write};
@@ -50,6 +51,10 @@ impl Position {
 
     pub fn side_to_move(&self) -> Color {
         self.side_to_move
+    }
+
+    pub fn zobrist_hash(&self) -> u64 {
+        self.zobrist_hash
     }
 
     pub fn can_castle_kingside(&self, color: Color) -> bool {
@@ -255,6 +260,19 @@ impl Position {
         new_pos.make_move(mov);
         !new_pos.is_check(side)
     }
+
+    /// Legality test for any move. It is generally going to be much faster to use is_legal_given_pseudolegal if you
+    /// already know that the machine is pseudolegal.
+    pub fn is_legal(&self, mov: Move) -> bool {
+        let mut moves = vec![];
+        movegen::generate_moves(self.side_to_move, self, &mut moves);
+        // O(n) scan here; could be O(1) if we collect moves into a set
+        if !moves.contains(&mov) {
+            return false;
+        }
+
+        self.is_legal_given_pseudolegal(mov)
+    }
 }
 
 //
@@ -298,9 +316,15 @@ impl Position {
                     Direction::North
                 };
 
-                let ep_square = self
-                    .en_passant_square
-                    .expect("invalid move: EP without EP-square");
+                let ep_square = if let Some(ep) = self.en_passant_square {
+                    ep
+                } else {
+                    panic!(
+                        "invalid move: EP without EP-square ({}) {}",
+                        mov,
+                        self.as_fen()
+                    );
+                };
                 ep_square.towards(ep_dir)
             };
 

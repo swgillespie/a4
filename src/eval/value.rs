@@ -31,6 +31,7 @@ const MATE_DISTANCE_MAX: i16 = 50;
 #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Value(i16);
 
+#[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub enum UnpackedValue {
     MateIn(u16),
     MatedIn(u16),
@@ -52,11 +53,23 @@ impl Value {
         Value(evaluation)
     }
 
+    pub fn step(self) -> Value {
+        match self.unpack() {
+            UnpackedValue::MateIn(value) => Value::mate_in((value + 1) as i16),
+            UnpackedValue::MatedIn(value) => Value::mated_in((value + 1) as i16),
+            _ => self,
+        }
+    }
+
     /// Unpacks a Value from its efficient representation to a matchable representation.
     pub fn unpack(self) -> UnpackedValue {
         match self.0 {
-            v if v > VALUE_MATE => UnpackedValue::MateIn((v - VALUE_MATE) as u16),
-            v if v < VALUE_MATED => UnpackedValue::MatedIn((VALUE_MATED - v) as u16),
+            v if v > VALUE_MATE => {
+                UnpackedValue::MateIn((VALUE_MATE + MATE_DISTANCE_MAX - v) as u16)
+            }
+            v if v < VALUE_MATED => {
+                UnpackedValue::MatedIn((v - VALUE_MATED + MATE_DISTANCE_MAX) as u16)
+            }
             v => UnpackedValue::Value(v),
         }
     }
@@ -135,6 +148,8 @@ impl fmt::Display for Value {
 
 #[cfg(test)]
 mod tests {
+    use crate::eval::UnpackedValue;
+
     use super::{Value, VALUE_MATE, VALUE_MATED};
 
     #[test]
@@ -160,5 +175,22 @@ mod tests {
     #[test]
     fn mated_in_4_is_better_than_mated_in_3() {
         assert!(Value::mated_in(4) > Value::mated_in(3))
+    }
+
+    #[test]
+    fn mate_in_2_is_worse_than_mate_in_1() {
+        assert!(Value::mate_in(2) < Value::mate_in(1))
+    }
+
+    #[test]
+    fn unpack_mated_in() {
+        let mated_in_one = Value::mated_in(1);
+        assert_eq!(mated_in_one.unpack(), UnpackedValue::MatedIn(1));
+    }
+
+    #[test]
+    fn unpack_mate_in() {
+        let mate_in_one = Value::mate_in(1);
+        assert_eq!(mate_in_one.unpack(), UnpackedValue::MateIn(1));
     }
 }
