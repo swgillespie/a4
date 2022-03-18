@@ -6,7 +6,7 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
-use crate::{core::*, Position};
+use crate::{core::*, position::Position};
 use std::convert::TryFrom;
 use std::fmt::{self, Write};
 
@@ -401,7 +401,7 @@ impl fmt::Debug for Move {
 mod tests {
     use super::Move;
     use crate::core::*;
-    use crate::Position;
+    use crate::position::Position;
 
     #[test]
     fn quiet() {

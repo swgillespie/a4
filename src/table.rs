@@ -36,7 +36,7 @@ use chashmap::{CHashMap, ReadGuard};
 use std::fmt;
 use std::lazy::SyncLazy;
 
-use crate::{core::Move, eval::Value, Position};
+use crate::{core::Move, eval::Value, position::Position};
 
 /// A read-only reference to an entry in the transposition table.
 pub struct Entry<'a>(ReadGuard<'a, u64, TableEntry>);

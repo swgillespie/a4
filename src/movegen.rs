@@ -6,7 +6,7 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 use crate::core::*;
-use crate::Position;
+use crate::position::Position;
 
 pub fn generate_pawn_moves(us: Color, pos: &Position, moves: &mut Vec<Move>) {
     let them = us.toggle();
@@ -252,7 +252,7 @@ mod tests {
 
     use super::generate_moves;
     use crate::core::*;
-    use crate::Position;
+    use crate::position::Position;
 
     fn assert_moves_generated(fen: &'static str, moves: &[Move]) {
         let pos = Position::from_fen(fen).unwrap();
