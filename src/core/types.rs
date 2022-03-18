@@ -314,6 +314,19 @@ pub enum PieceKind {
     King,
 }
 
+impl PieceKind {
+    pub fn value(self) -> i32 {
+        match self {
+            PieceKind::Pawn => 1,
+            PieceKind::Knight => 3,
+            PieceKind::Bishop => 3,
+            PieceKind::Rook => 5,
+            PieceKind::Queen => 9,
+            PieceKind::King => 100,
+        }
+    }
+}
+
 impl fmt::Display for PieceKind {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let c = match self {
