@@ -42,11 +42,17 @@ struct Searcher<'a, 'b> {
     options: &'a SearchOptions<'b>,
 }
 
-#[derive(Copy, Clone, Debug)]
+/// Statistics about the search, reported to the caller upon termination of the search.
+#[derive(Clone, Debug, Default)]
+pub struct SearchStats {
+    pub nodes_evaluated: u64,
+}
+
+#[derive(Clone, Debug)]
 pub struct SearchResult {
     pub best_move: Move,
     pub best_score: Value,
-    pub nodes_evaluated: u64,
+    pub stats: SearchStats,
 }
 
 impl<'a: 'b, 'b> Searcher<'a, 'b> {
@@ -58,7 +64,7 @@ impl<'a: 'b, 'b> Searcher<'a, 'b> {
         }
     }
 
-    fn search(&mut self, pos: &Position, depth: u32) -> Option<SearchResult> {
+    fn search(&mut self, pos: &Position, depth: u32) -> Option<(Move, Value)> {
         let alpha = Value::mated_in(0);
         let beta = Value::mate_in(0);
         let score = self.alpha_beta(pos, alpha, beta, depth);
@@ -71,11 +77,7 @@ impl<'a: 'b, 'b> Searcher<'a, 'b> {
             .expect("t-table miss after search?")
             .best_move()
             .expect("search thinks that root node is an all-node?");
-        Some(SearchResult {
-            best_move,
-            best_score: score,
-            nodes_evaluated: self.nodes_evaluated,
-        })
+        Some((best_move, score))
     }
 
     fn alpha_beta(&mut self, pos: &Position, mut alpha: Value, beta: Value, depth: u32) -> Value {
@@ -394,6 +396,7 @@ fn smallest_attacker(pos: &Position, target: Square) -> Option<Square> {
 
 pub fn search(pos: &Position, options: &SearchOptions) -> SearchResult {
     tracing::info!("initiating search ({:?})", options);
+    let mut stats = SearchStats::default();
     let mut current_best_move = Move::null();
     let mut current_best_score = Value::mated_in(0);
     let start_time = Instant::now();
@@ -423,12 +426,13 @@ pub fn search(pos: &Position, options: &SearchOptions) -> SearchResult {
         }
 
         let search_start = Instant::now();
-        if let Some(result) = searcher.search(pos, depth) {
+        if let Some((best_move, best_score)) = searcher.search(pos, depth) {
             let search_time = Instant::now().duration_since(search_start);
-            node_count += result.nodes_evaluated;
-            current_best_move = result.best_move;
-            current_best_score = result.best_score;
-            let nps = result.nodes_evaluated as f64 / search_time.as_secs_f64();
+            node_count += searcher.nodes_evaluated;
+            stats.nodes_evaluated += searcher.nodes_evaluated;
+            current_best_move = best_move;
+            current_best_score = best_score;
+            let nps = searcher.nodes_evaluated as f64 / search_time.as_secs_f64();
             let pv = table::get_pv(pos, depth);
             tracing::debug!("pv: {:?}", pv);
             if threads::get_worker_id() == Some(0) {
@@ -441,7 +445,7 @@ pub fn search(pos: &Position, options: &SearchOptions) -> SearchResult {
                 println!(
                     "info depth {} nodes {} nps {} pv {} score {}",
                     depth,
-                    result.nodes_evaluated,
+                    searcher.nodes_evaluated,
                     nps.floor() as i64,
                     pv_str,
                     current_best_score.as_uci(),
@@ -457,7 +461,7 @@ pub fn search(pos: &Position, options: &SearchOptions) -> SearchResult {
     SearchResult {
         best_move: current_best_move,
         best_score: current_best_score,
-        nodes_evaluated: node_count,
+        stats,
     }
 }
 
