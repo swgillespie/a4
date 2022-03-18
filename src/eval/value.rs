@@ -72,6 +72,21 @@ impl Value {
         }
     }
 
+    /// Formats this value in a format understood by UCI.
+    pub fn as_uci(self) -> String {
+        match self.unpack() {
+            UnpackedValue::MateIn(moves) => {
+                format!("mate {}", moves)
+            }
+            UnpackedValue::MatedIn(moves) => {
+                format!("mate -{}", moves)
+            }
+            UnpackedValue::Value(value) => {
+                format!("cp {}", value)
+            }
+        }
+    }
+
     fn add(self, other: Value) -> Value {
         debug_assert!(self.0 > VALUE_MATED && self.0 < VALUE_MATE);
         let mut next = self.0 + other.0;
