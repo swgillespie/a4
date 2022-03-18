@@ -5,14 +5,14 @@
 // <LICENSE-MIT or http://opensource.org/licenses/MIT>, at your
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
-use crate::core::SquareSet;
-use crate::core::*;
-use crate::core::{
-    SS_FILES, SS_FILE_A, SS_FILE_B, SS_FILE_C, SS_FILE_D, SS_FILE_E, SS_FILE_F, SS_FILE_G,
-    SS_FILE_H, SS_RANKS,
+use crate::{
+    core::{
+        SquareSet, SS_FILES, SS_FILE_A, SS_FILE_B, SS_FILE_C, SS_FILE_D, SS_FILE_E, SS_FILE_F,
+        SS_FILE_G, SS_FILE_H, SS_RANKS, *,
+    },
+    movegen,
+    position::Position,
 };
-use crate::movegen;
-use crate::position::Position;
 
 /// Provider of common board analyses upon a static position. It is suitable for use in board
 /// evaluators, where analysis queries can be aggressively cached when evaluating a single,
@@ -159,9 +159,7 @@ fn adjacent_files(file: File) -> SquareSet {
 #[cfg(test)]
 mod tests {
     use super::Analysis;
-
-    use crate::core::*;
-    use crate::position::Position;
+    use crate::{core::*, position::Position};
 
     #[test]
     fn doubled_pawn_smoke() {

@@ -5,8 +5,7 @@
 // <LICENSE-MIT or http://opensource.org/licenses/MIT>, at your
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
-use crate::core::*;
-use crate::position::Position;
+use crate::{core::*, position::Position};
 
 pub fn generate_pawn_moves(us: Color, pos: &Position, moves: &mut Vec<Move>) {
     let them = us.toggle();
@@ -251,8 +250,7 @@ mod tests {
     use std::collections::HashSet;
 
     use super::generate_moves;
-    use crate::core::*;
-    use crate::position::Position;
+    use crate::{core::*, position::Position};
 
     fn assert_moves_generated(fen: &'static str, moves: &[Move]) {
         let pos = Position::from_fen(fen).unwrap();

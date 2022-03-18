@@ -5,8 +5,9 @@
 // <LICENSE-MIT or http://opensource.org/licenses/MIT>, at your
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
-use crate::core::*;
 use lazy_static::lazy_static;
+
+use crate::core::*;
 
 const SS_RANK_12: SquareSet = SS_RANK_1.or(SS_RANK_2);
 const SS_RANK_78: SquareSet = SS_RANK_7.or(SS_RANK_8);

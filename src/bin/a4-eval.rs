@@ -6,10 +6,8 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
+use a4::{eval, position::Position};
 use structopt::StructOpt;
-
-use a4::eval;
-use a4::position::Position;
 
 #[derive(Debug, StructOpt)]
 struct Options {

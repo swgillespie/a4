@@ -6,13 +6,18 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
-use crate::core::{self, *};
-use crate::movegen;
-use crate::zobrist;
-use std::convert::TryFrom;
-use std::fmt::{self, Write};
-use std::hash::{Hash, Hasher};
+use std::{
+    convert::TryFrom,
+    fmt::{self, Write},
+    hash::{Hash, Hasher},
+};
+
 use thiserror::Error;
+
+use crate::{
+    core::{self, *},
+    movegen, zobrist,
+};
 
 /// A position, representing a chess game that has progressed up to this point. A Position encodes the complete state
 /// of the game such that the entire game up until this point can be recovered and reconstructed efficiently.
@@ -497,8 +502,7 @@ impl Position {
 
     /// Constructs a new position from a FEN representation of a board position.
     pub fn from_fen(fen: impl AsRef<str>) -> Result<Position, FenParseError> {
-        use std::iter::Peekable;
-        use std::str::Chars;
+        use std::{iter::Peekable, str::Chars};
 
         type Stream<'a> = Peekable<Chars<'a>>;
 
@@ -828,8 +832,10 @@ mod tests {
     mod fen {
         use std::convert::TryFrom;
 
-        use crate::core::*;
-        use crate::position::{FenParseError, Position};
+        use crate::{
+            core::*,
+            position::{FenParseError, Position},
+        };
 
         #[test]
         fn fen_smoke() {
@@ -1196,8 +1202,7 @@ mod tests {
     }
 
     mod legality {
-        use crate::core::*;
-        use crate::position::Position;
+        use crate::{core::*, position::Position};
 
         #[test]
         fn king_pawn_check() {
@@ -1215,8 +1220,7 @@ mod tests {
     }
 
     mod make {
-        use crate::core::*;
-        use crate::position::Position;
+        use crate::{core::*, position::Position};
 
         #[test]
         fn smoke_test_opening_pawn() {

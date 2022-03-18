@@ -6,14 +6,18 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
-use crate::core::*;
-use crate::eval::{evaluate, Value};
-use crate::movegen;
-use crate::position::Position;
-use crate::table::{self, NodeKind};
-use std::sync::atomic::AtomicBool;
-use std::sync::atomic::Ordering;
-use std::time::{Duration, Instant};
+use std::{
+    sync::atomic::{AtomicBool, Ordering},
+    time::{Duration, Instant},
+};
+
+use crate::{
+    core::*,
+    eval::{evaluate, Value},
+    movegen,
+    position::Position,
+    table::{self, NodeKind},
+};
 
 /// Options for a search.
 #[derive(Default, Debug)]

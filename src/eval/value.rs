@@ -5,9 +5,7 @@
 // <LICENSE-MIT or http://opensource.org/licenses/MIT>, at your
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
-use std::fmt;
-use std::i16;
-use std::ops;
+use std::{fmt, i16, ops};
 
 const VALUE_MATED: i16 = i16::MIN / 2 + 1;
 const VALUE_MATE: i16 = i16::MAX / 2;
@@ -148,9 +146,8 @@ impl fmt::Display for Value {
 
 #[cfg(test)]
 mod tests {
-    use crate::eval::UnpackedValue;
-
     use super::{Value, VALUE_MATE, VALUE_MATED};
+    use crate::eval::UnpackedValue;
 
     #[test]
     fn value_negate() {

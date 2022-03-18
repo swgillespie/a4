@@ -6,6 +6,8 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
+use std::{fmt, lazy::SyncLazy};
+
 /// A4's transposition table, which is responsible for memoizing search results
 /// for individual positions.
 ///
@@ -33,8 +35,6 @@
 ///     a sibling node is a better move and this node does not need to be searched any deeper.
 ///
 use chashmap::{CHashMap, ReadGuard};
-use std::fmt;
-use std::lazy::SyncLazy;
 
 use crate::{core::Move, eval::Value, position::Position};
 

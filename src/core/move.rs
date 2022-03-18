@@ -6,9 +6,12 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
+use std::{
+    convert::TryFrom,
+    fmt::{self, Write},
+};
+
 use crate::{core::*, position::Position};
-use std::convert::TryFrom;
-use std::fmt::{self, Write};
 
 const SOURCE_MASK: u16 = 0xFC00;
 const DESTINATION_MASK: u16 = 0x03F0;
@@ -400,8 +403,7 @@ impl fmt::Debug for Move {
 #[cfg(test)]
 mod tests {
     use super::Move;
-    use crate::core::*;
-    use crate::position::Position;
+    use crate::{core::*, position::Position};
 
     #[test]
     fn quiet() {
