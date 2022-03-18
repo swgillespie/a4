@@ -7,12 +7,12 @@
 // except according to those terms.
 
 use a4::uci;
-use tracing::Level;
-use tracing_subscriber::FmtSubscriber;
+use tracing_subscriber::{filter::LevelFilter, EnvFilter, FmtSubscriber};
 
 fn main() {
     let subscriber = FmtSubscriber::builder()
-        .with_max_level(Level::DEBUG)
+        .with_max_level(LevelFilter::OFF)
+        .with_env_filter(EnvFilter::from_env("A4_LOG"))
         .finish();
     tracing::subscriber::set_global_default(subscriber).expect("setting default subscriber failed");
 
