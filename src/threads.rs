@@ -13,65 +13,17 @@
 //!     threads to provide an answer to the request,
 //!  2. Worker threads, which perform search work as coordinated by the main thread.
 
-use std::{
-    cell::RefCell,
-    sync::{
-        atomic::{AtomicBool, Ordering},
-        mpsc::{self, Receiver, SyncSender},
-        Condvar, Mutex, Once, RwLock,
-    },
-    thread::{self, JoinHandle},
-    time::Duration,
-};
-use tracing::Level;
+use std::lazy::SyncOnceCell;
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::mpsc;
+use std::sync::mpsc::{Receiver, SyncSender};
+use std::sync::{Condvar, Mutex, RwLock};
+use std::thread;
+use std::time::Duration;
 
 use crate::eval::UnpackedValue;
 use crate::search::{self, SearchOptions};
 use crate::Position;
-
-/// External interface to the thread pool.
-pub struct Threads {
-    main_thread: MainThread,
-    worker_threads: Vec<WorkerThread>,
-}
-
-impl Threads {
-    fn new() -> Threads {
-        let mut workers = vec![];
-        for id in 0..num_cpus::get() {
-            workers.push(WorkerThread::new(id));
-        }
-
-        Threads {
-            main_thread: MainThread::new(),
-            worker_threads: workers,
-        }
-    }
-
-    /// Gets a reference to the main thread, for the purposes of sending messages to it.
-    pub fn main_thread(&self) -> &MainThread {
-        &self.main_thread
-    }
-
-    pub fn worker_threads(&self) -> &[WorkerThread] {
-        &self.worker_threads
-    }
-}
-
-static mut THREADS: Option<Threads> = None;
-static INIT: Once = Once::new();
-
-/// Initializes the global thread pool.
-pub fn initialize() {
-    unsafe {
-        INIT.call_once(|| THREADS = Some(Threads::new()));
-    }
-}
-
-/// Retrieves the global thread pool. Panics if the thread pool hasn't been initialized yet.
-pub fn get() -> &'static Threads {
-    unsafe { THREADS.as_ref().expect("get called before initialize") }
-}
 
 #[derive(Clone, Default)]
 pub struct SearchRequest {
@@ -85,294 +37,204 @@ pub struct SearchRequest {
     pub depth: Option<u32>,
 }
 
-enum Request {
-    #[allow(dead_code)]
-    Ping,
-    #[allow(dead_code)]
-    Shutdown,
-    Search(SearchRequest),
-    Stop,
-}
-
-enum Response {
-    Ping,
-    Shutdown,
-    #[allow(dead_code)]
+pub enum Request {
+    Search,
     Stop,
 }
 
 pub struct MainThread {
-    #[allow(dead_code)]
-    handle: JoinHandle<()>,
-    request_tx: SyncSender<Request>,
-    #[allow(dead_code)]
-    response_rx: Receiver<Response>,
-    position: RwLock<Position>,
+    tx: SyncSender<Request>,
+    position: RwLock<Option<Position>>,
     search: RwLock<Option<SearchRequest>>,
 }
 
 impl MainThread {
     fn new() -> MainThread {
-        let (request_tx, request_rx) = mpsc::sync_channel(0);
-        let (response_tx, response_rx) = mpsc::sync_channel(0);
-        let handle = thread::Builder::new()
+        let (tx, rx) = mpsc::sync_channel(0);
+        let _handle = thread::Builder::new()
             .name("a4 main thread".into())
-            .spawn(|| {
-                THREAD_KIND.with(|kind| {
-                    *kind.borrow_mut() = ThreadIdentifier::MainThread;
-                });
-                thread_loop(request_rx, response_tx);
+            .spawn(move || {
+                main_thread_loop(rx);
             })
             .expect("failed to spawn main thread");
 
         MainThread {
-            handle,
-            request_tx,
-            response_rx,
-            position: RwLock::new(Position::new()),
+            tx,
+            position: RwLock::new(None),
             search: RwLock::new(None),
         }
     }
 
-    #[allow(dead_code)]
-    pub fn ping(&self) -> bool {
-        self.request_tx
-            .send(Request::Ping)
-            .expect("ping failed to send on request tx");
-        let _ = self
-            .response_rx
-            .recv()
-            .expect("ping failed to read on request rx");
-        true
+    fn position(&self) -> Option<Position> {
+        self.position
+            .read()
+            .expect("failed to acquire position read lock")
+            .clone()
     }
 
-    pub fn search(&self, req: SearchRequest) {
-        self.request_tx
-            .send(Request::Search(req))
-            .expect("search failed to send on request tx");
-    }
-
-    pub fn stop(&self) {
-        self.request_tx
-            .send(Request::Stop)
-            .expect("stop failed to send on request tx");
-    }
-
-    #[allow(dead_code)]
-    pub fn shutdown(self) {
-        self.request_tx
-            .send(Request::Shutdown)
-            .expect("shutdown failed to send on request tx");
-        let _ = self
-            .response_rx
-            .recv()
-            .expect("shutdown failed to recv on request rx");
-        self.handle.join().expect("failed to join loop thread");
+    fn search(&self) -> Option<SearchRequest> {
+        self.search
+            .read()
+            .expect("failed to acquire search read lock")
+            .clone()
     }
 
     pub fn set_position(&self, pos: Position) {
-        *self.position.write().unwrap() = pos;
+        *self
+            .position
+            .write()
+            .expect("failed to acquire position write lock") = Some(pos);
     }
 
-    pub fn get_position(&self) -> Position {
-        self.position.read().unwrap().clone()
+    pub fn set_search(&self, search: SearchRequest) {
+        *self
+            .search
+            .write()
+            .expect("failed to acquire search write lock") = Some(search);
     }
 
-    pub fn set_search(&self, search: Option<SearchRequest>) {
-        *self.search.write().unwrap() = search;
+    pub fn begin_search(&self) {
+        self.tx
+            .send(Request::Search)
+            .expect("failed to send message to main thread");
     }
 
-    pub fn get_search(&self) -> Option<SearchRequest> {
-        self.search.read().unwrap().clone()
+    pub fn stop(&self) {
+        self.tx
+            .send(Request::Stop)
+            .expect("failed to send message to main thread");
     }
 }
 
-fn thread_loop(rx: Receiver<Request>, tx: SyncSender<Response>) {
-    let _span = tracing::span!(Level::INFO, "main_thread").entered();
-    let loop_result: Result<(), mpsc::SendError<Response>> = try {
-        tracing::debug!("entering main loop");
-        while let Ok(req) = rx.recv() {
-            match req {
-                Request::Ping => tx.send(Response::Ping)?,
-                Request::Shutdown => {
-                    tx.send(Response::Shutdown)?;
-                    return;
+fn main_thread_loop(rx: Receiver<Request>) {
+    let _span = tracing::info_span!("main_thread").entered();
+    tracing::info!("starting");
+    while let Ok(req) = rx.recv() {
+        match req {
+            Request::Search => {
+                tracing::info!("sending start signal to workers");
+                for worker in get_worker_threads() {
+                    worker.start();
                 }
-                Request::Search(req) => {
-                    tracing::debug!("sending start signal to workers");
-                    current().unwrap_main().set_search(Some(req));
-                    for worker in get().worker_threads() {
-                        worker.start();
-                    }
-                }
-                Request::Stop => {
-                    for worker in get().worker_threads() {
-                        worker.stop();
-                    }
-
-                    current().unwrap_main().set_search(None);
+            }
+            Request::Stop => {
+                tracing::info!("sending stop signal to workers");
+                for worker in get_worker_threads() {
+                    worker.stop();
                 }
             }
         }
-    };
-
-    loop_result.expect("failed to send response to calling thread");
+    }
 }
 
 pub struct WorkerThread {
-    #[allow(dead_code)]
-    handle: JoinHandle<()>,
+    id: usize,
     idle_lock: Mutex<bool>,
     idle_cv: Condvar,
     stop_flag: AtomicBool,
-    shutdown_flag: AtomicBool,
 }
 
 impl WorkerThread {
     pub fn new(id: usize) -> WorkerThread {
-        let handle = thread::Builder::new()
-            .name("a4 worker thread".into())
-            .spawn(move || {
-                std::thread::sleep(Duration::from_secs(2)); // lmao
-                THREAD_KIND.with(|kind| *kind.borrow_mut() = ThreadIdentifier::WorkerThread(id));
-                worker_thread_loop()
-            })
-            .expect("failed to spawn main thread");
-
         WorkerThread {
-            handle,
+            id,
             idle_lock: Mutex::new(true),
             idle_cv: Condvar::new(),
             stop_flag: AtomicBool::new(false),
-            shutdown_flag: AtomicBool::new(false),
         }
     }
 
-    #[allow(dead_code)]
-    pub fn shutdown(self) {
-        self.stop_flag.store(true, Ordering::Release);
-        self.shutdown_flag.store(true, Ordering::Release);
-        self.start();
-        self.handle.join().unwrap();
-    }
-
-    pub fn start(&self) {
-        let mut idle = self.idle_lock.lock().unwrap();
+    fn start(&self) {
+        let mut idle = self.idle_lock.lock().expect("failed to acquire idle lock");
         *idle = false;
-        self.idle_cv.notify_one();
+        self.idle_cv.notify_all();
     }
 
-    pub fn stop(&self) {
+    fn stop(&self) {
         self.stop_flag.store(true, Ordering::Release);
     }
-}
 
-fn worker_thread_loop() {
-    let (id, thread) = current().unwrap_worker();
-    let _span = tracing::span!(Level::DEBUG, "worker_thread", id).entered();
-    tracing::debug!("entering main loop");
-    loop {
-        tracing::debug!("waiting for start signal");
-        let idle = thread.idle_lock.lock().unwrap();
-        let mut idle = thread.idle_cv.wait_while(idle, |idle| *idle).unwrap();
-        if thread.shutdown_flag.load(Ordering::Acquire) {
-            tracing::debug!("received shutdown signal, terminating");
-            return;
-        }
+    fn thread_loop(&self) {
+        let _span = tracing::info_span!("worker_thread", self.id).entered();
+        let main_thread = get_main_thread();
+        tracing::info!("entering worker loop");
+        loop {
+            let idle = self.idle_lock.lock().expect("failed to acquire idle lock");
+            let mut idle = self
+                .idle_cv
+                .wait_while(idle, |idle| *idle)
+                .expect("failed to wait on condvar");
 
-        tracing::debug!("worker becoming active, initiating search");
-        if let Some(search) = get().main_thread().get_search() {
-            let pos = get().main_thread().get_position();
-            let opts = SearchOptions {
-                time_limit: search.time_limit,
-                node_limit: search.node_limit,
-                hard_stop: Some(&thread.stop_flag),
-                depth: search.depth.unwrap_or(10),
-            };
+            tracing::info!("worker becoming active");
+            if let Some(search) = main_thread.search() {
+                let position = main_thread
+                    .position()
+                    .expect("search requested with no position?");
 
-            let result = search::search(&pos, &opts);
-            // Pretty goofy violation here, but it's way easier to just print to stdout here rather than spin up
-            // another thread/channel pair and make the UCI layer do it.
-            let nodes_str = format!("nodes {}", result.nodes_evaluated);
-            println!("info nodes {}", result.nodes_evaluated);
-            let value_str = match result.best_score.unpack() {
-                UnpackedValue::MateIn(moves) => {
-                    format!("score mate {}", moves)
+                let opts = SearchOptions {
+                    time_limit: search.time_limit,
+                    node_limit: search.node_limit,
+                    hard_stop: Some(&self.stop_flag),
+                    depth: search.depth.unwrap_or(10),
+                };
+
+                let result = search::search(&position, &opts);
+
+                // The 0th worker thread is special in that it is responsible for printing its search results to stdout.
+                if self.id == 0 {
+                    let nodes_str = format!("nodes {}", result.nodes_evaluated);
+                    println!("info nodes {}", result.nodes_evaluated);
+                    let value_str = match result.best_score.unpack() {
+                        UnpackedValue::MateIn(moves) => {
+                            format!("score mate {}", moves)
+                        }
+                        UnpackedValue::MatedIn(moves) => {
+                            format!("score mate -{}", moves)
+                        }
+                        UnpackedValue::Value(value) => {
+                            format!("score cp {}", value)
+                        }
+                    };
+                    println!("info {} {}", nodes_str, value_str);
+                    println!("bestmove {}", result.best_move.as_uci());
                 }
-                UnpackedValue::MatedIn(moves) => {
-                    format!("score mate -{}", moves)
-                }
-                UnpackedValue::Value(value) => {
-                    format!("score cp {}", value)
-                }
-            };
-            println!("info {} {}", nodes_str, value_str);
-            println!("bestmove {}", result.best_move.as_uci());
-        }
+            }
 
-        tracing::debug!("worker received stop signal or completed search");
-        thread.stop_flag.store(false, Ordering::Release);
-        *idle = true;
-    }
-}
-
-enum ThreadIdentifier {
-    MainThread,
-    WorkerThread(usize),
-    Unknown,
-}
-
-enum ThreadKind {
-    Main(&'static MainThread),
-    Worker(usize, &'static WorkerThread),
-    Unknown,
-}
-
-impl ThreadKind {
-    pub fn unwrap_main(self) -> &'static MainThread {
-        match self {
-            ThreadKind::Main(thread) => thread,
-            ThreadKind::Worker(_, _) => panic!("unwrap_main() called on worker thread"),
-            ThreadKind::Unknown => panic!("unwrap_main() called on unknown thread"),
-        }
-    }
-
-    pub fn unwrap_worker(self) -> (usize, &'static WorkerThread) {
-        match self {
-            ThreadKind::Main(_) => panic!("unwrap_worker() called on main thread"),
-            ThreadKind::Worker(id, thread) => (id, thread),
-            ThreadKind::Unknown => panic!("unwrap_main() called on unknown thread"),
+            tracing::info!("worker going to sleep");
+            self.stop_flag.store(false, Ordering::Release);
+            *idle = true;
         }
     }
 }
 
-thread_local! {
-    static THREAD_KIND: RefCell<ThreadIdentifier> = RefCell::new(ThreadIdentifier::Unknown);
+pub fn get_main_thread() -> &'static MainThread {
+    static MAIN_THREAD: SyncOnceCell<MainThread> = SyncOnceCell::new();
+
+    &MAIN_THREAD.get_or_init(MainThread::new)
 }
 
-fn current() -> ThreadKind {
-    let threads = get();
-    THREAD_KIND.with(|kind| match *kind.borrow() {
-        ThreadIdentifier::MainThread => ThreadKind::Main(threads.main_thread()),
-        ThreadIdentifier::WorkerThread(id) => ThreadKind::Worker(id, &threads.worker_threads()[id]),
-        ThreadIdentifier::Unknown => ThreadKind::Unknown,
+pub fn get_worker_threads() -> &'static [WorkerThread] {
+    static WORKER_THREADS: SyncOnceCell<Vec<WorkerThread>> = SyncOnceCell::new();
+
+    &WORKER_THREADS.get_or_init(|| {
+        let mut workers = vec![];
+        for id in 0..num_cpus::get() {
+            workers.push(WorkerThread::new(id));
+        }
+
+        workers
     })
 }
 
-#[cfg(test)]
-mod tests {
-    use super::MainThread;
-
-    #[test]
-    fn setup_shutdown() {
-        let thread = MainThread::new();
-        thread.shutdown()
-    }
-
-    #[test]
-    fn ping_pong() {
-        let thread = MainThread::new();
-        assert!(thread.ping());
-        thread.shutdown();
+pub fn initialize() {
+    let _ = get_main_thread();
+    let workers = get_worker_threads();
+    for worker in workers {
+        thread::Builder::new()
+            .name(format!("a4 worker thread #{}", worker.id))
+            .spawn(move || {
+                worker.thread_loop();
+            })
+            .expect("failed to spawn worker thread");
     }
 }

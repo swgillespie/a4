@@ -55,7 +55,7 @@ fn handle_uci() {
 }
 
 fn handle_stop() {
-    threads::get().main_thread().stop();
+    threads::get_main_thread().stop();
 }
 
 fn handle_isready() {
@@ -101,7 +101,7 @@ fn handle_position(args: &[&str]) {
     };
 
     match result {
-        Ok(()) => threads::get().main_thread().set_position(position),
+        Ok(()) => threads::get_main_thread().set_position(position),
         Err(e) => println!("invalid position command: {}", e),
     }
 }
@@ -188,14 +188,15 @@ fn handle_go(args: &[&str]) {
 
     match result {
         Ok(()) => {
-            threads::get().main_thread().search(options);
+            threads::get_main_thread().set_search(options);
+            threads::get_main_thread().begin_search();
         }
         Err(e) => println!("invalid go command: {}", e),
     }
 }
 
 fn handle_ucinewgame() {
-    threads::get().main_thread().set_position(Position::new());
+    threads::get_main_thread().set_position(Position::new());
     table::clear();
 }
 
