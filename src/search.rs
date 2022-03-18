@@ -85,7 +85,9 @@ impl<'a: 'b, 'b> Searcher<'a, 'b> {
         // Two places that we check for search termination, inserted in the same place that a compiler would insert safepoints for preemption:
         //   1. Function entry blocks, so we can cut off trees that we are about to search if we are out of time
         //   2. Loop back edges, so we can cut off trees that we are partially in the process of searching
+        let _graph_span = tracing::debug_span!("ab", pos = %pos.as_fen(), ?alpha, ?beta).entered();
         if !self.can_continue_search() {
+            tracing::debug!("explicit search termination");
             return alpha;
         }
 
@@ -98,6 +100,7 @@ impl<'a: 'b, 'b> Searcher<'a, 'b> {
         let (mut hash_move, cutoff_value) =
             self.consider_transposition(pos, &mut alpha, beta, depth);
         if let Some(cutoff) = cutoff_value {
+            tracing::debug!(?cutoff, "tt cutoff");
             return cutoff;
         }
 
@@ -113,13 +116,16 @@ impl<'a: 'b, 'b> Searcher<'a, 'b> {
         if let Some(hash_move) = hash_move {
             let mut hash_pos = pos.clone();
             hash_pos.make_move(hash_move);
-            let value = -self.alpha_beta(&hash_pos, -beta, -alpha, depth - 1);
+            let ab_span = tracing::debug_span!("ab_hash_move", %hash_move);
+            let value = ab_span.in_scope(|| -self.alpha_beta(&hash_pos, -beta, -alpha, depth - 1));
             if value >= beta {
+                tracing::debug!(%hash_move, ?value, "hash move beta cutoff");
                 table::record_cut(pos, hash_move, depth, value);
                 return beta.step();
             }
 
             if value > alpha {
+                tracing::debug!(%hash_move, "hash move improved alpha");
                 improved_alpha = true;
                 table::record_pv(pos, hash_move, depth, value);
                 alpha = value;
@@ -153,13 +159,16 @@ impl<'a: 'b, 'b> Searcher<'a, 'b> {
         for mov in moves {
             let mut child = pos.clone();
             child.make_move(mov);
-            let value = -self.alpha_beta(&child, -beta, -alpha, depth - 1);
+            let ab_span = tracing::debug_span!("ab_move", %mov);
+            let value = ab_span.in_scope(|| -self.alpha_beta(&child, -beta, -alpha, depth - 1));
             if value >= beta {
+                tracing::debug!(%mov, ?value, "move failed high");
                 table::record_cut(pos, mov, depth, value);
                 return beta.step();
             }
 
             if value > alpha {
+                tracing::debug!(%mov, ?value, "move improved alpha");
                 improved_alpha = true;
                 table::record_pv(pos, mov, depth, value);
                 alpha = value;
@@ -167,6 +176,7 @@ impl<'a: 'b, 'b> Searcher<'a, 'b> {
         }
 
         if !improved_alpha {
+            tracing::debug!("all node");
             table::record_all(pos, depth, alpha);
         }
 
@@ -181,16 +191,18 @@ impl<'a: 'b, 'b> Searcher<'a, 'b> {
     /// pawn. We can't simply terminate the search there - we must continue evaluations until captures are complete,
     /// otherwise we will not see that our queen is lost.
     fn quiesce(&mut self, pos: &Position, mut alpha: Value, beta: Value) -> Value {
-        tracing::debug!("initiating qsearch");
+        let _q_span = tracing::debug_span!("qsearch", pos = %pos.as_fen(), ?alpha, ?beta);
         self.nodes_evaluated += 1;
         // The "stand pat" score is a lower bound to how bad this position is. We're interested in finding refutations
         // to this position that drop this lower bound.
         let mut stand_pat = evaluate(pos);
         if stand_pat >= beta {
             // There exists a refutation in a sibling node - no point seaerching this.
+            tracing::debug!(%stand_pat, "stand pat beta cutoff");
             return beta;
         }
         if alpha < stand_pat {
+            tracing::debug!(%stand_pat, "stand pat improved alpha");
             alpha = stand_pat;
         }
 
@@ -198,13 +210,6 @@ impl<'a: 'b, 'b> Searcher<'a, 'b> {
         movegen::generate_moves(pos.side_to_move(), pos, &mut moves);
         moves.retain(|&m| pos.is_legal_given_pseudolegal(m));
         moves.retain(|&m| m.is_capture());
-        tracing::debug!("pos: {}", pos.as_fen());
-        if tracing::enabled!(tracing::Level::DEBUG) {
-            for mov in &moves {
-                tracing::debug!("  capture: {}", mov.as_uci());
-            }
-        }
-
         if moves.len() == 0 {
             return if pos.side_to_move() == Color::Black {
                 -stand_pat
@@ -220,7 +225,8 @@ impl<'a: 'b, 'b> Searcher<'a, 'b> {
 
             let mut child = pos.clone();
             child.make_move(capture);
-            stand_pat = -self.quiesce(&child, -beta, -alpha);
+            let q_move_span = tracing::debug_span!("q_move", %capture);
+            stand_pat = q_move_span.in_scope(|| -self.quiesce(&child, -beta, -alpha));
             if stand_pat >= beta {
                 return beta;
             }
@@ -396,7 +402,6 @@ fn smallest_attacker(pos: &Position, target: Square) -> Option<Square> {
 }
 
 pub fn search(pos: &Position, options: &SearchOptions) -> SearchResult {
-    tracing::info!("initiating search ({:?})", options);
     let mut stats = SearchStats::default();
     let mut current_best_move = Move::null();
     let mut current_best_score = Value::mated_in(0);
@@ -438,7 +443,6 @@ pub fn search(pos: &Position, options: &SearchOptions) -> SearchResult {
             current_best_score = best_score;
             let nps = searcher.nodes_evaluated as f64 / search_time.as_secs_f64();
             let pv = table::get_pv(pos, depth);
-            tracing::debug!("pv: {:?}", pv);
             if threads::get_worker_id() == Some(0) {
                 // TODO(swgillespie) - seldepth, how far did the qsearch go
                 let pv_str = pv
