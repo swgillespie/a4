@@ -12,6 +12,7 @@ use a4::{
     search::{self, SearchOptions},
 };
 use structopt::StructOpt;
+use tracing_subscriber::{filter::LevelFilter, EnvFilter, FmtSubscriber};
 
 /// Shortcut program for debugging a4's search routines.
 #[derive(Debug, StructOpt)]
@@ -32,6 +33,13 @@ struct Options {
 }
 
 fn main() {
+    a4::debug::link_in_debug_utils();
+    let subscriber = FmtSubscriber::builder()
+        .with_max_level(LevelFilter::OFF)
+        .with_env_filter(EnvFilter::from_env("A4_LOG"))
+        .finish();
+    tracing::subscriber::set_global_default(subscriber).expect("setting default subscriber failed");
+
     let args = Options::from_args();
     let mut search_options = SearchOptions::default();
     if let Some(time_sec) = args.time_sec {
@@ -46,5 +54,9 @@ fn main() {
     search_options.depth = args.depth;
     let pos = Position::from_fen(args.fen).expect("invalid fen");
     let result = search::search(&pos, &search_options);
-    println!("{:?}", result);
+    println!("===========================");
+    print!("{}", pos);
+    println!("===========================");
+    println!("{:<15} {}", "Best Move:", result.best_move.as_uci());
+    println!("{:<15} {:?}", "Best Score:", result.best_score);
 }

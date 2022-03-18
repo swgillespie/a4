@@ -58,6 +58,7 @@ const ATTR_MASK: u16 = 0x000F;
 /// Thanks to [this ChessProgramming Wiki page](https://chessprogramming.wikispaces.com/Encoding+Moves)
 /// for the details.
 #[derive(Copy, Clone, PartialEq, Eq, Hash)]
+#[repr(transparent)]
 pub struct Move(u16);
 
 impl Move {
