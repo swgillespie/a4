@@ -17,6 +17,7 @@ use crate::{
     movegen,
     position::Position,
     table::{self, NodeKind},
+    threads,
 };
 
 /// Options for a search.
@@ -421,13 +422,36 @@ pub fn search(pos: &Position, options: &SearchOptions) -> SearchResult {
             break;
         }
 
+        let search_start = Instant::now();
         if let Some(result) = searcher.search(pos, depth) {
+            let search_time = Instant::now().duration_since(search_start);
             node_count += result.nodes_evaluated;
             current_best_move = result.best_move;
             current_best_score = result.best_score;
+            let nps = result.nodes_evaluated as f64 / search_time.as_secs_f64();
+            let pv = table::get_pv(pos, depth);
+            tracing::debug!("pv: {:?}", pv);
+            if threads::get_worker_id() == Some(0) {
+                // TODO(swgillespie) - seldepth, how far did the qsearch go
+                let pv_str = pv
+                    .into_iter()
+                    .map(|mov| mov.as_uci())
+                    .collect::<Vec<_>>()
+                    .join(" ");
+                println!(
+                    "info depth {} nodes {} nps {} pv {} score {}",
+                    depth,
+                    result.nodes_evaluated,
+                    nps.floor() as i64,
+                    pv_str,
+                    current_best_score.as_uci(),
+                );
+            }
         }
-        let pv = table::get_pv(pos, depth);
-        tracing::debug!("pv: {:?}", pv);
+    }
+
+    if threads::get_worker_id() == Some(0) {
+        println!("bestmove {}", current_best_move.as_uci());
     }
 
     SearchResult {

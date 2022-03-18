@@ -14,6 +14,7 @@
 //!  2. Worker threads, which perform search work as coordinated by the main thread.
 
 use std::{
+    cell::RefCell,
     lazy::SyncOnceCell,
     sync::{
         atomic::{AtomicBool, Ordering},
@@ -232,6 +233,14 @@ pub fn get_worker_threads() -> &'static [WorkerThread] {
     })
 }
 
+thread_local! {
+    static WORKER_THREAD_ID: RefCell<Option<usize>> = RefCell::new(None);
+}
+
+pub fn get_worker_id() -> Option<usize> {
+    WORKER_THREAD_ID.with(|id| *id.borrow())
+}
+
 pub fn initialize() {
     let _ = get_main_thread();
     let workers = get_worker_threads();
@@ -239,6 +248,7 @@ pub fn initialize() {
         thread::Builder::new()
             .name(format!("a4 worker thread #{}", worker.id))
             .spawn(move || {
+                WORKER_THREAD_ID.with(|id| *id.borrow_mut() = Some(worker.id));
                 worker.thread_loop();
             })
             .expect("failed to spawn worker thread");
