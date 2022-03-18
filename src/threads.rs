@@ -189,8 +189,8 @@ impl WorkerThread {
 
                 // The 0th worker thread is special in that it is responsible for printing its search results to stdout.
                 if self.id == 0 {
-                    let nodes_str = format!("nodes {}", result.nodes_evaluated);
-                    println!("info nodes {}", result.nodes_evaluated);
+                    let nodes_str = format!("nodes {}", result.stats.nodes_evaluated);
+                    println!("info nodes {}", result.stats.nodes_evaluated);
                     let value_str = match result.best_score.unpack() {
                         UnpackedValue::MateIn(moves) => {
                             format!("score mate {}", moves)
