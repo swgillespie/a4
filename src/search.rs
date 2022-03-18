@@ -9,8 +9,8 @@
 use crate::core::*;
 use crate::eval::{evaluate, Value};
 use crate::movegen;
+use crate::position::Position;
 use crate::table::{self, NodeKind};
-use crate::Position;
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::Ordering;
 use std::time::{Duration, Instant};

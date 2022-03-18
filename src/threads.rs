@@ -22,8 +22,8 @@ use std::thread;
 use std::time::Duration;
 
 use crate::eval::UnpackedValue;
+use crate::position::Position;
 use crate::search::{self, SearchOptions};
-use crate::Position;
 
 #[derive(Clone, Default)]
 pub struct SearchRequest {

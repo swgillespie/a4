@@ -17,11 +17,9 @@
 pub mod core;
 pub mod eval;
 pub mod movegen;
-mod position;
+pub mod position;
 pub mod search;
 mod table;
 mod threads;
 pub mod uci;
 mod zobrist;
-
-pub use position::Position;

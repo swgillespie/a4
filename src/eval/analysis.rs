@@ -161,7 +161,7 @@ mod tests {
     use super::Analysis;
 
     use crate::core::*;
-    use crate::Position;
+    use crate::position::Position;
 
     #[test]
     fn doubled_pawn_smoke() {

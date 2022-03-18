@@ -1197,7 +1197,7 @@ mod tests {
 
     mod legality {
         use crate::core::*;
-        use crate::Position;
+        use crate::position::Position;
 
         #[test]
         fn king_pawn_check() {
@@ -1216,7 +1216,7 @@ mod tests {
 
     mod make {
         use crate::core::*;
-        use crate::Position;
+        use crate::position::Position;
 
         #[test]
         fn smoke_test_opening_pawn() {

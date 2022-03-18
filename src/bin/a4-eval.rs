@@ -9,7 +9,7 @@
 use structopt::StructOpt;
 
 use a4::eval;
-use a4::Position;
+use a4::position::Position;
 
 #[derive(Debug, StructOpt)]
 struct Options {
