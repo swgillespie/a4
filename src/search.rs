@@ -167,14 +167,63 @@ impl<'a: 'b, 'b> Searcher<'a, 'b> {
         alpha.step()
     }
 
-    fn quiesce(&mut self, pos: &Position, _alpha: Value, _beta: Value) -> Value {
+    /// A quiesence search to terminate a search. The goal of the q-search is to only terminate the search at a
+    /// position that is "quiet" and doesn't have any tactical possibilities. If we don't do so, the "horizon effect"
+    /// can lead a4 into terminating a search at highly vulnerable situations.
+    ///
+    /// Consider a search that reaches its depth limit at a move where a queen takes a pawn that is defended by another
+    /// pawn. We can't simply terminate the search there - we must continue evaluations until captures are complete,
+    /// otherwise we will not see that our queen is lost.
+    fn quiesce(&mut self, pos: &Position, mut alpha: Value, beta: Value) -> Value {
+        tracing::debug!("initiating qsearch");
         self.nodes_evaluated += 1;
-        let value = evaluate(pos);
-        if pos.side_to_move() == Color::Black {
-            -value
-        } else {
-            value
+        // The "stand pat" score is a lower bound to how bad this position is. We're interested in finding refutations
+        // to this position that drop this lower bound.
+        let mut stand_pat = evaluate(pos);
+        if stand_pat >= beta {
+            // There exists a refutation in a sibling node - no point seaerching this.
+            return beta;
         }
+        if alpha < stand_pat {
+            alpha = stand_pat;
+        }
+
+        let mut moves = Vec::new();
+        movegen::generate_moves(pos.side_to_move(), pos, &mut moves);
+        moves.retain(|&m| pos.is_legal_given_pseudolegal(m));
+        moves.retain(|&m| m.is_capture());
+        tracing::debug!("pos: {}", pos.as_fen());
+        if tracing::enabled!(tracing::Level::DEBUG) {
+            for mov in &moves {
+                tracing::debug!("  capture: {}", mov.as_uci());
+            }
+        }
+
+        if moves.len() == 0 {
+            return if pos.side_to_move() == Color::Black {
+                -stand_pat
+            } else {
+                stand_pat
+            };
+        }
+
+        for capture in moves {
+            if !self.can_continue_search() {
+                return alpha;
+            }
+
+            let mut child = pos.clone();
+            child.make_move(capture);
+            stand_pat = -self.quiesce(&child, -beta, -alpha);
+            if stand_pat >= beta {
+                return beta;
+            }
+            if stand_pat >= alpha {
+                alpha = stand_pat;
+            }
+        }
+
+        alpha
     }
 
     fn can_continue_search(&self) -> bool {
@@ -279,13 +328,13 @@ impl<'a: 'b, 'b> Searcher<'a, 'b> {
 }
 
 pub fn search(pos: &Position, options: &SearchOptions) -> SearchResult {
-    tracing::debug!("initiating search ({:?})", options);
+    tracing::info!("initiating search ({:?})", options);
     let mut current_best_move = Move::null();
     let mut current_best_score = Value::mated_in(0);
     let start_time = Instant::now();
     let mut node_count = 0;
     for depth in 1..=options.depth {
-        tracing::debug!("beginning iterative search of depth {}", depth);
+        tracing::info!("beginning iterative search of depth {}", depth);
         let time_since_start = Instant::now().duration_since(start_time);
         if let Some(limit) = options.time_limit {
             if limit < time_since_start {
