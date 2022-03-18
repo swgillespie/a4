@@ -13,8 +13,6 @@
 //!     threads to provide an answer to the request,
 //!  2. Worker threads, which perform search work as coordinated by the main thread.
 
-#![allow(dead_code)] // Lots of this code will be used elsewhere in time.
-
 use std::{
     cell::RefCell,
     sync::{
@@ -88,7 +86,9 @@ pub struct SearchRequest {
 }
 
 enum Request {
+    #[allow(dead_code)]
     Ping,
+    #[allow(dead_code)]
     Shutdown,
     Search(SearchRequest),
     Stop,
@@ -97,12 +97,15 @@ enum Request {
 enum Response {
     Ping,
     Shutdown,
+    #[allow(dead_code)]
     Stop,
 }
 
 pub struct MainThread {
+    #[allow(dead_code)]
     handle: JoinHandle<()>,
     request_tx: SyncSender<Request>,
+    #[allow(dead_code)]
     response_rx: Receiver<Response>,
     position: RwLock<Position>,
     search: RwLock<Option<SearchRequest>>,
@@ -131,6 +134,7 @@ impl MainThread {
         }
     }
 
+    #[allow(dead_code)]
     pub fn ping(&self) -> bool {
         self.request_tx
             .send(Request::Ping)
@@ -154,6 +158,7 @@ impl MainThread {
             .expect("stop failed to send on request tx");
     }
 
+    #[allow(dead_code)]
     pub fn shutdown(self) {
         self.request_tx
             .send(Request::Shutdown)
@@ -215,6 +220,7 @@ fn thread_loop(rx: Receiver<Request>, tx: SyncSender<Response>) {
 }
 
 pub struct WorkerThread {
+    #[allow(dead_code)]
     handle: JoinHandle<()>,
     idle_lock: Mutex<bool>,
     idle_cv: Condvar,
@@ -242,6 +248,7 @@ impl WorkerThread {
         }
     }
 
+    #[allow(dead_code)]
     pub fn shutdown(self) {
         self.stop_flag.store(true, Ordering::Release);
         self.shutdown_flag.store(true, Ordering::Release);
