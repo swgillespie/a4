@@ -8,7 +8,7 @@
 
 //! A collection of debug utilities that are either executable directly from a debugger or invoke the debugger
 //! throughout the course of execution.
-use std::{hint::black_box, ptr};
+use std::{ffi::CString, hint::black_box, ptr};
 
 use crate::{core::Move, eval::Value, position::Position};
 
@@ -20,20 +20,26 @@ pub extern "C" fn pos_str(pos: *const Position) {
 }
 
 #[no_mangle]
-pub extern "C" fn pos_fen(pos: *const Position) {
+pub extern "C" fn pos_fen(pos: *const Position) -> *const i8 {
     // assumption: `pos` was derived from a Rust reference and thus is not null.
     let pos = unsafe { &*pos };
-    println!("{}", pos.as_fen());
+    let body = CString::new(format!("{}", pos.as_fen())).unwrap();
+    let leaked = Box::leak(body.into_boxed_c_str());
+    return leaked.as_ptr();
 }
 
 #[no_mangle]
-pub extern "C" fn value_str(value: Value) {
-    println!("{:?}", value);
+pub extern "C" fn value_str(value: Value) -> *const i8 {
+    let body = CString::new(format!("{:?}", value)).unwrap();
+    let leaked = Box::leak(body.into_boxed_c_str());
+    return leaked.as_ptr();
 }
 
 #[no_mangle]
-pub extern "C" fn move_str(mov: Move) {
-    println!("{}", mov.as_uci());
+pub extern "C" fn move_str(mov: Move) -> *const i8 {
+    let body = CString::new(format!("{}", mov.as_uci())).unwrap();
+    let leaked = Box::leak(body.into_boxed_c_str());
+    return leaked.as_ptr();
 }
 
 #[no_mangle]
