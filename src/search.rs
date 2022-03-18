@@ -53,19 +53,24 @@ impl<'a: 'b, 'b> Searcher<'a, 'b> {
         }
     }
 
-    fn search(&mut self, pos: &Position, depth: u32) -> SearchResult {
+    fn search(&mut self, pos: &Position, depth: u32) -> Option<SearchResult> {
         let alpha = Value::mated_in(0);
         let beta = Value::mate_in(0);
         let score = self.alpha_beta(pos, alpha, beta, depth);
+        // If this search was cut short for any reason, we can't trust the alpha, beta, or score that we ended up with.
+        if !self.can_continue_search() {
+            return None;
+        }
+
         let best_move = table::query(&pos)
             .expect("t-table miss after search?")
             .best_move()
             .expect("search thinks that root node is an all-node?");
-        SearchResult {
+        Some(SearchResult {
             best_move,
             best_score: score,
             nodes_evaluated: self.nodes_evaluated,
-        }
+        })
     }
 
     fn alpha_beta(&mut self, pos: &Position, mut alpha: Value, beta: Value, depth: u32) -> Value {
@@ -270,13 +275,13 @@ impl<'a: 'b, 'b> Searcher<'a, 'b> {
 }
 
 pub fn search(pos: &Position, options: &SearchOptions) -> SearchResult {
-    tracing::info!("initiating search ({:?})", options);
+    tracing::debug!("initiating search ({:?})", options);
     let mut current_best_move = Move::null();
     let mut current_best_score = Value::mated_in(0);
     let start_time = Instant::now();
     let mut node_count = 0;
     for depth in 1..=options.depth {
-        tracing::info!("beginning iterative search of depth {}", depth);
+        tracing::debug!("beginning iterative search of depth {}", depth);
         let time_since_start = Instant::now().duration_since(start_time);
         if let Some(limit) = options.time_limit {
             if limit < time_since_start {
@@ -299,12 +304,13 @@ pub fn search(pos: &Position, options: &SearchOptions) -> SearchResult {
             break;
         }
 
-        let result = searcher.search(pos, depth);
-        node_count += result.nodes_evaluated;
-        current_best_move = result.best_move;
-        current_best_score = result.best_score;
+        if let Some(result) = searcher.search(pos, depth) {
+            node_count += result.nodes_evaluated;
+            current_best_move = result.best_move;
+            current_best_score = result.best_score;
+        }
         let pv = table::get_pv(pos, depth);
-        tracing::info!("pv: {:?}", pv);
+        tracing::debug!("pv: {:?}", pv);
     }
 
     SearchResult {
