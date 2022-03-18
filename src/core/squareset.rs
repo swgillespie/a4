@@ -6,9 +6,9 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
+use std::{fmt, ops};
+
 use crate::core::{self, Direction, File, Rank, Square};
-use std::fmt;
-use std::ops;
 
 /// A set of squares on the chessboard. The implementation of SquareSet is designed to mirror
 /// [`std::collections::HashSet`], but is specifically designed to store squares efficiently on modern processors.

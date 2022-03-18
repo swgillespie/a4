@@ -5,10 +5,11 @@
 // <LICENSE-MIT or http://opensource.org/licenses/MIT>, at your
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
-use crate::core::*;
-use crate::eval::analysis::Analysis;
-use crate::eval::Value;
-use crate::position::Position;
+use crate::{
+    core::*,
+    eval::{analysis::Analysis, Value},
+    position::Position,
+};
 
 const KING_WEIGHT: i16 = 10000;
 const QUEEN_WEIGHT: i16 = 900;
@@ -157,8 +158,7 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::eval::Value;
-    use crate::position::Position;
+    use crate::{eval::Value, position::Position};
 
     #[test]
     fn white_mate_evaluation() {

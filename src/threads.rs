@@ -13,17 +13,23 @@
 //!     threads to provide an answer to the request,
 //!  2. Worker threads, which perform search work as coordinated by the main thread.
 
-use std::lazy::SyncOnceCell;
-use std::sync::atomic::{AtomicBool, Ordering};
-use std::sync::mpsc;
-use std::sync::mpsc::{Receiver, SyncSender};
-use std::sync::{Condvar, Mutex, RwLock};
-use std::thread;
-use std::time::Duration;
+use std::{
+    lazy::SyncOnceCell,
+    sync::{
+        atomic::{AtomicBool, Ordering},
+        mpsc,
+        mpsc::{Receiver, SyncSender},
+        Condvar, Mutex, RwLock,
+    },
+    thread,
+    time::Duration,
+};
 
-use crate::eval::UnpackedValue;
-use crate::position::Position;
-use crate::search::{self, SearchOptions};
+use crate::{
+    eval::UnpackedValue,
+    position::Position,
+    search::{self, SearchOptions},
+};
 
 #[derive(Clone, Default)]
 pub struct SearchRequest {

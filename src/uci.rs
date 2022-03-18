@@ -9,12 +9,14 @@
 //! An implementation of the UCI protocol for a4, driving our internal search routines.
 //! See [here](http://wbec-ridderkerk.nl/html/UCIProtocol.html) for full documentation on the protocol.
 
-use crate::{core::Move, position::Position, table, threads, threads::SearchRequest};
-use anyhow::anyhow;
 use std::{
     io::{self, BufRead},
     time::Duration,
 };
+
+use anyhow::anyhow;
+
+use crate::{core::Move, position::Position, table, threads, threads::SearchRequest};
 
 pub fn run() -> io::Result<()> {
     threads::initialize();
