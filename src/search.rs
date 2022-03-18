@@ -46,6 +46,7 @@ struct Searcher<'a, 'b> {
 #[derive(Clone, Debug, Default)]
 pub struct SearchStats {
     pub nodes_evaluated: u64,
+    pub nodes_evaluated_per_depth: Vec<u64>,
 }
 
 #[derive(Clone, Debug)]
@@ -430,6 +431,9 @@ pub fn search(pos: &Position, options: &SearchOptions) -> SearchResult {
             let search_time = Instant::now().duration_since(search_start);
             node_count += searcher.nodes_evaluated;
             stats.nodes_evaluated += searcher.nodes_evaluated;
+            stats
+                .nodes_evaluated_per_depth
+                .push(searcher.nodes_evaluated);
             current_best_move = best_move;
             current_best_score = best_score;
             let nps = searcher.nodes_evaluated as f64 / search_time.as_secs_f64();

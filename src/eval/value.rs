@@ -27,6 +27,7 @@ const MATE_DISTANCE_MAX: i16 = 50;
 /// Because of this constrained value, we must take care that the addition or subtraction of scores do not cross these
 /// thresholds. This check is dynamic.
 #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord)]
+#[repr(transparent)]
 pub struct Value(i16);
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
