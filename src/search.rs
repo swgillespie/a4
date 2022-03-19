@@ -405,6 +405,7 @@ fn smallest_attacker(pos: &Position, target: Square) -> Option<Square> {
 }
 
 pub fn search(pos: &Position, options: &SearchOptions) -> SearchResult {
+    let _search_span = tracing::debug_span!(constants::SEARCH, pos = %pos.as_fen()).entered();
     let mut stats = SearchStats::default();
     let mut current_best_move = Move::null();
     let mut current_best_score = Value::mated_in(0);
@@ -435,7 +436,9 @@ pub fn search(pos: &Position, options: &SearchOptions) -> SearchResult {
         }
 
         let search_start = Instant::now();
-        if let Some((best_move, best_score)) = searcher.search(pos, depth) {
+        let depth_span =
+            tracing::debug_span!(constants::SEARCH_WITH_DEPTH, pos = %pos.as_fen(), %depth);
+        if let Some((best_move, best_score)) = depth_span.in_scope(|| searcher.search(pos, depth)) {
             let search_time = Instant::now().duration_since(search_start);
             node_count += searcher.nodes_evaluated;
             stats.nodes_evaluated += searcher.nodes_evaluated;

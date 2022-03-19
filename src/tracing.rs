@@ -10,3 +10,4 @@
 //! search routines that are otherwise difficult to debug.
 
 pub mod constants;
+pub mod search;

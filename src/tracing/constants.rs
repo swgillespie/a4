@@ -11,6 +11,10 @@
 //! The code in `a4::tracing` operates by creating spans and messages with known string values, so that they can be
 //! interpreted by `tracing` Layers that are operating upon them. This module collects them all in one place.
 
+pub const SEARCH: &'static str = "search";
+
+pub const SEARCH_WITH_DEPTH: &'static str = "search with depth";
+
 /// The name of a span representing a call to `alpha_beta` in Search.
 pub const ALPHA_BETA: &'static str = "ab";
 
