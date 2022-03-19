@@ -10,9 +10,10 @@ use std::time::Duration;
 use a4::{
     position::Position,
     search::{self, SearchOptions},
+    tracing::search::SearchGraphLayer,
 };
 use structopt::StructOpt;
-use tracing_subscriber::{filter::LevelFilter, EnvFilter, FmtSubscriber};
+use tracing_subscriber::prelude::*;
 
 /// Shortcut program for debugging a4's search routines.
 #[derive(Debug, StructOpt)]
@@ -34,11 +35,15 @@ struct Options {
 
 fn main() {
     a4::debug::link_in_debug_utils();
+    tracing_subscriber::registry()
+        .with(SearchGraphLayer::new())
+        .init();
+    /*
     let subscriber = FmtSubscriber::builder()
         .with_max_level(LevelFilter::OFF)
         .with_env_filter(EnvFilter::from_env("A4_LOG"))
         .finish();
-    tracing::subscriber::set_global_default(subscriber).expect("setting default subscriber failed");
+    */
 
     let args = Options::from_args();
     let mut search_options = SearchOptions::default();
