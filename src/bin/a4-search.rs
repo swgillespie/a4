@@ -5,7 +5,7 @@
 // <LICENSE-MIT or http://opensource.org/licenses/MIT>, at your
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
-use std::time::Duration;
+use std::{fs::File, path::PathBuf, time::Duration};
 
 use a4::{
     position::Position,
@@ -31,21 +31,21 @@ struct Options {
     /// Maximum depth to search to with a non-specialized search.
     #[structopt(short, long, default_value = "6")]
     depth: u32,
+    /// File to write a search event log to.
+    #[structopt(long)]
+    search_log: Option<PathBuf>,
 }
 
 fn main() {
     a4::debug::link_in_debug_utils();
-    tracing_subscriber::registry()
-        .with(SearchGraphLayer::new())
-        .init();
-    /*
-    let subscriber = FmtSubscriber::builder()
-        .with_max_level(LevelFilter::OFF)
-        .with_env_filter(EnvFilter::from_env("A4_LOG"))
-        .finish();
-    */
-
     let args = Options::from_args();
+    if let Some(ref search_log) = args.search_log {
+        let file = File::create(search_log).expect("failed to open search log");
+        tracing_subscriber::registry()
+            .with(SearchGraphLayer::new(file))
+            .init();
+    }
+
     let mut search_options = SearchOptions::default();
     if let Some(time_sec) = args.time_sec {
         let duration = Duration::from_secs(time_sec);

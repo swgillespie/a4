@@ -8,12 +8,15 @@ edition = "2018"
 anyhow = "1.0.44"
 bitflags = "1.2.1"
 chashmap = "2.2.2"
+derive_more = "0.99.17"
 thiserror = "1.0.23" 
 lazy_static = "1.4.0"
 structopt = "0.3.21"
 tracing = "0.1.28"
 tracing-subscriber = { version = "0.3.9", features = ["env-filter"] }
 num_cpus = "1.13.1"
+serde = { version = "1.0.117", features = ["derive"] }
+serde_json = "1.0.59"
 
 [dev-dependencies]
 criterion = "0.3"
