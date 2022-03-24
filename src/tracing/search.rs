@@ -9,7 +9,7 @@
 use std::{collections::HashMap, fmt::Debug, io::Write, sync::Mutex, time::SystemTime};
 
 use derive_more::From;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use tracing::{
     field::{Field, Visit},
     span::Attributes,
@@ -19,71 +19,96 @@ use tracing_subscriber::{layer::Context, registry::LookupSpan, Layer};
 
 use crate::tracing::constants;
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct SearchEvent {
-    timestamp: SystemTime,
-    kind: SearchEventKind,
+    pub timestamp: SystemTime,
+    pub kind: SearchEventKind,
 }
 
-#[derive(Debug, Serialize, From)]
+#[derive(Debug, Serialize, Deserialize, From)]
 pub enum SearchEventKind {
     Start(StartEvent),
     Instant(InstantEvent),
     End(EndEvent),
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct StartEvent {
-    id: u64,
-    kind: StartEventKind,
+    pub id: u64,
+    pub kind: StartEventKind,
 }
 
-#[derive(Debug, Serialize, From)]
+#[derive(Debug, Serialize, Deserialize, From)]
 pub enum StartEventKind {
     Search(SearchStartEvent),
     SearchDepth(SearchDepthStartEvent),
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct SearchStartEvent {
-    fen: String,
+    pub fen: String,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct SearchDepthStartEvent {
-    depth: u32,
-    fen: String,
+    pub depth: u32,
+    pub fen: String,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct InstantEvent {
-    kind: InstantEventKind,
+    pub kind: InstantEventKind,
 }
 
-#[derive(Debug, Serialize, From)]
+#[derive(Debug, Serialize, Deserialize, From)]
 pub enum InstantEventKind {
     SearchTermination(SearchTerminationEvent),
+    SearchComplete(SearchCompleteEvent),
+    SearchWithDepthComplete(SearchWithDepthCompleteEvent),
 }
 
-#[derive(Debug, Serialize)]
-pub struct SearchTerminationEvent {}
+#[derive(Debug, Serialize, Deserialize)]
+pub struct SearchTerminationEvent {
+    pub reason: SearchTerminationReason,
+}
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Deserialize)]
+pub struct SearchCompleteEvent {
+    pub best_move: String,
+    pub best_value: String,
+    pub nodes_evaluated: u64,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct SearchWithDepthCompleteEvent {
+    pub best_move: String,
+    pub best_value: String,
+    pub nodes_evaluated: u64,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub enum SearchTerminationReason {
+    Explicit,
+    Time,
+    Nodes,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
 pub struct EndEvent {
-    id: u64,
-    kind: EndEventKind,
+    pub id: u64,
+    pub kind: EndEventKind,
 }
 
-#[derive(Debug, Serialize, From)]
+#[derive(Debug, Serialize, Deserialize, From)]
 pub enum EndEventKind {
     Search(SearchEndEvent),
     SearchDepth(SearchDepthEndEvent),
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct SearchEndEvent {}
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct SearchDepthEndEvent {}
 
 /// The SearchGraphLayer is a Layer that specifically understands the instrumentation in a4's search routines and uses
@@ -135,7 +160,7 @@ impl SearchGraphLayer {
     }
 
     fn on_search_enter(&self, attrs: &Attributes<'_>, id: &Id) {
-        let attrs = extract_fields(attrs);
+        let attrs = attrs.extract_fields();
         self.record_start_event(
             id,
             SearchStartEvent {
@@ -150,7 +175,7 @@ impl SearchGraphLayer {
     }
 
     fn on_search_with_depth_enter(&self, attrs: &Attributes<'_>, id: &Id) {
-        let attrs = extract_fields(attrs);
+        let attrs = attrs.extract_fields();
         self.record_start_event(
             id,
             SearchDepthStartEvent {
@@ -168,8 +193,35 @@ impl SearchGraphLayer {
         self.record_end_event(id, SearchDepthEndEvent {})
     }
 
-    fn on_search_termination(&self) {
-        self.record_instant_event(SearchTerminationEvent {})
+    fn on_search_termination(&self, event: &Event<'_>) {
+        let attrs = event.extract_fields();
+        let termination_reason = match attrs.get("reason").expect("no reason key").as_ref() {
+            "duration" => SearchTerminationReason::Time,
+            "nodes" => SearchTerminationReason::Nodes,
+            "explicit" => SearchTerminationReason::Explicit,
+            r => panic!("unknown search termination reason: {}", r),
+        };
+        self.record_instant_event(SearchTerminationEvent {
+            reason: termination_reason,
+        });
+    }
+
+    fn on_search_complete(&self, event: &Event<'_>) {
+        let attrs = event.extract_fields();
+        self.record_instant_event(SearchCompleteEvent {
+            best_move: attrs.get("best_move").unwrap().clone(),
+            best_value: attrs.get("best_score").unwrap().clone(),
+            nodes_evaluated: attrs.get("nodes").unwrap().parse().unwrap(),
+        });
+    }
+
+    fn on_search_with_depth_complete(&self, event: &Event<'_>) {
+        let attrs = event.extract_fields();
+        self.record_instant_event(SearchWithDepthCompleteEvent {
+            best_move: attrs.get("best_move").unwrap().clone(),
+            best_value: attrs.get("best_score").unwrap().clone(),
+            nodes_evaluated: attrs.get("nodes").unwrap().parse().unwrap(),
+        });
     }
 }
 
@@ -195,22 +247,45 @@ where
         }
     }
 
-    fn on_event(&self, event: &Event<'_>, ctx: Context<'_, S>) {
-        todo!()
+    fn on_event(&self, event: &Event<'_>, _ctx: Context<'_, S>) {
+        let attrs = event.extract_fields();
+        // Not all events have `event` keys (e.g. mundane logs from other modules).
+        // Ignore the ones we don't care about.
+        if let Some(event_str) = attrs.get("event") {
+            match event_str.as_ref() {
+                constants::SEARCH_TERMINATION => self.on_search_termination(event),
+                constants::SEARCH_COMPLETE => self.on_search_complete(event),
+                constants::SEARCH_WITH_DEPTH_COMPLETE => self.on_search_with_depth_complete(event),
+                _ => {}
+            }
+        }
     }
 }
 
-fn extract_fields(attrs: &Attributes<'_>) -> HashMap<String, String> {
-    struct HashMapExtractor(HashMap<String, String>);
+trait HasExtractableFields {
+    fn extract_fields(&self) -> HashMap<String, String>;
+}
 
-    impl Visit for HashMapExtractor {
-        fn record_debug(&mut self, field: &Field, value: &dyn Debug) {
-            self.0
-                .insert(field.name().to_owned(), format!("{:?}", value));
-        }
+impl HasExtractableFields for Attributes<'_> {
+    fn extract_fields(&self) -> HashMap<String, String> {
+        let mut extractor = HashMapExtractor(HashMap::new());
+        self.record(&mut extractor);
+        extractor.0
     }
+}
 
-    let mut extractor = HashMapExtractor(HashMap::new());
-    attrs.record(&mut extractor);
-    extractor.0
+impl HasExtractableFields for Event<'_> {
+    fn extract_fields(&self) -> HashMap<String, String> {
+        let mut extractor = HashMapExtractor(HashMap::new());
+        self.record(&mut extractor);
+        extractor.0
+    }
+}
+
+struct HashMapExtractor(HashMap<String, String>);
+impl Visit for HashMapExtractor {
+    fn record_debug(&mut self, field: &Field, value: &dyn Debug) {
+        self.0
+            .insert(field.name().to_owned(), format!("{:?}", value));
+    }
 }
