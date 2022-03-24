@@ -57,12 +57,16 @@ pub struct SearchDepthStartEvent {
 
 #[derive(Debug, Serialize)]
 pub struct InstantEvent {
-    id: u64,
     kind: InstantEventKind,
 }
 
 #[derive(Debug, Serialize, From)]
-pub enum InstantEventKind {}
+pub enum InstantEventKind {
+    SearchTermination(SearchTerminationEvent),
+}
+
+#[derive(Debug, Serialize)]
+pub struct SearchTerminationEvent {}
 
 #[derive(Debug, Serialize)]
 pub struct EndEvent {
@@ -116,6 +120,11 @@ impl SearchGraphLayer {
         self.record_event(SearchEventKind::Start(event));
     }
 
+    fn record_instant_event<T: Into<InstantEventKind>>(&self, kind: T) {
+        let event = InstantEvent { kind: kind.into() };
+        self.record_event(SearchEventKind::Instant(event));
+    }
+
     fn record_end_event<T: Into<EndEventKind>>(&self, id: &Id, kind: T) {
         let event = EndEvent {
             id: id.into_u64(),
@@ -158,6 +167,10 @@ impl SearchGraphLayer {
     fn on_search_with_depth_exit(&self, id: &Id) {
         self.record_end_event(id, SearchDepthEndEvent {})
     }
+
+    fn on_search_termination(&self) {
+        self.record_instant_event(SearchTerminationEvent {})
+    }
 }
 
 impl<S: Subscriber> Layer<S> for SearchGraphLayer
@@ -183,8 +196,7 @@ where
     }
 
     fn on_event(&self, event: &Event<'_>, ctx: Context<'_, S>) {
-        let _ = event;
-        let _ = ctx;
+        todo!()
     }
 }
 
