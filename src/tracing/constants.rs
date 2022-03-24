@@ -47,3 +47,7 @@ pub const STAND_PAT_BETA_CUTOFF: &'static str = "stand pat beta cutoff";
 pub const STAND_PAT_IMPROVED_ALPHA: &'static str = "stand pat improved alpha";
 
 pub const ALPHA_BETA_ALL: &'static str = "all node";
+
+pub const SEARCH_COMPLETE: &'static str = "search complete";
+
+pub const SEARCH_WITH_DEPTH_COMPLETE: &'static str = "search with depth complete";

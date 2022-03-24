@@ -41,6 +41,9 @@ struct Searcher<'a, 'b> {
     search_start_time: Instant,
     nodes_evaluated: u64,
     options: &'a SearchOptions<'b>,
+    /// Whether this searcher is terminating. This flag is set the first time our termination check reveals that we
+    /// should terminate.
+    terminating: bool,
 }
 
 /// Statistics about the search, reported to the caller upon termination of the search.
@@ -63,6 +66,7 @@ impl<'a: 'b, 'b> Searcher<'a, 'b> {
             nodes_evaluated: 0,
             search_start_time: Instant::now(),
             options,
+            terminating: false,
         }
     }
 
@@ -90,7 +94,6 @@ impl<'a: 'b, 'b> Searcher<'a, 'b> {
             tracing::debug_span!(constants::ALPHA_BETA, pos = %pos.as_fen(), ?alpha, ?beta)
                 .entered();
         if !self.can_continue_search() {
-            tracing::debug!(event = constants::SEARCH_TERMINATION);
             return alpha;
         }
 
@@ -103,7 +106,7 @@ impl<'a: 'b, 'b> Searcher<'a, 'b> {
         let (mut hash_move, cutoff_value) =
             self.consider_transposition(pos, &mut alpha, beta, depth);
         if let Some(cutoff) = cutoff_value {
-            tracing::debug!(?cutoff, event = constants::TT_CUTOFF);
+            tracing::debug!(?cutoff, event = %constants::TT_CUTOFF);
             return cutoff;
         }
 
@@ -122,13 +125,13 @@ impl<'a: 'b, 'b> Searcher<'a, 'b> {
             let ab_span = tracing::debug_span!(constants::ALPHA_BETA_HASH_MOVE, %hash_move);
             let value = ab_span.in_scope(|| -self.alpha_beta(&hash_pos, -beta, -alpha, depth - 1));
             if value >= beta {
-                tracing::debug!(%hash_move, ?value, event = constants::HASH_MOVE_BETA_CUTOFF);
+                tracing::debug!(%hash_move, ?value, event = %constants::HASH_MOVE_BETA_CUTOFF);
                 table::record_cut(pos, hash_move, depth, value);
                 return beta.step();
             }
 
             if value > alpha {
-                tracing::debug!(%hash_move, event = constants::HASH_MOVE_IMPROVED_ALPHA);
+                tracing::debug!(%hash_move, event = %constants::HASH_MOVE_IMPROVED_ALPHA);
                 improved_alpha = true;
                 table::record_pv(pos, hash_move, depth, value);
                 alpha = value;
@@ -165,13 +168,13 @@ impl<'a: 'b, 'b> Searcher<'a, 'b> {
             let ab_span = tracing::debug_span!(constants::ALPHA_BETA_MOVE, %mov);
             let value = ab_span.in_scope(|| -self.alpha_beta(&child, -beta, -alpha, depth - 1));
             if value >= beta {
-                tracing::debug!(%mov, ?value, event = constants::MOVE_BETA_CUTOFF);
+                tracing::debug!(%mov, ?value, event = %constants::MOVE_BETA_CUTOFF);
                 table::record_cut(pos, mov, depth, value);
                 return beta.step();
             }
 
             if value > alpha {
-                tracing::debug!(%mov, ?value, event = constants::MOVE_IMPROVED_ALPHA);
+                tracing::debug!(%mov, ?value, event = %constants::MOVE_IMPROVED_ALPHA);
                 improved_alpha = true;
                 table::record_pv(pos, mov, depth, value);
                 alpha = value;
@@ -179,7 +182,7 @@ impl<'a: 'b, 'b> Searcher<'a, 'b> {
         }
 
         if !improved_alpha {
-            tracing::debug!(event = constants::ALPHA_BETA_ALL);
+            tracing::debug!(event = %constants::ALPHA_BETA_ALL);
             table::record_all(pos, depth, alpha);
         }
 
@@ -201,11 +204,11 @@ impl<'a: 'b, 'b> Searcher<'a, 'b> {
         let mut stand_pat = evaluate(pos);
         if stand_pat >= beta {
             // There exists a refutation in a sibling node - no point seaerching this.
-            tracing::debug!(%stand_pat, event = constants::STAND_PAT_BETA_CUTOFF);
+            tracing::debug!(%stand_pat, event = %constants::STAND_PAT_BETA_CUTOFF);
             return beta;
         }
         if alpha < stand_pat {
-            tracing::debug!(%stand_pat, event = constants::STAND_PAT_IMPROVED_ALPHA);
+            tracing::debug!(%stand_pat, event = %constants::STAND_PAT_IMPROVED_ALPHA);
             alpha = stand_pat;
         }
 
@@ -241,21 +244,34 @@ impl<'a: 'b, 'b> Searcher<'a, 'b> {
         alpha
     }
 
-    fn can_continue_search(&self) -> bool {
+    fn can_continue_search(&mut self) -> bool {
+        if self.terminating {
+            return false;
+        }
+
         if let Some(limit) = self.options.time_limit {
             if Instant::now().saturating_duration_since(self.search_start_time) > limit {
+                tracing::debug!(event = %constants::SEARCH_TERMINATION, reason = "duration");
+                self.terminating = true;
                 return false;
             }
         }
 
         if let Some(limit) = self.options.node_limit {
             if self.nodes_evaluated > limit {
+                tracing::debug!(event = %constants::SEARCH_TERMINATION, reason = "nodes");
+                self.terminating = true;
                 return false;
             }
         }
 
         if let Some(ptr) = self.options.hard_stop {
             if ptr.load(Ordering::Acquire) {
+                tracing::debug!(
+                    event = %constants::SEARCH_TERMINATION,
+                    reason = "explicit_stop"
+                );
+                self.terminating = true;
                 return false;
             }
         }
@@ -465,6 +481,13 @@ pub fn search(pos: &Position, options: &SearchOptions) -> SearchResult {
                     current_best_score.as_uci(),
                 );
             }
+
+            tracing::debug!(
+                event = %constants::SEARCH_WITH_DEPTH_COMPLETE,
+                best_move = %best_move,
+                best_score = %best_score,
+                nodes = %searcher.nodes_evaluated
+            );
         }
     }
 
@@ -472,6 +495,12 @@ pub fn search(pos: &Position, options: &SearchOptions) -> SearchResult {
         println!("bestmove {}", current_best_move.as_uci());
     }
 
+    tracing::debug!(
+        event = %constants::SEARCH_COMPLETE,
+        best_move = %current_best_move,
+        best_score = %current_best_score,
+        nodes = %stats.nodes_evaluated
+    );
     SearchResult {
         best_move: current_best_move,
         best_score: current_best_score,
