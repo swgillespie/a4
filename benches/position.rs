@@ -8,7 +8,8 @@
 
 use a4::{
     core::{self, Color, Move},
-    movegen, Position,
+    movegen,
+    position::Position,
 };
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
 
