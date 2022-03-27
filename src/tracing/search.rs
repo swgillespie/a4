@@ -42,6 +42,7 @@ pub struct StartEvent {
 pub enum StartEventKind {
     Search(SearchStartEvent),
     SearchDepth(SearchDepthStartEvent),
+    AlphaBeta(AlphaBetaStartEvent),
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -51,6 +52,14 @@ pub struct SearchStartEvent {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct SearchDepthStartEvent {
+    pub depth: u32,
+    pub fen: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct AlphaBetaStartEvent {
+    pub alpha: String,
+    pub beta: String,
     pub depth: u32,
     pub fen: String,
 }
@@ -103,6 +112,7 @@ pub struct EndEvent {
 pub enum EndEventKind {
     Search(SearchEndEvent),
     SearchDepth(SearchDepthEndEvent),
+    AlphaBeta(AlphaBetaEndEvent),
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -110,6 +120,9 @@ pub struct SearchEndEvent {}
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct SearchDepthEndEvent {}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct AlphaBetaEndEvent {}
 
 /// The SearchGraphLayer is a Layer that specifically understands the instrumentation in a4's search routines and uses
 /// them to reconstruct the search tree after a search is performed. It does not do any particular deep analysis of the
@@ -223,6 +236,23 @@ impl SearchGraphLayer {
             nodes_evaluated: attrs.get("nodes").unwrap().parse().unwrap(),
         });
     }
+
+    fn on_alpha_beta_enter(&self, attrs: &Attributes<'_>, id: &Id) {
+        let attrs = attrs.extract_fields();
+        self.record_start_event(
+            id,
+            AlphaBetaStartEvent {
+                alpha: attrs.get("alpha").unwrap().clone(),
+                beta: attrs.get("beta").unwrap().clone(),
+                fen: attrs.get("pos").unwrap().clone(),
+                depth: attrs.get("depth").unwrap().parse().unwrap(),
+            },
+        )
+    }
+
+    fn on_alpha_beta_exit(&self, id: &Id) {
+        self.record_end_event(id, AlphaBetaEndEvent {});
+    }
 }
 
 impl<S: Subscriber> Layer<S> for SearchGraphLayer
@@ -234,6 +264,7 @@ where
         match span.name() {
             constants::SEARCH => self.on_search_enter(attrs, id),
             constants::SEARCH_WITH_DEPTH => self.on_search_with_depth_enter(attrs, id),
+            constants::ALPHA_BETA => self.on_alpha_beta_enter(attrs, id),
             _ => {}
         }
     }
@@ -243,6 +274,7 @@ where
         match span.name() {
             constants::SEARCH => self.on_search_exit(&id),
             constants::SEARCH_WITH_DEPTH => self.on_search_with_depth_exit(&id),
+            constants::ALPHA_BETA => self.on_alpha_beta_exit(&id),
             _ => {}
         }
     }

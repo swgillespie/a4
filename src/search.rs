@@ -91,7 +91,7 @@ impl<'a: 'b, 'b> Searcher<'a, 'b> {
         //   1. Function entry blocks, so we can cut off trees that we are about to search if we are out of time
         //   2. Loop back edges, so we can cut off trees that we are partially in the process of searching
         let _graph_span =
-            tracing::debug_span!(constants::ALPHA_BETA, pos = %pos.as_fen(), ?alpha, ?beta)
+            tracing::debug_span!(constants::ALPHA_BETA, pos = %pos.as_fen(), %alpha, %beta, %depth)
                 .entered();
         if !self.can_continue_search() {
             return alpha;
