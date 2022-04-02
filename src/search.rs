@@ -251,6 +251,7 @@ impl<'a: 'b, 'b> Searcher<'a, 'b> {
 
         if let Some(limit) = self.options.time_limit {
             if Instant::now().saturating_duration_since(self.search_start_time) > limit {
+                tracing::info!("terminating search due to time limit");
                 tracing::debug!(event = %constants::SEARCH_TERMINATION, reason = "duration");
                 self.terminating = true;
                 return false;
@@ -259,6 +260,7 @@ impl<'a: 'b, 'b> Searcher<'a, 'b> {
 
         if let Some(limit) = self.options.node_limit {
             if self.nodes_evaluated > limit {
+                tracing::info!("terminating search due to nodes evaluated");
                 tracing::debug!(event = %constants::SEARCH_TERMINATION, reason = "nodes");
                 self.terminating = true;
                 return false;
@@ -267,6 +269,7 @@ impl<'a: 'b, 'b> Searcher<'a, 'b> {
 
         if let Some(ptr) = self.options.hard_stop {
             if ptr.load(Ordering::Acquire) {
+                tracing::info!("terminating search due to explicit termination");
                 tracing::debug!(
                     event = %constants::SEARCH_TERMINATION,
                     reason = "explicit_stop"
