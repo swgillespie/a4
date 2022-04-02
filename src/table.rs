@@ -182,6 +182,11 @@ pub fn get_pv(pos: &Position, depth: u32) -> Vec<Move> {
     let mut pv_clone = pos.clone();
     for _ in 0..depth {
         if let Some(best_move) = query(&pv_clone).and_then(|e| e.best_move()) {
+            // The PV ends in the end of a game.
+            if best_move.is_null() {
+                break;
+            }
+
             pv.push(best_move);
             pv_clone.make_move(best_move);
         } else {

@@ -27,7 +27,6 @@ use std::{
 };
 
 use crate::{
-    eval::UnpackedValue,
     position::Position,
     search::{self, SearchOptions},
 };
@@ -128,7 +127,10 @@ fn main_thread_loop(rx: Receiver<Request>) {
                 tracing::info!("sending stop signal to workers");
                 for worker in get_worker_threads() {
                     worker.stop();
+                    worker.wait_until_idle()
                 }
+
+                tracing::info!("all workers are now idle")
             }
         }
     }
@@ -161,6 +163,16 @@ impl WorkerThread {
         self.stop_flag.store(true, Ordering::Release);
     }
 
+    fn wait_until_idle(&self) {
+        tracing::info!("waiting until worker thread {} is idle", self.id);
+        let idle = self.idle_lock.lock().expect("failed to acquire idle lock");
+        let _idle = self
+            .idle_cv
+            .wait_while(idle, |idle| !*idle)
+            .expect("failed to wait on condvar");
+        tracing::info!("worker thread {} is idle", self.id);
+    }
+
     fn thread_loop(&self) {
         let _span = tracing::info_span!("worker_thread", self.id).entered();
         let main_thread = get_main_thread();
@@ -185,34 +197,27 @@ impl WorkerThread {
                     depth: search.depth.unwrap_or(10),
                 };
 
-                let result = search::search(&position, &opts);
+                search::search(&position, &opts);
 
                 // The 0th worker thread is special in that it is responsible for printing its search results to stdout.
                 if self.id == 0 {
-                    // Stop everyone else from searching.
-                    get_main_thread().stop();
+                    tracing::info!("stopping search for other threads");
+                    for worker in get_worker_threads() {
+                        if worker.id == self.id {
+                            continue;
+                        }
 
-                    let nodes_str = format!("nodes {}", result.stats.nodes_evaluated);
-                    println!("info nodes {}", result.stats.nodes_evaluated);
-                    let value_str = match result.best_score.unpack() {
-                        UnpackedValue::MateIn(moves) => {
-                            format!("score mate {}", moves)
-                        }
-                        UnpackedValue::MatedIn(moves) => {
-                            format!("score mate -{}", moves)
-                        }
-                        UnpackedValue::Value(value) => {
-                            format!("score cp {}", value)
-                        }
-                    };
-                    println!("info {} {}", nodes_str, value_str);
-                    println!("bestmove {}", result.best_move.as_uci());
+                        worker.stop();
+                        worker.wait_until_idle()
+                    }
                 }
+            } else {
+                tracing::warn!("worker going back to sleep due to no search work");
             }
 
-            tracing::info!("worker going to sleep");
             self.stop_flag.store(false, Ordering::Release);
             *idle = true;
+            tracing::info!("worker is idle");
         }
     }
 }
