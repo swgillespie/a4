@@ -1,0 +1,583 @@
+{"timestamp":{"secs_since_epoch":1648406941,"nanos_since_epoch":17316700},"kind":{"Start":{"id":1,"kind":{"Search":{"fen":"r1bqkb1r/ppp3pp/2n2p2/3np3/2BP4/5N2/PPP2PPP/RNBQ1RK1 w kq - 0 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406941,"nanos_since_epoch":17571500},"kind":{"Start":{"id":2,"kind":{"SearchDepth":{"depth":1,"fen":"r1bqkb1r/ppp3pp/2n2p2/3np3/2BP4/5N2/PPP2PPP/RNBQ1RK1 w kq - 0 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406941,"nanos_since_epoch":17827600},"kind":{"Start":{"id":3,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"#0","depth":1,"fen":"r1bqkb1r/ppp3pp/2n2p2/3np3/2BP4/5N2/PPP2PPP/RNBQ1RK1 w kq - 0 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406941,"nanos_since_epoch":18305600},"kind":{"Start":{"id":5,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"#0","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/3np3/2BP4/P4N2/1PP2PPP/RNBQ1RK1 b kq - 0 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":36082500},"kind":{"End":{"id":5,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":36355200},"kind":{"Start":{"id":2251799813685253,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"180","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/3np3/2BP4/1P3N2/P1P2PPP/RNBQ1RK1 b kq - 0 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":38776200},"kind":{"End":{"id":2251799813685253,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":38985300},"kind":{"Start":{"id":4503599627370501,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"80","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/3np3/2BP4/2P2N2/PP3PPP/RNBQ1RK1 b kq - 0 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":53271100},"kind":{"End":{"id":4503599627370501,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":53513900},"kind":{"Start":{"id":6755399441055749,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"70","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/3np3/2BP4/5NP1/PPP2P1P/RNBQ1RK1 b kq - 0 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":55238800},"kind":{"End":{"id":6755399441055749,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":55416200},"kind":{"Start":{"id":9007199254740997,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"70","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/3np3/2BP4/5N1P/PPP2PP1/RNBQ1RK1 b kq - 0 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":61092600},"kind":{"End":{"id":9007199254740997,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":61301800},"kind":{"Start":{"id":11258999068426245,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"70","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/3np3/P1BP4/5N2/1PP2PPP/RNBQ1RK1 b kq a3 0 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":64870700},"kind":{"End":{"id":11258999068426245,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":65093700},"kind":{"Start":{"id":13510798882111493,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"70","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/3np3/1PBP4/5N2/P1P2PPP/RNBQ1RK1 b kq b3 0 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":65484400},"kind":{"End":{"id":13510798882111493,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":65700900},"kind":{"Start":{"id":15762598695796741,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"70","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/3np3/2BP2P1/5N2/PPP2P1P/RNBQ1RK1 b kq g3 0 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":68232000},"kind":{"End":{"id":15762598695796741,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":68443200},"kind":{"Start":{"id":18014398509481989,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"70","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/3np3/2BP3P/5N2/PPP2PP1/RNBQ1RK1 b kq h3 0 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":78595000},"kind":{"End":{"id":18014398509481989,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":78831700},"kind":{"Start":{"id":20266198323167237,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"70","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/3np3/2BP4/5N2/PPPB1PPP/RN1Q1RK1 b kq - 1 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":90723500},"kind":{"End":{"id":20266198323167237,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":90960300},"kind":{"Start":{"id":22517998136852485,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"70","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/3np3/2BP4/4BN2/PPP2PPP/RN1Q1RK1 b kq - 1 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":132609100},"kind":{"End":{"id":22517998136852485,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":132815800},"kind":{"Start":{"id":24769797950537733,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"70","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/3np3/2BP1B2/5N2/PPP2PPP/RN1Q1RK1 b kq - 1 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":139197800},"kind":{"End":{"id":24769797950537733,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":139783800},"kind":{"Start":{"id":27021597764222981,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"70","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/3np1B1/2BP4/5N2/PPP2PPP/RN1Q1RK1 b kq - 1 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":207044300},"kind":{"End":{"id":27021597764222981,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":207283200},"kind":{"Start":{"id":29273397577908229,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"70","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p1B/3np3/2BP4/5N2/PPP2PPP/RN1Q1RK1 b kq - 1 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":292933000},"kind":{"End":{"id":29273397577908229,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":293160200},"kind":{"Start":{"id":31525197391593477,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"70","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/3np3/3P4/5N2/PPP1BPPP/RNBQ1RK1 b kq - 1 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":301031300},"kind":{"End":{"id":31525197391593477,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":301573800},"kind":{"Start":{"id":33776997205278725,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"70","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/3np3/3P4/1B3N2/PPP2PPP/RNBQ1RK1 b kq - 1 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":309871300},"kind":{"End":{"id":33776997205278725,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":310112800},"kind":{"Start":{"id":36028797018963973,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"70","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/3np3/3P4/3B1N2/PPP2PPP/RNBQ1RK1 b kq - 1 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":320073500},"kind":{"End":{"id":36028797018963973,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":320296500},"kind":{"Start":{"id":38280596832649221,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"70","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/1B1np3/3P4/5N2/PPP2PPP/RNBQ1RK1 b kq - 1 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":321708000},"kind":{"End":{"id":38280596832649221,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":321907600},"kind":{"Start":{"id":40532396646334469,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"60","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/3Bp3/3P4/5N2/PPP2PPP/RNBQ1RK1 b kq - 0 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":322271200},"kind":{"End":{"id":40532396646334469,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":322453800},"kind":{"Start":{"id":42784196460019717,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"60","depth":0,"fen":"r1bqkb1r/ppp3pp/B1n2p2/3np3/3P4/5N2/PPP2PPP/RNBQ1RK1 b kq - 1 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":326174800},"kind":{"End":{"id":42784196460019717,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":326392400},"kind":{"Start":{"id":45035996273704965,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"60","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/3np3/2BP4/5N2/PPPN1PPP/R1BQ1RK1 b kq - 1 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":335892600},"kind":{"End":{"id":45035996273704965,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":336095100},"kind":{"Start":{"id":47287796087390213,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"60","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/3np3/2BP4/N4N2/PPP2PPP/R1BQ1RK1 b kq - 1 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":366393200},"kind":{"End":{"id":47287796087390213,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":366959800},"kind":{"Start":{"id":49539595901075461,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"60","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/3np3/2BP4/2N2N2/PPP2PPP/R1BQ1RK1 b kq - 1 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":369313200},"kind":{"End":{"id":49539595901075461,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":369492300},"kind":{"Start":{"id":51791395714760709,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"60","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/3np3/2BP4/8/PPP2PPP/RNBQNRK1 b kq - 1 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":375381100},"kind":{"End":{"id":51791395714760709,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":375636600},"kind":{"Start":{"id":54043195528445957,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"60","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/3np3/2BP4/8/PPPN1PPP/RNBQ1RK1 b kq - 1 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":376458100},"kind":{"End":{"id":54043195528445957,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":376982000},"kind":{"Start":{"id":56294995342131205,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"60","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/3np3/2BP3N/8/PPP2PPP/RNBQ1RK1 b kq - 1 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":379318000},"kind":{"End":{"id":56294995342131205,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":379521100},"kind":{"Start":{"id":58546795155816453,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"60","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/3np1N1/2BP4/8/PPP2PPP/RNBQ1RK1 b kq - 1 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":386311600},"kind":{"End":{"id":58546795155816453,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":386495800},"kind":{"Start":{"id":60798594969501701,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"60","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/3np3/2BP4/5N2/PPP2PPP/RNBQR1K1 b kq - 1 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":397822400},"kind":{"End":{"id":60798594969501701,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":398064500},"kind":{"Start":{"id":63050394783186949,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"40","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/3np3/2BP4/5N2/PPP2PPP/RNB1QRK1 b kq - 1 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":403268600},"kind":{"End":{"id":63050394783186949,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":403441800},"kind":{"Start":{"id":65302194596872197,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"40","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/3np3/2BP4/5N2/PPPQ1PPP/RNB2RK1 b kq - 1 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":410627300},"kind":{"End":{"id":65302194596872197,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":410987000},"kind":{"Start":{"id":67553994410557445,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"40","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/3np3/2BP4/5N2/PPP1QPPP/RNB2RK1 b kq - 1 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":424057600},"kind":{"End":{"id":67553994410557445,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":424294100},"kind":{"Start":{"id":69805794224242693,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"40","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/3np3/2BP4/3Q1N2/PPP2PPP/RNB2RK1 b kq - 1 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":434419400},"kind":{"End":{"id":69805794224242693,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":434712900},"kind":{"Start":{"id":72057594037927941,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"40","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/3np3/2BP4/5N2/PPP2PPP/RNBQ1R1K b kq - 1 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":440619500},"kind":{"End":{"id":72057594037927941,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":440907500},"kind":{"Start":{"id":74309393851613189,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"40","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/3nP3/2B5/5N2/PPP2PPP/RNBQ1RK1 b kq - 0 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":441299300},"kind":{"End":{"id":74309393851613189,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":441553900},"kind":{"Start":{"id":76561193665298437,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"40","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/3nN3/2BP4/8/PPP2PPP/RNBQ1RK1 b kq - 0 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":441975000},"kind":{"End":{"id":76561193665298437,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":442116200},"kind":{"End":{"id":3,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":442314000},"kind":{"Instant":{"kind":{"SearchWithDepthComplete":{"best_move":"f1e1","best_value":"-40","nodes_evaluated":5124}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":442469300},"kind":{"End":{"id":2,"kind":{"SearchDepth":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":442708900},"kind":{"Start":{"id":2251799813685250,"kind":{"SearchDepth":{"depth":2,"fen":"r1bqkb1r/ppp3pp/2n2p2/3np3/2BP4/5N2/PPP2PPP/RNBQ1RK1 w kq - 0 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":442916100},"kind":{"Start":{"id":2251799813685251,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"#0","depth":2,"fen":"r1bqkb1r/ppp3pp/2n2p2/3np3/2BP4/5N2/PPP2PPP/RNBQ1RK1 w kq - 0 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":443201300},"kind":{"Start":{"id":78812993478983685,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"#0","depth":1,"fen":"r1bqkb1r/ppp3pp/2n2p2/3np3/2BP4/5N2/PPP2PPP/RNBQR1K1 b kq - 1 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":443593100},"kind":{"Start":{"id":90071992547409927,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"#0","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/3n4/2BPp3/5N2/PPP2PPP/RNBQR1K1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":444499600},"kind":{"End":{"id":90071992547409927,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":444729700},"kind":{"Start":{"id":92323792361095175,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"-30","depth":0,"fen":"r1bqkb1r/ppp3pp/2n5/3npp2/2BP4/5N2/PPP2PPP/RNBQR1K1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":445120600},"kind":{"End":{"id":92323792361095175,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":445316600},"kind":{"Start":{"id":94575592174780423,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"-30","depth":0,"fen":"r1bqkb1r/1pp3pp/p1n2p2/3np3/2BP4/5N2/PPP2PPP/RNBQR1K1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":445740200},"kind":{"End":{"id":94575592174780423,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":445936300},"kind":{"Start":{"id":96827391988465671,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"-30","depth":0,"fen":"r1bqkb1r/p1p3pp/1pn2p2/3np3/2BP4/5N2/PPP2PPP/RNBQR1K1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":453027800},"kind":{"End":{"id":96827391988465671,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":453292100},"kind":{"Start":{"id":99079191802150919,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"-100","depth":0,"fen":"r1bqkb1r/ppp4p/2n2pp1/3np3/2BP4/5N2/PPP2PPP/RNBQR1K1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":453822100},"kind":{"End":{"id":99079191802150919,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":454074500},"kind":{"Start":{"id":101330991615836167,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"-100","depth":0,"fen":"r1bqkb1r/ppp3p1/2n2p1p/3np3/2BP4/5N2/PPP2PPP/RNBQR1K1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":454474600},"kind":{"End":{"id":101330991615836167,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":454717500},"kind":{"Start":{"id":103582791429521415,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"-100","depth":0,"fen":"r1bqkb1r/1pp3pp/2n2p2/p2np3/2BP4/5N2/PPP2PPP/RNBQR1K1 w kq a6 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":455133700},"kind":{"End":{"id":103582791429521415,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":455333200},"kind":{"Start":{"id":105834591243206663,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"-100","depth":0,"fen":"r1bqkb1r/p1p3pp/2n2p2/1p1np3/2BP4/5N2/PPP2PPP/RNBQR1K1 w kq b6 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":460820800},"kind":{"End":{"id":105834591243206663,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":461054500},"kind":{"Start":{"id":108086391056891911,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"-100","depth":0,"fen":"r1bqkb1r/ppp4p/2n2p2/3np1p1/2BP4/5N2/PPP2PPP/RNBQR1K1 w kq g6 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":921566300},"kind":{"End":{"id":108086391056891911,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":921865500},"kind":{"Start":{"id":110338190870577159,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"-120","depth":0,"fen":"r1bqkb1r/ppp3p1/2n2p2/3np2p/2BP4/5N2/PPP2PPP/RNBQR1K1 w kq h6 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":922292300},"kind":{"End":{"id":110338190870577159,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":922477200},"kind":{"Start":{"id":112589990684262407,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"-120","depth":0,"fen":"r2qkb1r/ppp3pp/2n2p2/3np3/2BP4/5N1b/PPP2PPP/RNBQR1K1 w kq - 2 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":922898800},"kind":{"End":{"id":112589990684262407,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":923093000},"kind":{"Start":{"id":114841790497947655,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"-120","depth":0,"fen":"r2qkb1r/ppp3pp/2n2p2/3np3/2BP2b1/5N2/PPP2PPP/RNBQR1K1 w kq - 2 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":923522300},"kind":{"End":{"id":114841790497947655,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":923915900},"kind":{"Start":{"id":117093590311632903,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"-120","depth":0,"fen":"r2qkb1r/ppp3pp/2n2p2/3npb2/2BP4/5N2/PPP2PPP/RNBQR1K1 w kq - 2 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":924774000},"kind":{"End":{"id":117093590311632903,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":925021700},"kind":{"Start":{"id":119345390125318151,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"-120","depth":0,"fen":"r2qkb1r/ppp3pp/2n1bp2/3np3/2BP4/5N2/PPP2PPP/RNBQR1K1 w kq - 2 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":925430800},"kind":{"End":{"id":119345390125318151,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":925625600},"kind":{"Start":{"id":121597189939003399,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"-120","depth":0,"fen":"r2qkb1r/pppb2pp/2n2p2/3np3/2BP4/5N2/PPP2PPP/RNBQR1K1 w kq - 2 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":926079100},"kind":{"End":{"id":121597189939003399,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":926309400},"kind":{"Start":{"id":123848989752688647,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"-120","depth":0,"fen":"r1bqk2r/ppp3pp/2n2p2/3np3/2BP4/b4N2/PPP2PPP/RNBQR1K1 w kq - 2 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":927531200},"kind":{"End":{"id":123848989752688647,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":927942200},"kind":{"Start":{"id":126100789566373895,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"-120","depth":0,"fen":"r1bqk2r/ppp3pp/2n2p2/3np3/1bBP4/5N2/PPP2PPP/RNBQR1K1 w kq - 2 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":928380700},"kind":{"End":{"id":126100789566373895,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":928600900},"kind":{"Start":{"id":128352589380059143,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"-120","depth":0,"fen":"r1bqk2r/ppp3pp/2n2p2/2bnp3/2BP4/5N2/PPP2PPP/RNBQR1K1 w kq - 2 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":929064600},"kind":{"End":{"id":128352589380059143,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":929270000},"kind":{"Start":{"id":130604389193744391,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"-120","depth":0,"fen":"r1bqk2r/ppp3pp/2nb1p2/3np3/2BP4/5N2/PPP2PPP/RNBQR1K1 w kq - 2 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":929715500},"kind":{"End":{"id":130604389193744391,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":929919100},"kind":{"Start":{"id":132856189007429639,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"-120","depth":0,"fen":"r1bqk2r/ppp1b1pp/2n2p2/3np3/2BP4/5N2/PPP2PPP/RNBQR1K1 w kq - 2 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":930314300},"kind":{"End":{"id":132856189007429639,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":930805500},"kind":{"Start":{"id":135107988821114887,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"-120","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/4p3/2BP4/2n2N2/PPP2PPP/RNBQR1K1 w kq - 2 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":931447500},"kind":{"End":{"id":135107988821114887,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":931641900},"kind":{"Start":{"id":137359788634800135,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"-120","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/4p3/2BP4/4nN2/PPP2PPP/RNBQR1K1 w kq - 2 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":932112500},"kind":{"End":{"id":137359788634800135,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":932400300},"kind":{"Start":{"id":139611588448485383,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"-120","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/4p3/1nBP4/5N2/PPP2PPP/RNBQR1K1 w kq - 2 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":932918300},"kind":{"End":{"id":139611588448485383,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":933121700},"kind":{"Start":{"id":141863388262170631,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"-120","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/4p3/2BP1n2/5N2/PPP2PPP/RNBQR1K1 w kq - 2 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":933563000},"kind":{"End":{"id":141863388262170631,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":933801000},"kind":{"Start":{"id":144115188075855879,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"-120","depth":0,"fen":"r1bqkb1r/ppp3pp/1nn2p2/4p3/2BP4/5N2/PPP2PPP/RNBQR1K1 w kq - 2 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":934219200},"kind":{"End":{"id":144115188075855879,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":934419400},"kind":{"Start":{"id":146366987889541127,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"-120","depth":0,"fen":"r1bqkb1r/ppp1n1pp/2n2p2/4p3/2BP4/5N2/PPP2PPP/RNBQR1K1 w kq - 2 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":934851700},"kind":{"End":{"id":146366987889541127,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":935050500},"kind":{"Start":{"id":148618787703226375,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"-120","depth":0,"fen":"r1bqkb1r/ppp3pp/5p2/3np3/1nBP4/5N2/PPP2PPP/RNBQR1K1 w kq - 2 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":935438100},"kind":{"End":{"id":148618787703226375,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":935624700},"kind":{"Start":{"id":150870587516911623,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"-120","depth":0,"fen":"r1bqkb1r/ppp3pp/5p2/3np3/2Bn4/5N2/PPP2PPP/RNBQR1K1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":949554200},"kind":{"End":{"id":150870587516911623,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":949786700},"kind":{"Start":{"id":153122387330596871,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"-120","depth":0,"fen":"r1bqkb1r/ppp3pp/5p2/n2np3/2BP4/5N2/PPP2PPP/RNBQR1K1 w kq - 2 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":950151500},"kind":{"End":{"id":153122387330596871,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":950322900},"kind":{"Start":{"id":155374187144282119,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"-120","depth":0,"fen":"r1bqkb1r/ppp1n1pp/5p2/3np3/2BP4/5N2/PPP2PPP/RNBQR1K1 w kq - 2 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":950692600},"kind":{"End":{"id":155374187144282119,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":950863700},"kind":{"Start":{"id":157625986957967367,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"-120","depth":0,"fen":"rnbqkb1r/ppp3pp/5p2/3np3/2BP4/5N2/PPP2PPP/RNBQR1K1 w kq - 2 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":951224200},"kind":{"End":{"id":157625986957967367,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":951396300},"kind":{"Start":{"id":159877786771652615,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"-120","depth":0,"fen":"1rbqkb1r/ppp3pp/2n2p2/3np3/2BP4/5N2/PPP2PPP/RNBQR1K1 w k - 2 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":951788700},"kind":{"End":{"id":159877786771652615,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":951959500},"kind":{"Start":{"id":162129586585337863,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"-120","depth":0,"fen":"r1bqkbr1/ppp3pp/2n2p2/3np3/2BP4/5N2/PPP2PPP/RNBQR1K1 w q - 2 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":952323500},"kind":{"End":{"id":162129586585337863,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":952494900},"kind":{"Start":{"id":164381386399023111,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"-120","depth":0,"fen":"r1b1kb1r/ppp3pp/2nq1p2/3np3/2BP4/5N2/PPP2PPP/RNBQR1K1 w kq - 2 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":952879100},"kind":{"End":{"id":164381386399023111,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":953058200},"kind":{"Start":{"id":166633186212708359,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"-120","depth":0,"fen":"r1b1kb1r/pppq2pp/2n2p2/3np3/2BP4/5N2/PPP2PPP/RNBQR1K1 w kq - 2 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":953420500},"kind":{"End":{"id":166633186212708359,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":953593300},"kind":{"Start":{"id":168884986026393607,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"-120","depth":0,"fen":"r1b1kb1r/ppp1q1pp/2n2p2/3np3/2BP4/5N2/PPP2PPP/RNBQR1K1 w kq - 2 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":953972700},"kind":{"End":{"id":168884986026393607,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":954145100},"kind":{"Start":{"id":171136785840078855,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"-120","depth":0,"fen":"r1bq1b1r/pppk2pp/2n2p2/3np3/2BP4/5N2/PPP2PPP/RNBQR1K1 w  - 2 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":954497000},"kind":{"End":{"id":171136785840078855,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":954703000},"kind":{"Start":{"id":173388585653764103,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"-120","depth":0,"fen":"r1bq1b1r/ppp1k1pp/2n2p2/3np3/2BP4/5N2/PPP2PPP/RNBQR1K1 w  - 2 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":955127800},"kind":{"End":{"id":173388585653764103,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":955327000},"kind":{"Start":{"id":175640385467449351,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"-120","depth":0,"fen":"r1bq1b1r/ppp2kpp/2n2p2/3np3/2BP4/5N2/PPP2PPP/RNBQR1K1 w  - 2 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":955747300},"kind":{"End":{"id":175640385467449351,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":955882300},"kind":{"End":{"id":78812993478983685,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":956204900},"kind":{"Start":{"id":81064793292668933,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"120","depth":1,"fen":"r1bqkb1r/ppp3pp/2n2p2/3np3/2BP4/P4N2/1PP2PPP/RNBQ1RK1 b kq - 0 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":956841000},"kind":{"Start":{"id":177892185281134599,"kind":{"AlphaBeta":{"alpha":"-120","beta":"#0","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/3n4/2BPp3/P4N2/1PP2PPP/RNBQ1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":957584900},"kind":{"End":{"id":177892185281134599,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":957833800},"kind":{"Start":{"id":180143985094819847,"kind":{"AlphaBeta":{"alpha":"-120","beta":"-70","depth":0,"fen":"r1bqkb1r/ppp3pp/2n5/3npp2/2BP4/P4N2/1PP2PPP/RNBQ1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":958216300},"kind":{"End":{"id":180143985094819847,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":958415600},"kind":{"Start":{"id":182395784908505095,"kind":{"AlphaBeta":{"alpha":"-120","beta":"-70","depth":0,"fen":"r1bqkb1r/1pp3pp/p1n2p2/3np3/2BP4/P4N2/1PP2PPP/RNBQ1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":958838000},"kind":{"End":{"id":182395784908505095,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":959039900},"kind":{"Start":{"id":184647584722190343,"kind":{"AlphaBeta":{"alpha":"-120","beta":"-70","depth":0,"fen":"r1bqkb1r/p1p3pp/1pn2p2/3np3/2BP4/P4N2/1PP2PPP/RNBQ1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":991765400},"kind":{"End":{"id":184647584722190343,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":992021600},"kind":{"End":{"id":81064793292668933,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":992214500},"kind":{"Start":{"id":83316593106354181,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"120","depth":1,"fen":"r1bqkb1r/ppp3pp/2n2p2/3np3/2BP4/1P3N2/P1P2PPP/RNBQ1RK1 b kq - 0 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":992578400},"kind":{"Start":{"id":186899384535875591,"kind":{"AlphaBeta":{"alpha":"-120","beta":"#0","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/3n4/2BPp3/1P3N2/P1P2PPP/RNBQ1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":993252800},"kind":{"End":{"id":186899384535875591,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":993464700},"kind":{"Start":{"id":189151184349560839,"kind":{"AlphaBeta":{"alpha":"-120","beta":"30","depth":0,"fen":"r1bqkb1r/ppp3pp/2n5/3npp2/2BP4/1P3N2/P1P2PPP/RNBQ1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":993835200},"kind":{"End":{"id":189151184349560839,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":994035400},"kind":{"Start":{"id":191402984163246087,"kind":{"AlphaBeta":{"alpha":"-120","beta":"30","depth":0,"fen":"r1bqkb1r/1pp3pp/p1n2p2/3np3/2BP4/1P3N2/P1P2PPP/RNBQ1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":994416000},"kind":{"End":{"id":191402984163246087,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":994595600},"kind":{"Start":{"id":193654783976931335,"kind":{"AlphaBeta":{"alpha":"-120","beta":"30","depth":0,"fen":"r1bqkb1r/p1p3pp/1pn2p2/3np3/2BP4/1P3N2/P1P2PPP/RNBQ1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":995646000},"kind":{"End":{"id":193654783976931335,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":995846900},"kind":{"Start":{"id":195906583790616583,"kind":{"AlphaBeta":{"alpha":"-120","beta":"-50","depth":0,"fen":"r1bqkb1r/ppp4p/2n2pp1/3np3/2BP4/1P3N2/P1P2PPP/RNBQ1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":996232100},"kind":{"End":{"id":195906583790616583,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":996413700},"kind":{"Start":{"id":198158383604301831,"kind":{"AlphaBeta":{"alpha":"-120","beta":"-50","depth":0,"fen":"r1bqkb1r/ppp3p1/2n2p1p/3np3/2BP4/1P3N2/P1P2PPP/RNBQ1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":997104300},"kind":{"End":{"id":198158383604301831,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":997298900},"kind":{"Start":{"id":200410183417987079,"kind":{"AlphaBeta":{"alpha":"-120","beta":"-50","depth":0,"fen":"r1bqkb1r/1pp3pp/2n2p2/p2np3/2BP4/1P3N2/P1P2PPP/RNBQ1RK1 w kq a6 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":997687800},"kind":{"End":{"id":200410183417987079,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406942,"nanos_since_epoch":997876400},"kind":{"Start":{"id":202661983231672327,"kind":{"AlphaBeta":{"alpha":"-120","beta":"-50","depth":0,"fen":"r1bqkb1r/p1p3pp/2n2p2/1p1np3/2BP4/1P3N2/P1P2PPP/RNBQ1RK1 w kq b6 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":334000},"kind":{"End":{"id":202661983231672327,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":534900},"kind":{"Start":{"id":204913783045357575,"kind":{"AlphaBeta":{"alpha":"-120","beta":"-50","depth":0,"fen":"r1bqkb1r/ppp4p/2n2p2/3np1p1/2BP4/1P3N2/P1P2PPP/RNBQ1RK1 w kq g6 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":18201400},"kind":{"End":{"id":204913783045357575,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":18450800},"kind":{"Start":{"id":207165582859042823,"kind":{"AlphaBeta":{"alpha":"-120","beta":"-70","depth":0,"fen":"r1bqkb1r/ppp3p1/2n2p2/3np2p/2BP4/1P3N2/P1P2PPP/RNBQ1RK1 w kq h6 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":18830300},"kind":{"End":{"id":207165582859042823,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":19029000},"kind":{"Start":{"id":209417382672728071,"kind":{"AlphaBeta":{"alpha":"-120","beta":"-70","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/3n4/2Bp4/1P3N2/P1P2PPP/RNBQ1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":19396700},"kind":{"End":{"id":209417382672728071,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":19575100},"kind":{"Start":{"id":211669182486413319,"kind":{"AlphaBeta":{"alpha":"-120","beta":"-70","depth":0,"fen":"r2qkb1r/ppp3pp/2n2p2/3np3/2BP4/1P3N1b/P1P2PPP/RNBQ1RK1 w kq - 1 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":19950300},"kind":{"End":{"id":211669182486413319,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":20141100},"kind":{"Start":{"id":213920982300098567,"kind":{"AlphaBeta":{"alpha":"-120","beta":"-70","depth":0,"fen":"r2qkb1r/ppp3pp/2n2p2/3np3/2BP2b1/1P3N2/P1P2PPP/RNBQ1RK1 w kq - 1 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":20513400},"kind":{"End":{"id":213920982300098567,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":20692400},"kind":{"Start":{"id":216172782113783815,"kind":{"AlphaBeta":{"alpha":"-120","beta":"-70","depth":0,"fen":"r2qkb1r/ppp3pp/2n2p2/3npb2/2BP4/1P3N2/P1P2PPP/RNBQ1RK1 w kq - 1 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":21087500},"kind":{"End":{"id":216172782113783815,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":21285800},"kind":{"Start":{"id":218424581927469063,"kind":{"AlphaBeta":{"alpha":"-120","beta":"-70","depth":0,"fen":"r2qkb1r/ppp3pp/2n1bp2/3np3/2BP4/1P3N2/P1P2PPP/RNBQ1RK1 w kq - 1 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":21665900},"kind":{"End":{"id":218424581927469063,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":21844100},"kind":{"Start":{"id":220676381741154311,"kind":{"AlphaBeta":{"alpha":"-120","beta":"-70","depth":0,"fen":"r2qkb1r/pppb2pp/2n2p2/3np3/2BP4/1P3N2/P1P2PPP/RNBQ1RK1 w kq - 1 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":22720800},"kind":{"End":{"id":220676381741154311,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":24837100},"kind":{"Start":{"id":222928181554839559,"kind":{"AlphaBeta":{"alpha":"-120","beta":"-70","depth":0,"fen":"r1bqk2r/ppp3pp/2n2p2/3np3/2BP4/bP3N2/P1P2PPP/RNBQ1RK1 w kq - 1 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":25250700},"kind":{"End":{"id":222928181554839559,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":25432500},"kind":{"Start":{"id":225179981368524807,"kind":{"AlphaBeta":{"alpha":"-120","beta":"-70","depth":0,"fen":"r1bqk2r/ppp3pp/2n2p2/3np3/1bBP4/1P3N2/P1P2PPP/RNBQ1RK1 w kq - 1 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":25813900},"kind":{"End":{"id":225179981368524807,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":26007800},"kind":{"Start":{"id":227431781182210055,"kind":{"AlphaBeta":{"alpha":"-120","beta":"-70","depth":0,"fen":"r1bqk2r/ppp3pp/2n2p2/2bnp3/2BP4/1P3N2/P1P2PPP/RNBQ1RK1 w kq - 1 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":26385600},"kind":{"End":{"id":227431781182210055,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":26959100},"kind":{"Start":{"id":229683580995895303,"kind":{"AlphaBeta":{"alpha":"-120","beta":"-70","depth":0,"fen":"r1bqk2r/ppp3pp/2nb1p2/3np3/2BP4/1P3N2/P1P2PPP/RNBQ1RK1 w kq - 1 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":27361400},"kind":{"End":{"id":229683580995895303,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":27543000},"kind":{"Start":{"id":231935380809580551,"kind":{"AlphaBeta":{"alpha":"-120","beta":"-70","depth":0,"fen":"r1bqk2r/ppp1b1pp/2n2p2/3np3/2BP4/1P3N2/P1P2PPP/RNBQ1RK1 w kq - 1 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":27924300},"kind":{"End":{"id":231935380809580551,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":28118800},"kind":{"Start":{"id":234187180623265799,"kind":{"AlphaBeta":{"alpha":"-120","beta":"-70","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/4p3/2BP4/1Pn2N2/P1P2PPP/RNBQ1RK1 w kq - 1 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":28498800},"kind":{"End":{"id":234187180623265799,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":28676000},"kind":{"Start":{"id":236438980436951047,"kind":{"AlphaBeta":{"alpha":"-120","beta":"-70","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/4p3/2BP4/1P2nN2/P1P2PPP/RNBQ1RK1 w kq - 1 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":29073000},"kind":{"End":{"id":236438980436951047,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":29394100},"kind":{"Start":{"id":238690780250636295,"kind":{"AlphaBeta":{"alpha":"-120","beta":"-70","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/4p3/1nBP4/1P3N2/P1P2PPP/RNBQ1RK1 w kq - 1 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":30110700},"kind":{"End":{"id":238690780250636295,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":30343300},"kind":{"Start":{"id":240942580064321543,"kind":{"AlphaBeta":{"alpha":"-120","beta":"-70","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/4p3/2BP1n2/1P3N2/P1P2PPP/RNBQ1RK1 w kq - 1 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":30737400},"kind":{"End":{"id":240942580064321543,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":30974400},"kind":{"Start":{"id":243194379878006791,"kind":{"AlphaBeta":{"alpha":"-120","beta":"-70","depth":0,"fen":"r1bqkb1r/ppp3pp/1nn2p2/4p3/2BP4/1P3N2/P1P2PPP/RNBQ1RK1 w kq - 1 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":31373700},"kind":{"End":{"id":243194379878006791,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":31567000},"kind":{"Start":{"id":245446179691692039,"kind":{"AlphaBeta":{"alpha":"-120","beta":"-70","depth":0,"fen":"r1bqkb1r/ppp1n1pp/2n2p2/4p3/2BP4/1P3N2/P1P2PPP/RNBQ1RK1 w kq - 1 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":31928400},"kind":{"End":{"id":245446179691692039,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":32120900},"kind":{"Start":{"id":247697979505377287,"kind":{"AlphaBeta":{"alpha":"-120","beta":"-70","depth":0,"fen":"r1bqkb1r/ppp3pp/5p2/3np3/1nBP4/1P3N2/P1P2PPP/RNBQ1RK1 w kq - 1 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":32487100},"kind":{"End":{"id":247697979505377287,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":32665600},"kind":{"Start":{"id":249949779319062535,"kind":{"AlphaBeta":{"alpha":"-120","beta":"-70","depth":0,"fen":"r1bqkb1r/ppp3pp/5p2/3np3/2Bn4/1P3N2/P1P2PPP/RNBQ1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":33952900},"kind":{"End":{"id":249949779319062535,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":34179300},"kind":{"Start":{"id":252201579132747783,"kind":{"AlphaBeta":{"alpha":"-120","beta":"-80","depth":0,"fen":"r1bqkb1r/ppp3pp/5p2/n2np3/2BP4/1P3N2/P1P2PPP/RNBQ1RK1 w kq - 1 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":34544800},"kind":{"End":{"id":252201579132747783,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":34725200},"kind":{"Start":{"id":254453378946433031,"kind":{"AlphaBeta":{"alpha":"-120","beta":"-80","depth":0,"fen":"r1bqkb1r/ppp1n1pp/5p2/3np3/2BP4/1P3N2/P1P2PPP/RNBQ1RK1 w kq - 1 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":35126500},"kind":{"End":{"id":254453378946433031,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":35310800},"kind":{"Start":{"id":256705178760118279,"kind":{"AlphaBeta":{"alpha":"-120","beta":"-80","depth":0,"fen":"rnbqkb1r/ppp3pp/5p2/3np3/2BP4/1P3N2/P1P2PPP/RNBQ1RK1 w kq - 1 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":35672500},"kind":{"End":{"id":256705178760118279,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":35849500},"kind":{"Start":{"id":258956978573803527,"kind":{"AlphaBeta":{"alpha":"-120","beta":"-80","depth":0,"fen":"1rbqkb1r/ppp3pp/2n2p2/3np3/2BP4/1P3N2/P1P2PPP/RNBQ1RK1 w k - 1 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":36226600},"kind":{"End":{"id":258956978573803527,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":36414400},"kind":{"Start":{"id":261208778387488775,"kind":{"AlphaBeta":{"alpha":"-120","beta":"-80","depth":0,"fen":"r1bqkbr1/ppp3pp/2n2p2/3np3/2BP4/1P3N2/P1P2PPP/RNBQ1RK1 w q - 1 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":37096300},"kind":{"End":{"id":261208778387488775,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":37281900},"kind":{"Start":{"id":263460578201174023,"kind":{"AlphaBeta":{"alpha":"-120","beta":"-80","depth":0,"fen":"r1b1kb1r/ppp3pp/2nq1p2/3np3/2BP4/1P3N2/P1P2PPP/RNBQ1RK1 w kq - 1 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":37654300},"kind":{"End":{"id":263460578201174023,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":37833600},"kind":{"Start":{"id":265712378014859271,"kind":{"AlphaBeta":{"alpha":"-120","beta":"-80","depth":0,"fen":"r1b1kb1r/pppq2pp/2n2p2/3np3/2BP4/1P3N2/P1P2PPP/RNBQ1RK1 w kq - 1 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":38215500},"kind":{"End":{"id":265712378014859271,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":38393400},"kind":{"Start":{"id":267964177828544519,"kind":{"AlphaBeta":{"alpha":"-120","beta":"-80","depth":0,"fen":"r1b1kb1r/ppp1q1pp/2n2p2/3np3/2BP4/1P3N2/P1P2PPP/RNBQ1RK1 w kq - 1 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":38761000},"kind":{"End":{"id":267964177828544519,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":38941200},"kind":{"Start":{"id":270215977642229767,"kind":{"AlphaBeta":{"alpha":"-120","beta":"-80","depth":0,"fen":"r1bq1b1r/pppk2pp/2n2p2/3np3/2BP4/1P3N2/P1P2PPP/RNBQ1RK1 w  - 1 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":39330800},"kind":{"End":{"id":270215977642229767,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":39525300},"kind":{"Start":{"id":272467777455915015,"kind":{"AlphaBeta":{"alpha":"-120","beta":"-80","depth":0,"fen":"r1bq1b1r/ppp1k1pp/2n2p2/3np3/2BP4/1P3N2/P1P2PPP/RNBQ1RK1 w  - 1 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":39900700},"kind":{"End":{"id":272467777455915015,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":40108800},"kind":{"Start":{"id":274719577269600263,"kind":{"AlphaBeta":{"alpha":"-120","beta":"-80","depth":0,"fen":"r1bq1b1r/ppp2kpp/2n2p2/3np3/2BP4/1P3N2/P1P2PPP/RNBQ1RK1 w  - 1 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":40501900},"kind":{"End":{"id":274719577269600263,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":40645500},"kind":{"End":{"id":83316593106354181,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":40856500},"kind":{"Start":{"id":85568392920039429,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"80","depth":1,"fen":"r1bqkb1r/ppp3pp/2n2p2/3np3/2BP4/2P2N2/PP3PPP/RNBQ1RK1 b kq - 0 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":41309700},"kind":{"Start":{"id":276971377083285511,"kind":{"AlphaBeta":{"alpha":"-80","beta":"#0","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/3n4/2BPp3/2P2N2/PP3PPP/RNBQ1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":42019300},"kind":{"End":{"id":276971377083285511,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":42244200},"kind":{"Start":{"id":279223176896970759,"kind":{"AlphaBeta":{"alpha":"-80","beta":"-60","depth":0,"fen":"r1bqkb1r/ppp3pp/2n5/3npp2/2BP4/2P2N2/PP3PPP/RNBQ1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":42649600},"kind":{"End":{"id":279223176896970759,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":42829700},"kind":{"Start":{"id":281474976710656007,"kind":{"AlphaBeta":{"alpha":"-80","beta":"-60","depth":0,"fen":"r1bqkb1r/1pp3pp/p1n2p2/3np3/2BP4/2P2N2/PP3PPP/RNBQ1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":43220200},"kind":{"End":{"id":281474976710656007,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":43400300},"kind":{"Start":{"id":283726776524341255,"kind":{"AlphaBeta":{"alpha":"-80","beta":"-60","depth":0,"fen":"r1bqkb1r/p1p3pp/1pn2p2/3np3/2BP4/2P2N2/PP3PPP/RNBQ1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":53766000},"kind":{"End":{"id":283726776524341255,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":53954900},"kind":{"End":{"id":85568392920039429,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":54151000},"kind":{"Start":{"id":87820192733724677,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"80","depth":1,"fen":"r1bqkb1r/ppp3pp/2n2p2/3np3/2BP4/5NP1/PPP2P1P/RNBQ1RK1 b kq - 0 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":54503200},"kind":{"Start":{"id":285978576338026503,"kind":{"AlphaBeta":{"alpha":"-80","beta":"#0","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/3n4/2BPp3/5NP1/PPP2P1P/RNBQ1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":55178500},"kind":{"End":{"id":285978576338026503,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":55378900},"kind":{"Start":{"id":288230376151711751,"kind":{"AlphaBeta":{"alpha":"-80","beta":"30","depth":0,"fen":"r1bqkb1r/ppp3pp/2n5/3npp2/2BP4/5NP1/PPP2P1P/RNBQ1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":55758700},"kind":{"End":{"id":288230376151711751,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":55946300},"kind":{"Start":{"id":290482175965396999,"kind":{"AlphaBeta":{"alpha":"-80","beta":"30","depth":0,"fen":"r1bqkb1r/1pp3pp/p1n2p2/3np3/2BP4/5NP1/PPP2P1P/RNBQ1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":56373800},"kind":{"End":{"id":290482175965396999,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":56784600},"kind":{"Start":{"id":292733975779082247,"kind":{"AlphaBeta":{"alpha":"-80","beta":"30","depth":0,"fen":"r1bqkb1r/p1p3pp/1pn2p2/3np3/2BP4/5NP1/PPP2P1P/RNBQ1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":57971400},"kind":{"End":{"id":292733975779082247,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":58225100},"kind":{"Start":{"id":294985775592767495,"kind":{"AlphaBeta":{"alpha":"-80","beta":"-50","depth":0,"fen":"r1bqkb1r/ppp4p/2n2pp1/3np3/2BP4/5NP1/PPP2P1P/RNBQ1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":58645900},"kind":{"End":{"id":294985775592767495,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":58836700},"kind":{"Start":{"id":297237575406452743,"kind":{"AlphaBeta":{"alpha":"-80","beta":"-50","depth":0,"fen":"r1bqkb1r/ppp3p1/2n2p1p/3np3/2BP4/5NP1/PPP2P1P/RNBQ1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":59225100},"kind":{"End":{"id":297237575406452743,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":59409800},"kind":{"Start":{"id":299489375220137991,"kind":{"AlphaBeta":{"alpha":"-80","beta":"-50","depth":0,"fen":"r1bqkb1r/1pp3pp/2n2p2/p2np3/2BP4/5NP1/PPP2P1P/RNBQ1RK1 w kq a6 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":59801000},"kind":{"End":{"id":299489375220137991,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":59983200},"kind":{"Start":{"id":301741175033823239,"kind":{"AlphaBeta":{"alpha":"-80","beta":"-50","depth":0,"fen":"r1bqkb1r/p1p3pp/2n2p2/1p1np3/2BP4/5NP1/PPP2P1P/RNBQ1RK1 w kq b6 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":62315600},"kind":{"End":{"id":301741175033823239,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":62556900},"kind":{"Start":{"id":303992974847508487,"kind":{"AlphaBeta":{"alpha":"-80","beta":"-50","depth":0,"fen":"r1bqkb1r/ppp4p/2n2p2/3np1p1/2BP4/5NP1/PPP2P1P/RNBQ1RK1 w kq g6 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":79957200},"kind":{"End":{"id":303992974847508487,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":80213900},"kind":{"Start":{"id":306244774661193735,"kind":{"AlphaBeta":{"alpha":"-80","beta":"-70","depth":0,"fen":"r1bqkb1r/ppp3p1/2n2p2/3np2p/2BP4/5NP1/PPP2P1P/RNBQ1RK1 w kq h6 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":80614000},"kind":{"End":{"id":306244774661193735,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":80815900},"kind":{"Start":{"id":308496574474878983,"kind":{"AlphaBeta":{"alpha":"-80","beta":"-70","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/3n4/2Bp4/5NP1/PPP2P1P/RNBQ1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":81188400},"kind":{"End":{"id":308496574474878983,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":81371200},"kind":{"Start":{"id":310748374288564231,"kind":{"AlphaBeta":{"alpha":"-80","beta":"-70","depth":0,"fen":"r2qkb1r/ppp3pp/2n2p2/3np3/2BP4/5NPb/PPP2P1P/RNBQ1RK1 w kq - 1 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":81784300},"kind":{"End":{"id":310748374288564231,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":81962900},"kind":{"Start":{"id":313000174102249479,"kind":{"AlphaBeta":{"alpha":"-80","beta":"-70","depth":0,"fen":"r2qkb1r/ppp3pp/2n2p2/3np3/2BP2b1/5NP1/PPP2P1P/RNBQ1RK1 w kq - 1 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":82336300},"kind":{"End":{"id":313000174102249479,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":82535400},"kind":{"Start":{"id":315251973915934727,"kind":{"AlphaBeta":{"alpha":"-80","beta":"-70","depth":0,"fen":"r2qkb1r/ppp3pp/2n2p2/3npb2/2BP4/5NP1/PPP2P1P/RNBQ1RK1 w kq - 1 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":82911800},"kind":{"End":{"id":315251973915934727,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":83089800},"kind":{"Start":{"id":317503773729619975,"kind":{"AlphaBeta":{"alpha":"-80","beta":"-70","depth":0,"fen":"r2qkb1r/ppp3pp/2n1bp2/3np3/2BP4/5NP1/PPP2P1P/RNBQ1RK1 w kq - 1 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":83485900},"kind":{"End":{"id":317503773729619975,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":83674000},"kind":{"Start":{"id":319755573543305223,"kind":{"AlphaBeta":{"alpha":"-80","beta":"-70","depth":0,"fen":"r2qkb1r/pppb2pp/2n2p2/3np3/2BP4/5NP1/PPP2P1P/RNBQ1RK1 w kq - 1 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":84037800},"kind":{"End":{"id":319755573543305223,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":84224600},"kind":{"Start":{"id":322007373356990471,"kind":{"AlphaBeta":{"alpha":"-80","beta":"-70","depth":0,"fen":"r1bqk2r/ppp3pp/2n2p2/3np3/2BP4/b4NP1/PPP2P1P/RNBQ1RK1 w kq - 1 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":84621800},"kind":{"End":{"id":322007373356990471,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":84855300},"kind":{"Start":{"id":324259173170675719,"kind":{"AlphaBeta":{"alpha":"-80","beta":"-70","depth":0,"fen":"r1bqk2r/ppp3pp/2n2p2/3np3/1bBP4/5NP1/PPP2P1P/RNBQ1RK1 w kq - 1 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":90288000},"kind":{"End":{"id":324259173170675719,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":90535800},"kind":{"Start":{"id":326510972984360967,"kind":{"AlphaBeta":{"alpha":"-80","beta":"-70","depth":0,"fen":"r1bqk2r/ppp3pp/2n2p2/2bnp3/2BP4/5NP1/PPP2P1P/RNBQ1RK1 w kq - 1 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":90930100},"kind":{"End":{"id":326510972984360967,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":91114500},"kind":{"Start":{"id":328762772798046215,"kind":{"AlphaBeta":{"alpha":"-80","beta":"-70","depth":0,"fen":"r1bqk2r/ppp3pp/2nb1p2/3np3/2BP4/5NP1/PPP2P1P/RNBQ1RK1 w kq - 1 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":92004500},"kind":{"End":{"id":328762772798046215,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":92224600},"kind":{"Start":{"id":331014572611731463,"kind":{"AlphaBeta":{"alpha":"-80","beta":"-70","depth":0,"fen":"r1bqk2r/ppp1b1pp/2n2p2/3np3/2BP4/5NP1/PPP2P1P/RNBQ1RK1 w kq - 1 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":92626200},"kind":{"End":{"id":331014572611731463,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":92804600},"kind":{"Start":{"id":333266372425416711,"kind":{"AlphaBeta":{"alpha":"-80","beta":"-70","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/4p3/2BP4/2n2NP1/PPP2P1P/RNBQ1RK1 w kq - 1 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":93244600},"kind":{"End":{"id":333266372425416711,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":93426800},"kind":{"Start":{"id":335518172239101959,"kind":{"AlphaBeta":{"alpha":"-80","beta":"-70","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/4p3/2BP4/4nNP1/PPP2P1P/RNBQ1RK1 w kq - 1 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":93821100},"kind":{"End":{"id":335518172239101959,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":94004200},"kind":{"Start":{"id":337769972052787207,"kind":{"AlphaBeta":{"alpha":"-80","beta":"-70","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/4p3/1nBP4/5NP1/PPP2P1P/RNBQ1RK1 w kq - 1 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":94388000},"kind":{"End":{"id":337769972052787207,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":94587200},"kind":{"Start":{"id":340021771866472455,"kind":{"AlphaBeta":{"alpha":"-80","beta":"-70","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/4p3/2BP1n2/5NP1/PPP2P1P/RNBQ1RK1 w kq - 1 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":94992000},"kind":{"End":{"id":340021771866472455,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":95174900},"kind":{"Start":{"id":342273571680157703,"kind":{"AlphaBeta":{"alpha":"-80","beta":"-70","depth":0,"fen":"r1bqkb1r/ppp3pp/1nn2p2/4p3/2BP4/5NP1/PPP2P1P/RNBQ1RK1 w kq - 1 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":95559800},"kind":{"End":{"id":342273571680157703,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":95742000},"kind":{"Start":{"id":344525371493842951,"kind":{"AlphaBeta":{"alpha":"-80","beta":"-70","depth":0,"fen":"r1bqkb1r/ppp1n1pp/2n2p2/4p3/2BP4/5NP1/PPP2P1P/RNBQ1RK1 w kq - 1 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":96113200},"kind":{"End":{"id":344525371493842951,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":96292900},"kind":{"Start":{"id":346777171307528199,"kind":{"AlphaBeta":{"alpha":"-80","beta":"-70","depth":0,"fen":"r1bqkb1r/ppp3pp/5p2/3np3/1nBP4/5NP1/PPP2P1P/RNBQ1RK1 w kq - 1 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":96940500},"kind":{"End":{"id":346777171307528199,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":97140400},"kind":{"Start":{"id":349028971121213447,"kind":{"AlphaBeta":{"alpha":"-80","beta":"-70","depth":0,"fen":"r1bqkb1r/ppp3pp/5p2/3np3/2Bn4/5NP1/PPP2P1P/RNBQ1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":98407000},"kind":{"End":{"id":349028971121213447,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":98582600},"kind":{"End":{"id":87820192733724677,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":98760400},"kind":{"Start":{"id":90071992547409925,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"80","depth":1,"fen":"r1bqkb1r/ppp3pp/2n2p2/3np3/2BP4/5N1P/PPP2PP1/RNBQ1RK1 b kq - 0 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":99128900},"kind":{"Start":{"id":351280770934898695,"kind":{"AlphaBeta":{"alpha":"-80","beta":"#0","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/3n4/2BPp3/5N1P/PPP2PP1/RNBQ1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":99771000},"kind":{"End":{"id":351280770934898695,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":99969600},"kind":{"Start":{"id":353532570748583943,"kind":{"AlphaBeta":{"alpha":"-80","beta":"-60","depth":0,"fen":"r1bqkb1r/ppp3pp/2n5/3npp2/2BP4/5N1P/PPP2PP1/RNBQ1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":100336800},"kind":{"End":{"id":353532570748583943,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":100535400},"kind":{"Start":{"id":355784370562269191,"kind":{"AlphaBeta":{"alpha":"-80","beta":"-60","depth":0,"fen":"r1bqkb1r/1pp3pp/p1n2p2/3np3/2BP4/5N1P/PPP2PP1/RNBQ1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":100909900},"kind":{"End":{"id":355784370562269191,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":101088100},"kind":{"Start":{"id":358036170375954439,"kind":{"AlphaBeta":{"alpha":"-80","beta":"-60","depth":0,"fen":"r1bqkb1r/p1p3pp/1pn2p2/3np3/2BP4/5N1P/PPP2PP1/RNBQ1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":113910600},"kind":{"End":{"id":358036170375954439,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":114112400},"kind":{"End":{"id":90071992547409925,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":114295600},"kind":{"Start":{"id":92323792361095173,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"80","depth":1,"fen":"r1bqkb1r/ppp3pp/2n2p2/3np3/P1BP4/5N2/1PP2PPP/RNBQ1RK1 b kq a3 0 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":114668000},"kind":{"Start":{"id":360287970189639687,"kind":{"AlphaBeta":{"alpha":"-80","beta":"#0","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/3n4/P1BPp3/5N2/1PP2PPP/RNBQ1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":115293900},"kind":{"End":{"id":360287970189639687,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":115491500},"kind":{"Start":{"id":362539770003324935,"kind":{"AlphaBeta":{"alpha":"-80","beta":"-50","depth":0,"fen":"r1bqkb1r/ppp3pp/2n5/3npp2/P1BP4/5N2/1PP2PPP/RNBQ1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":115869900},"kind":{"End":{"id":362539770003324935,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":116056900},"kind":{"Start":{"id":364791569817010183,"kind":{"AlphaBeta":{"alpha":"-80","beta":"-50","depth":0,"fen":"r1bqkb1r/1pp3pp/p1n2p2/3np3/P1BP4/5N2/1PP2PPP/RNBQ1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":116468100},"kind":{"End":{"id":364791569817010183,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":116926400},"kind":{"Start":{"id":367043369630695431,"kind":{"AlphaBeta":{"alpha":"-80","beta":"-50","depth":0,"fen":"r1bqkb1r/p1p3pp/1pn2p2/3np3/P1BP4/5N2/1PP2PPP/RNBQ1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":127629500},"kind":{"End":{"id":367043369630695431,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":127829600},"kind":{"End":{"id":92323792361095173,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":128015000},"kind":{"Start":{"id":94575592174780421,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"80","depth":1,"fen":"r1bqkb1r/ppp3pp/2n2p2/3np3/1PBP4/5N2/P1P2PPP/RNBQ1RK1 b kq b3 0 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":128398500},"kind":{"Start":{"id":369295169444380679,"kind":{"AlphaBeta":{"alpha":"-80","beta":"#0","depth":0,"fen":"r1bqk2r/ppp3pp/2n2p2/3np3/1bBP4/5N2/P1P2PPP/RNBQ1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":129481300},"kind":{"End":{"id":369295169444380679,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":129689000},"kind":{"Start":{"id":371546969258065927,"kind":{"AlphaBeta":{"alpha":"-80","beta":"-50","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/4p3/1nBP4/5N2/P1P2PPP/RNBQ1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":130061900},"kind":{"End":{"id":371546969258065927,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":130252000},"kind":{"Start":{"id":373798769071751175,"kind":{"AlphaBeta":{"alpha":"-80","beta":"-50","depth":0,"fen":"r1bqkb1r/ppp3pp/5p2/3np3/1nBP4/5N2/P1P2PPP/RNBQ1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":130654000},"kind":{"End":{"id":373798769071751175,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":130836700},"kind":{"Start":{"id":376050568885436423,"kind":{"AlphaBeta":{"alpha":"-80","beta":"-50","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/3n4/1PBPp3/5N2/P1P2PPP/RNBQ1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":131213300},"kind":{"End":{"id":376050568885436423,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":131398100},"kind":{"Start":{"id":378302368699121671,"kind":{"AlphaBeta":{"alpha":"-80","beta":"-50","depth":0,"fen":"r1bqkb1r/ppp3pp/2n5/3npp2/1PBP4/5N2/P1P2PPP/RNBQ1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":131805300},"kind":{"End":{"id":378302368699121671,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":132004100},"kind":{"Start":{"id":380554168512806919,"kind":{"AlphaBeta":{"alpha":"-80","beta":"-50","depth":0,"fen":"r1bqkb1r/1pp3pp/p1n2p2/3np3/1PBP4/5N2/P1P2PPP/RNBQ1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":132380800},"kind":{"End":{"id":380554168512806919,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":132579300},"kind":{"Start":{"id":382805968326492167,"kind":{"AlphaBeta":{"alpha":"-80","beta":"-50","depth":0,"fen":"r1bqkb1r/p1p3pp/1pn2p2/3np3/1PBP4/5N2/P1P2PPP/RNBQ1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":132950800},"kind":{"End":{"id":382805968326492167,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":133130800},"kind":{"Start":{"id":385057768140177415,"kind":{"AlphaBeta":{"alpha":"-80","beta":"-50","depth":0,"fen":"r1bqkb1r/ppp4p/2n2pp1/3np3/1PBP4/5N2/P1P2PPP/RNBQ1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":133538200},"kind":{"End":{"id":385057768140177415,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":133719500},"kind":{"Start":{"id":387309567953862663,"kind":{"AlphaBeta":{"alpha":"-80","beta":"-50","depth":0,"fen":"r1bqkb1r/ppp3p1/2n2p1p/3np3/1PBP4/5N2/P1P2PPP/RNBQ1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":134092800},"kind":{"End":{"id":387309567953862663,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":134270400},"kind":{"Start":{"id":389561367767547911,"kind":{"AlphaBeta":{"alpha":"-80","beta":"-50","depth":0,"fen":"r1bqkb1r/1pp3pp/2n2p2/p2np3/1PBP4/5N2/P1P2PPP/RNBQ1RK1 w kq a6 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":134670600},"kind":{"End":{"id":389561367767547911,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":134853800},"kind":{"Start":{"id":391813167581233159,"kind":{"AlphaBeta":{"alpha":"-80","beta":"-50","depth":0,"fen":"r1bqkb1r/p1p3pp/2n2p2/1p1np3/1PBP4/5N2/P1P2PPP/RNBQ1RK1 w kq b6 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":137802800},"kind":{"End":{"id":391813167581233159,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":138077400},"kind":{"Start":{"id":394064967394918407,"kind":{"AlphaBeta":{"alpha":"-80","beta":"-60","depth":0,"fen":"r1bqkb1r/ppp4p/2n2p2/3np1p1/1PBP4/5N2/P1P2PPP/RNBQ1RK1 w kq g6 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":138466000},"kind":{"End":{"id":394064967394918407,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":141802900},"kind":{"Start":{"id":396316767208603655,"kind":{"AlphaBeta":{"alpha":"-80","beta":"-60","depth":0,"fen":"r1bqkb1r/ppp3p1/2n2p2/3np2p/1PBP4/5N2/P1P2PPP/RNBQ1RK1 w kq h6 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":142466700},"kind":{"End":{"id":396316767208603655,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":142716300},"kind":{"Start":{"id":398568567022288903,"kind":{"AlphaBeta":{"alpha":"-80","beta":"-60","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/3n4/1PBp4/5N2/P1P2PPP/RNBQ1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":143270100},"kind":{"End":{"id":398568567022288903,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":143481400},"kind":{"Start":{"id":400820366835974151,"kind":{"AlphaBeta":{"alpha":"-80","beta":"-60","depth":0,"fen":"r2qkb1r/ppp3pp/2n2p2/3np3/1PBP4/5N1b/P1P2PPP/RNBQ1RK1 w kq - 1 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":143865700},"kind":{"End":{"id":400820366835974151,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":144045000},"kind":{"Start":{"id":403072166649659399,"kind":{"AlphaBeta":{"alpha":"-80","beta":"-60","depth":0,"fen":"r2qkb1r/ppp3pp/2n2p2/3np3/1PBP2b1/5N2/P1P2PPP/RNBQ1RK1 w kq - 1 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":144418600},"kind":{"End":{"id":403072166649659399,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":144610300},"kind":{"Start":{"id":405323966463344647,"kind":{"AlphaBeta":{"alpha":"-80","beta":"-60","depth":0,"fen":"r2qkb1r/ppp3pp/2n2p2/3npb2/1PBP4/5N2/P1P2PPP/RNBQ1RK1 w kq - 1 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":144986900},"kind":{"End":{"id":405323966463344647,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":145164200},"kind":{"Start":{"id":407575766277029895,"kind":{"AlphaBeta":{"alpha":"-80","beta":"-60","depth":0,"fen":"r2qkb1r/ppp3pp/2n1bp2/3np3/1PBP4/5N2/P1P2PPP/RNBQ1RK1 w kq - 1 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":145557700},"kind":{"End":{"id":407575766277029895,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":145745000},"kind":{"Start":{"id":409827566090715143,"kind":{"AlphaBeta":{"alpha":"-80","beta":"-60","depth":0,"fen":"r2qkb1r/pppb2pp/2n2p2/3np3/1PBP4/5N2/P1P2PPP/RNBQ1RK1 w kq - 1 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":146110800},"kind":{"End":{"id":409827566090715143,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":146289700},"kind":{"Start":{"id":412079365904400391,"kind":{"AlphaBeta":{"alpha":"-80","beta":"-60","depth":0,"fen":"r1bqk2r/ppp3pp/2n2p2/2bnp3/1PBP4/5N2/P1P2PPP/RNBQ1RK1 w kq - 1 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":147104800},"kind":{"End":{"id":412079365904400391,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":147435500},"kind":{"Start":{"id":414331165718085639,"kind":{"AlphaBeta":{"alpha":"-80","beta":"-60","depth":0,"fen":"r1bqk2r/ppp3pp/2nb1p2/3np3/1PBP4/5N2/P1P2PPP/RNBQ1RK1 w kq - 1 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":147832000},"kind":{"End":{"id":414331165718085639,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":148105100},"kind":{"Start":{"id":416582965531770887,"kind":{"AlphaBeta":{"alpha":"-80","beta":"-60","depth":0,"fen":"r1bqk2r/ppp1b1pp/2n2p2/3np3/1PBP4/5N2/P1P2PPP/RNBQ1RK1 w kq - 1 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":148502100},"kind":{"End":{"id":416582965531770887,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":148687600},"kind":{"Start":{"id":418834765345456135,"kind":{"AlphaBeta":{"alpha":"-80","beta":"-60","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/4p3/1PBP4/2n2N2/P1P2PPP/RNBQ1RK1 w kq - 1 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":149062100},"kind":{"End":{"id":418834765345456135,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":149212300},"kind":{"Start":{"id":421086565159141383,"kind":{"AlphaBeta":{"alpha":"-80","beta":"-60","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/4p3/1PBP4/4nN2/P1P2PPP/RNBQ1RK1 w kq - 1 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":149563300},"kind":{"End":{"id":421086565159141383,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":149710300},"kind":{"Start":{"id":423338364972826631,"kind":{"AlphaBeta":{"alpha":"-80","beta":"-60","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/4p3/1PBP1n2/5N2/P1P2PPP/RNBQ1RK1 w kq - 1 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":150095900},"kind":{"End":{"id":423338364972826631,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":150248500},"kind":{"Start":{"id":425590164786511879,"kind":{"AlphaBeta":{"alpha":"-80","beta":"-60","depth":0,"fen":"r1bqkb1r/ppp3pp/1nn2p2/4p3/1PBP4/5N2/P1P2PPP/RNBQ1RK1 w kq - 1 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":150599200},"kind":{"End":{"id":425590164786511879,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":150749600},"kind":{"Start":{"id":427841964600197127,"kind":{"AlphaBeta":{"alpha":"-80","beta":"-60","depth":0,"fen":"r1bqkb1r/ppp1n1pp/2n2p2/4p3/1PBP4/5N2/P1P2PPP/RNBQ1RK1 w kq - 1 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":151104000},"kind":{"End":{"id":427841964600197127,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":151249400},"kind":{"Start":{"id":430093764413882375,"kind":{"AlphaBeta":{"alpha":"-80","beta":"-60","depth":0,"fen":"r1bqkb1r/ppp3pp/5p2/3np3/1PBn4/5N2/P1P2PPP/RNBQ1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":151637800},"kind":{"End":{"id":430093764413882375,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":151785900},"kind":{"Start":{"id":432345564227567623,"kind":{"AlphaBeta":{"alpha":"-80","beta":"-60","depth":0,"fen":"r1bqkb1r/ppp3pp/5p2/n2np3/1PBP4/5N2/P1P2PPP/RNBQ1RK1 w kq - 1 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":152238400},"kind":{"End":{"id":432345564227567623,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":152389200},"kind":{"Start":{"id":434597364041252871,"kind":{"AlphaBeta":{"alpha":"-80","beta":"-60","depth":0,"fen":"r1bqkb1r/ppp1n1pp/5p2/3np3/1PBP4/5N2/P1P2PPP/RNBQ1RK1 w kq - 1 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":152714800},"kind":{"End":{"id":434597364041252871,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":152858800},"kind":{"Start":{"id":436849163854938119,"kind":{"AlphaBeta":{"alpha":"-80","beta":"-60","depth":0,"fen":"rnbqkb1r/ppp3pp/5p2/3np3/1PBP4/5N2/P1P2PPP/RNBQ1RK1 w kq - 1 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":153214300},"kind":{"End":{"id":436849163854938119,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":153411100},"kind":{"Start":{"id":439100963668623367,"kind":{"AlphaBeta":{"alpha":"-80","beta":"-60","depth":0,"fen":"1rbqkb1r/ppp3pp/2n2p2/3np3/1PBP4/5N2/P1P2PPP/RNBQ1RK1 w k - 1 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":153740000},"kind":{"End":{"id":439100963668623367,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":153914700},"kind":{"Start":{"id":441352763482308615,"kind":{"AlphaBeta":{"alpha":"-80","beta":"-60","depth":0,"fen":"r1bqkbr1/ppp3pp/2n2p2/3np3/1PBP4/5N2/P1P2PPP/RNBQ1RK1 w q - 1 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":154276800},"kind":{"End":{"id":441352763482308615,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":154453200},"kind":{"Start":{"id":443604563295993863,"kind":{"AlphaBeta":{"alpha":"-80","beta":"-60","depth":0,"fen":"r1b1kb1r/ppp3pp/2nq1p2/3np3/1PBP4/5N2/P1P2PPP/RNBQ1RK1 w kq - 1 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":154819200},"kind":{"End":{"id":443604563295993863,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":154997000},"kind":{"Start":{"id":445856363109679111,"kind":{"AlphaBeta":{"alpha":"-80","beta":"-60","depth":0,"fen":"r1b1kb1r/pppq2pp/2n2p2/3np3/1PBP4/5N2/P1P2PPP/RNBQ1RK1 w kq - 1 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":159409100},"kind":{"End":{"id":445856363109679111,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":159910200},"kind":{"Start":{"id":448108162923364359,"kind":{"AlphaBeta":{"alpha":"-80","beta":"-60","depth":0,"fen":"r1b1kb1r/ppp1q1pp/2n2p2/3np3/1PBP4/5N2/P1P2PPP/RNBQ1RK1 w kq - 1 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":160751800},"kind":{"End":{"id":448108162923364359,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":161170700},"kind":{"Start":{"id":450359962737049607,"kind":{"AlphaBeta":{"alpha":"-80","beta":"-60","depth":0,"fen":"r1bq1b1r/pppk2pp/2n2p2/3np3/1PBP4/5N2/P1P2PPP/RNBQ1RK1 w  - 1 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":162453500},"kind":{"End":{"id":450359962737049607,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":163347000},"kind":{"Start":{"id":452611762550734855,"kind":{"AlphaBeta":{"alpha":"-80","beta":"-60","depth":0,"fen":"r1bq1b1r/ppp1k1pp/2n2p2/3np3/1PBP4/5N2/P1P2PPP/RNBQ1RK1 w  - 1 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":164113200},"kind":{"End":{"id":452611762550734855,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":164309400},"kind":{"Start":{"id":454863562364420103,"kind":{"AlphaBeta":{"alpha":"-80","beta":"-60","depth":0,"fen":"r1bq1b1r/ppp2kpp/2n2p2/3np3/1PBP4/5N2/P1P2PPP/RNBQ1RK1 w  - 1 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":164697800},"kind":{"End":{"id":454863562364420103,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":164860900},"kind":{"End":{"id":94575592174780421,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":165185400},"kind":{"Start":{"id":96827391988465669,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"60","depth":1,"fen":"r1bqkb1r/ppp3pp/2n2p2/3np3/2BP2P1/5N2/PPP2P1P/RNBQ1RK1 b kq g3 0 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":165571700},"kind":{"Start":{"id":457115362178105351,"kind":{"AlphaBeta":{"alpha":"-60","beta":"#0","depth":0,"fen":"r2qkb1r/ppp3pp/2n2p2/3np3/2BP2b1/5N2/PPP2P1P/RNBQ1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":167067200},"kind":{"End":{"id":457115362178105351,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":167393600},"kind":{"Start":{"id":459367161991790599,"kind":{"AlphaBeta":{"alpha":"-60","beta":"-10","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/3n4/2BPp1P1/5N2/PPP2P1P/RNBQ1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":167761600},"kind":{"End":{"id":459367161991790599,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":167938600},"kind":{"Start":{"id":461618961805475847,"kind":{"AlphaBeta":{"alpha":"-60","beta":"-10","depth":0,"fen":"r1bqkb1r/ppp3pp/2n5/3npp2/2BP2P1/5N2/PPP2P1P/RNBQ1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":168391200},"kind":{"End":{"id":461618961805475847,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":168606400},"kind":{"Start":{"id":463870761619161095,"kind":{"AlphaBeta":{"alpha":"-60","beta":"-10","depth":0,"fen":"r1bqkb1r/1pp3pp/p1n2p2/3np3/2BP2P1/5N2/PPP2P1P/RNBQ1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":169001300},"kind":{"End":{"id":463870761619161095,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":169188500},"kind":{"Start":{"id":466122561432846343,"kind":{"AlphaBeta":{"alpha":"-60","beta":"-10","depth":0,"fen":"r1bqkb1r/p1p3pp/1pn2p2/3np3/2BP2P1/5N2/PPP2P1P/RNBQ1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":170286100},"kind":{"End":{"id":466122561432846343,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":170483800},"kind":{"Start":{"id":468374361246531591,"kind":{"AlphaBeta":{"alpha":"-60","beta":"-40","depth":0,"fen":"r1bqkb1r/ppp4p/2n2pp1/3np3/2BP2P1/5N2/PPP2P1P/RNBQ1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":170851100},"kind":{"End":{"id":468374361246531591,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":171050700},"kind":{"Start":{"id":470626161060216839,"kind":{"AlphaBeta":{"alpha":"-60","beta":"-40","depth":0,"fen":"r1bqkb1r/ppp3p1/2n2p1p/3np3/2BP2P1/5N2/PPP2P1P/RNBQ1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":171503800},"kind":{"End":{"id":470626161060216839,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":171684100},"kind":{"Start":{"id":472877960873902087,"kind":{"AlphaBeta":{"alpha":"-60","beta":"-40","depth":0,"fen":"r1bqkb1r/1pp3pp/2n2p2/p2np3/2BP2P1/5N2/PPP2P1P/RNBQ1RK1 w kq a6 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":172178200},"kind":{"End":{"id":472877960873902087,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":172360700},"kind":{"Start":{"id":475129760687587335,"kind":{"AlphaBeta":{"alpha":"-60","beta":"-40","depth":0,"fen":"r1bqkb1r/p1p3pp/2n2p2/1p1np3/2BP2P1/5N2/PPP2P1P/RNBQ1RK1 w kq b6 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":174921700},"kind":{"End":{"id":475129760687587335,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":175569900},"kind":{"Start":{"id":477381560501272583,"kind":{"AlphaBeta":{"alpha":"-60","beta":"-40","depth":0,"fen":"r1bqkb1r/ppp4p/2n2p2/3np1p1/2BP2P1/5N2/PPP2P1P/RNBQ1RK1 w kq g6 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":182108600},"kind":{"End":{"id":477381560501272583,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":182298200},"kind":{"End":{"id":96827391988465669,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":182479900},"kind":{"Start":{"id":99079191802150917,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"60","depth":1,"fen":"r1bqkb1r/ppp3pp/2n2p2/3np3/2BP3P/5N2/PPP2PP1/RNBQ1RK1 b kq h3 0 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":182846900},"kind":{"Start":{"id":479633360314957831,"kind":{"AlphaBeta":{"alpha":"-60","beta":"#0","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/3n4/2BPp2P/5N2/PPP2PP1/RNBQ1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":183459400},"kind":{"End":{"id":479633360314957831,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":183609100},"kind":{"End":{"id":99079191802150917,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":183784100},"kind":{"Start":{"id":101330991615836165,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"60","depth":1,"fen":"r1bqkb1r/ppp3pp/2n2p2/3np3/2BP4/5N2/PPPB1PPP/RN1Q1RK1 b kq - 1 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":184153200},"kind":{"Start":{"id":481885160128643079,"kind":{"AlphaBeta":{"alpha":"-60","beta":"#0","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/3n4/2Bp4/5N2/PPPB1PPP/RN1Q1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":193018800},"kind":{"End":{"id":481885160128643079,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":193217900},"kind":{"End":{"id":101330991615836165,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":193399600},"kind":{"Start":{"id":103582791429521413,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"60","depth":1,"fen":"r1bqkb1r/ppp3pp/2n2p2/3np3/2BP4/4BN2/PPP2PPP/RN1Q1RK1 b kq - 1 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":193762600},"kind":{"Start":{"id":484136959942328327,"kind":{"AlphaBeta":{"alpha":"-60","beta":"#0","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/3n4/2BPp3/4BN2/PPP2PPP/RN1Q1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":194402400},"kind":{"End":{"id":484136959942328327,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":194600200},"kind":{"Start":{"id":486388759756013575,"kind":{"AlphaBeta":{"alpha":"-60","beta":"-50","depth":0,"fen":"r1bqkb1r/ppp3pp/2n5/3npp2/2BP4/4BN2/PPP2PPP/RN1Q1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":194973200},"kind":{"End":{"id":486388759756013575,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":195166400},"kind":{"Start":{"id":488640559569698823,"kind":{"AlphaBeta":{"alpha":"-60","beta":"-50","depth":0,"fen":"r1bqkb1r/1pp3pp/p1n2p2/3np3/2BP4/4BN2/PPP2PPP/RN1Q1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":195539000},"kind":{"End":{"id":488640559569698823,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":195718100},"kind":{"Start":{"id":490892359383384071,"kind":{"AlphaBeta":{"alpha":"-60","beta":"-50","depth":0,"fen":"r1bqkb1r/p1p3pp/1pn2p2/3np3/2BP4/4BN2/PPP2PPP/RN1Q1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":211214700},"kind":{"End":{"id":490892359383384071,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":211433500},"kind":{"End":{"id":103582791429521413,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":211624500},"kind":{"Start":{"id":105834591243206661,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"60","depth":1,"fen":"r1bqkb1r/ppp3pp/2n2p2/3np3/2BP1B2/5N2/PPP2PPP/RN1Q1RK1 b kq - 1 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":213373100},"kind":{"Start":{"id":493144159197069319,"kind":{"AlphaBeta":{"alpha":"-60","beta":"#0","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/3n4/2BP1p2/5N2/PPP2PPP/RN1Q1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":264674000},"kind":{"End":{"id":493144159197069319,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":264862800},"kind":{"End":{"id":105834591243206661,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":265064700},"kind":{"Start":{"id":108086391056891909,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"60","depth":1,"fen":"r1bqkb1r/ppp3pp/2n2p2/3np1B1/2BP4/5N2/PPP2PPP/RN1Q1RK1 b kq - 1 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":265435400},"kind":{"Start":{"id":495395959010754567,"kind":{"AlphaBeta":{"alpha":"-60","beta":"#0","depth":0,"fen":"r1bqkb1r/ppp3pp/2n5/3np1p1/2BP4/5N2/PPP2PPP/RN1Q1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":383176400},"kind":{"End":{"id":495395959010754567,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":383378700},"kind":{"End":{"id":108086391056891909,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":383580300},"kind":{"Start":{"id":110338190870577157,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"60","depth":1,"fen":"r1bqkb1r/ppp3pp/2n2p1B/3np3/2BP4/5N2/PPP2PPP/RN1Q1RK1 b kq - 1 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":383943800},"kind":{"Start":{"id":497647758824439815,"kind":{"AlphaBeta":{"alpha":"-60","beta":"#0","depth":0,"fen":"r1bqkb1r/ppp4p/2n2p1p/3np3/2BP4/5N2/PPP2PPP/RN1Q1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":428708900},"kind":{"End":{"id":497647758824439815,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":428913100},"kind":{"End":{"id":110338190870577157,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":429112600},"kind":{"Start":{"id":112589990684262405,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"60","depth":1,"fen":"r1bqkb1r/ppp3pp/2n2p2/3np3/3P4/5N2/PPP1BPPP/RNBQ1RK1 b kq - 1 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":429506700},"kind":{"Start":{"id":499899558638125063,"kind":{"AlphaBeta":{"alpha":"-60","beta":"#0","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/3n4/3Pp3/5N2/PPP1BPPP/RNBQ1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":429960400},"kind":{"End":{"id":499899558638125063,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":430167900},"kind":{"End":{"id":112589990684262405,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":430407400},"kind":{"Start":{"id":114841790497947653,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"60","depth":1,"fen":"r1bqkb1r/ppp3pp/2n2p2/3np3/3P4/1B3N2/PPP2PPP/RNBQ1RK1 b kq - 1 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":430822600},"kind":{"Start":{"id":502151358451810311,"kind":{"AlphaBeta":{"alpha":"-60","beta":"#0","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/3n4/3Pp3/1B3N2/PPP2PPP/RNBQ1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":431460700},"kind":{"End":{"id":502151358451810311,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":431609800},"kind":{"End":{"id":114841790497947653,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":431782400},"kind":{"Start":{"id":117093590311632901,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"60","depth":1,"fen":"r1bqkb1r/ppp3pp/2n2p2/3np3/3P4/3B1N2/PPP2PPP/RNBQ1RK1 b kq - 1 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":432179900},"kind":{"Start":{"id":504403158265495559,"kind":{"AlphaBeta":{"alpha":"-60","beta":"#0","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/3n4/3p4/3B1N2/PPP2PPP/RNBQ1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":442567300},"kind":{"End":{"id":504403158265495559,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":442775600},"kind":{"End":{"id":117093590311632901,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":442992600},"kind":{"Start":{"id":119345390125318149,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"60","depth":1,"fen":"r1bqkb1r/ppp3pp/2n2p2/1B1np3/3P4/5N2/PPP2PPP/RNBQ1RK1 b kq - 1 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":443363200},"kind":{"Start":{"id":506654958079180807,"kind":{"AlphaBeta":{"alpha":"-60","beta":"#0","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/1B1n4/3Pp3/5N2/PPP2PPP/RNBQ1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":444015400},"kind":{"End":{"id":506654958079180807,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":444252600},"kind":{"Start":{"id":508906757892866055,"kind":{"AlphaBeta":{"alpha":"-60","beta":"10","depth":0,"fen":"r1bqkb1r/ppp3pp/2n5/1B1npp2/3P4/5N2/PPP2PPP/RNBQ1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":444642100},"kind":{"End":{"id":508906757892866055,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":444843700},"kind":{"Start":{"id":511158557706551303,"kind":{"AlphaBeta":{"alpha":"-60","beta":"10","depth":0,"fen":"r1bqkb1r/1pp3pp/p1n2p2/1B1np3/3P4/5N2/PPP2PPP/RNBQ1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":445264100},"kind":{"End":{"id":511158557706551303,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":445454800},"kind":{"Start":{"id":513410357520236551,"kind":{"AlphaBeta":{"alpha":"-60","beta":"10","depth":0,"fen":"r1bqkb1r/p1p3pp/1pn2p2/1B1np3/3P4/5N2/PPP2PPP/RNBQ1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":446891600},"kind":{"End":{"id":513410357520236551,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":447096700},"kind":{"End":{"id":119345390125318149,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":447283400},"kind":{"Start":{"id":121597189939003397,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"60","depth":1,"fen":"r1bqkb1r/ppp3pp/2n2p2/3Bp3/3P4/5N2/PPP2PPP/RNBQ1RK1 b kq - 0 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":447662700},"kind":{"Start":{"id":515662157333921799,"kind":{"AlphaBeta":{"alpha":"-60","beta":"#0","depth":0,"fen":"r1b1kb1r/ppp3pp/2n2p2/3qp3/3P4/5N2/PPP2PPP/RNBQ1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":451319000},"kind":{"End":{"id":515662157333921799,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":451560400},"kind":{"End":{"id":121597189939003397,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":451771900},"kind":{"Start":{"id":123848989752688645,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"60","depth":1,"fen":"r1bqkb1r/ppp3pp/B1n2p2/3np3/3P4/5N2/PPP2PPP/RNBQ1RK1 b kq - 1 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":452188700},"kind":{"Start":{"id":517913957147607047,"kind":{"AlphaBeta":{"alpha":"-60","beta":"#0","depth":0,"fen":"r1bqkb1r/p1p3pp/p1n2p2/3np3/3P4/5N2/PPP2PPP/RNBQ1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":458261200},"kind":{"End":{"id":517913957147607047,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":458476300},"kind":{"End":{"id":123848989752688645,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":458769200},"kind":{"Start":{"id":126100789566373893,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"60","depth":1,"fen":"r1bqkb1r/ppp3pp/2n2p2/3np3/2BP4/5N2/PPPN1PPP/R1BQ1RK1 b kq - 1 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":459138900},"kind":{"Start":{"id":520165756961292295,"kind":{"AlphaBeta":{"alpha":"-60","beta":"#0","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/3n4/2Bp4/5N2/PPPN1PPP/R1BQ1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":469275300},"kind":{"End":{"id":520165756961292295,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":469485700},"kind":{"End":{"id":126100789566373893,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":469716300},"kind":{"Start":{"id":128352589380059141,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"60","depth":1,"fen":"r1bqkb1r/ppp3pp/2n2p2/3np3/2BP4/N4N2/PPP2PPP/R1BQ1RK1 b kq - 1 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":470098000},"kind":{"Start":{"id":522417556774977543,"kind":{"AlphaBeta":{"alpha":"-60","beta":"#0","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/3n4/2BPp3/N4N2/PPP2PPP/R1BQ1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":470752600},"kind":{"End":{"id":522417556774977543,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":470918100},"kind":{"End":{"id":128352589380059141,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":471132800},"kind":{"Start":{"id":130604389193744389,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"60","depth":1,"fen":"r1bqkb1r/ppp3pp/2n2p2/3np3/2BP4/2N2N2/PPP2PPP/R1BQ1RK1 b kq - 1 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":471522300},"kind":{"Start":{"id":524669356588662791,"kind":{"AlphaBeta":{"alpha":"-60","beta":"#0","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/3n4/2BPp3/2N2N2/PPP2PPP/R1BQ1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":472655300},"kind":{"End":{"id":524669356588662791,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":472879400},"kind":{"Start":{"id":526921156402348039,"kind":{"AlphaBeta":{"alpha":"-60","beta":"-40","depth":0,"fen":"r1bqkb1r/ppp3pp/2n5/3npp2/2BP4/2N2N2/PPP2PPP/R1BQ1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":473278800},"kind":{"End":{"id":526921156402348039,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":473475900},"kind":{"Start":{"id":529172956216033287,"kind":{"AlphaBeta":{"alpha":"-60","beta":"-40","depth":0,"fen":"r1bqkb1r/1pp3pp/p1n2p2/3np3/2BP4/2N2N2/PPP2PPP/R1BQ1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":473893700},"kind":{"End":{"id":529172956216033287,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":474099100},"kind":{"Start":{"id":531424756029718535,"kind":{"AlphaBeta":{"alpha":"-60","beta":"-40","depth":0,"fen":"r1bqkb1r/p1p3pp/1pn2p2/3np3/2BP4/2N2N2/PPP2PPP/R1BQ1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":477495600},"kind":{"End":{"id":531424756029718535,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":477779700},"kind":{"End":{"id":130604389193744389,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":477970500},"kind":{"Start":{"id":132856189007429637,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"60","depth":1,"fen":"r1bqkb1r/ppp3pp/2n2p2/3np3/2BP4/8/PPP2PPP/RNBQNRK1 b kq - 1 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":478327300},"kind":{"Start":{"id":533676555843403783,"kind":{"AlphaBeta":{"alpha":"-60","beta":"#0","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/3n4/2Bp4/8/PPP2PPP/RNBQNRK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":483046800},"kind":{"End":{"id":533676555843403783,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":483282800},"kind":{"End":{"id":132856189007429637,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":483457000},"kind":{"Start":{"id":135107988821114885,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"60","depth":1,"fen":"r1bqkb1r/ppp3pp/2n2p2/3np3/2BP4/8/PPPN1PPP/RNBQ1RK1 b kq - 1 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":483829100},"kind":{"Start":{"id":535928355657089031,"kind":{"AlphaBeta":{"alpha":"-60","beta":"#0","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/3n4/2Bp4/8/PPPN1PPP/RNBQ1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":484375400},"kind":{"End":{"id":535928355657089031,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":484522600},"kind":{"End":{"id":135107988821114885,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":484768900},"kind":{"Start":{"id":137359788634800133,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"60","depth":1,"fen":"r1bqkb1r/ppp3pp/2n2p2/3np3/2BP3N/8/PPP2PPP/RNBQ1RK1 b kq - 1 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":485103200},"kind":{"Start":{"id":538180155470774279,"kind":{"AlphaBeta":{"alpha":"-60","beta":"#0","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/3n4/2Bp3N/8/PPP2PPP/RNBQ1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":487459800},"kind":{"End":{"id":538180155470774279,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":487649800},"kind":{"End":{"id":137359788634800133,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":487831000},"kind":{"Start":{"id":139611588448485381,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"60","depth":1,"fen":"r1bqkb1r/ppp3pp/2n2p2/3np1N1/2BP4/8/PPP2PPP/RNBQ1RK1 b kq - 1 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":488191100},"kind":{"Start":{"id":540431955284459527,"kind":{"AlphaBeta":{"alpha":"-60","beta":"#0","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/3n2N1/2Bp4/8/PPP2PPP/RNBQ1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":495406200},"kind":{"End":{"id":540431955284459527,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":495648900},"kind":{"End":{"id":139611588448485381,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":495861700},"kind":{"Start":{"id":141863388262170629,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"60","depth":1,"fen":"r1bqkb1r/ppp3pp/2n2p2/3np3/2BP4/5N2/PPP2PPP/RNBQR1K1 b kq - 1 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":496094800},"kind":{"End":{"id":141863388262170629,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":496301600},"kind":{"Start":{"id":144115188075855877,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"60","depth":1,"fen":"r1bqkb1r/ppp3pp/2n2p2/3np3/2BP4/5N2/PPP2PPP/RNB1QRK1 b kq - 1 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":496917400},"kind":{"Start":{"id":542683755098144775,"kind":{"AlphaBeta":{"alpha":"-60","beta":"#0","depth":0,"fen":"r1bqkb1r/ppp3pp/5p2/3np3/2Bn4/5N2/PPP2PPP/RNB1QRK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":502151700},"kind":{"End":{"id":542683755098144775,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":502325200},"kind":{"End":{"id":144115188075855877,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":502540900},"kind":{"Start":{"id":146366987889541125,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"60","depth":1,"fen":"r1bqkb1r/ppp3pp/2n2p2/3np3/2BP4/5N2/PPPQ1PPP/RNB2RK1 b kq - 1 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":502922400},"kind":{"Start":{"id":544935554911830023,"kind":{"AlphaBeta":{"alpha":"-60","beta":"#0","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/3n4/2BPp3/5N2/PPPQ1PPP/RNB2RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":503548900},"kind":{"End":{"id":544935554911830023,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":503727900},"kind":{"End":{"id":146366987889541125,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":503955000},"kind":{"Start":{"id":148618787703226373,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"60","depth":1,"fen":"r1bqkb1r/ppp3pp/2n2p2/3np3/2BP4/5N2/PPP1QPPP/RNB2RK1 b kq - 1 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":504311600},"kind":{"Start":{"id":547187354725515271,"kind":{"AlphaBeta":{"alpha":"-60","beta":"#0","depth":0,"fen":"r1bqkb1r/ppp3pp/5p2/3np3/2Bn4/5N2/PPP1QPPP/RNB2RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":517778900},"kind":{"End":{"id":547187354725515271,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":517970500},"kind":{"End":{"id":148618787703226373,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":518146300},"kind":{"Start":{"id":150870587516911621,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"60","depth":1,"fen":"r1bqkb1r/ppp3pp/2n2p2/3np3/2BP4/3Q1N2/PPP2PPP/RNB2RK1 b kq - 1 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":518487600},"kind":{"Start":{"id":549439154539200519,"kind":{"AlphaBeta":{"alpha":"-60","beta":"#0","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/3n4/2BPp3/3Q1N2/PPP2PPP/RNB2RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":519417300},"kind":{"End":{"id":549439154539200519,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":519659300},"kind":{"Start":{"id":551690954352885767,"kind":{"AlphaBeta":{"alpha":"-60","beta":"-50","depth":0,"fen":"r1bqkb1r/ppp3pp/2n5/3npp2/2BP4/3Q1N2/PPP2PPP/RNB2RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":520023600},"kind":{"End":{"id":551690954352885767,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":520197300},"kind":{"Start":{"id":553942754166571015,"kind":{"AlphaBeta":{"alpha":"-60","beta":"-50","depth":0,"fen":"r1bqkb1r/1pp3pp/p1n2p2/3np3/2BP4/3Q1N2/PPP2PPP/RNB2RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":520567300},"kind":{"End":{"id":553942754166571015,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":520777400},"kind":{"Start":{"id":556194553980256263,"kind":{"AlphaBeta":{"alpha":"-60","beta":"-50","depth":0,"fen":"r1bqkb1r/p1p3pp/1pn2p2/3np3/2BP4/3Q1N2/PPP2PPP/RNB2RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":547037500},"kind":{"End":{"id":556194553980256263,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":547266100},"kind":{"End":{"id":150870587516911621,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":547528200},"kind":{"Start":{"id":153122387330596869,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"60","depth":1,"fen":"r1bqkb1r/ppp3pp/2n2p2/3np3/2BP4/5N2/PPP2PPP/RNBQ1R1K b kq - 1 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":547980700},"kind":{"Start":{"id":558446353793941511,"kind":{"AlphaBeta":{"alpha":"-60","beta":"#0","depth":0,"fen":"r1bqkb1r/ppp3pp/2n2p2/3n4/2BPp3/5N2/PPP2PPP/RNBQ1R1K w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":548669200},"kind":{"End":{"id":558446353793941511,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":548889400},"kind":{"Start":{"id":560698153607626759,"kind":{"AlphaBeta":{"alpha":"-60","beta":"-50","depth":0,"fen":"r1bqkb1r/ppp3pp/2n5/3npp2/2BP4/5N2/PPP2PPP/RNBQ1R1K w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":549289200},"kind":{"End":{"id":560698153607626759,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":549517700},"kind":{"Start":{"id":562949953421312007,"kind":{"AlphaBeta":{"alpha":"-60","beta":"-50","depth":0,"fen":"r1bqkb1r/1pp3pp/p1n2p2/3np3/2BP4/5N2/PPP2PPP/RNBQ1R1K w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":549970800},"kind":{"End":{"id":562949953421312007,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":550171200},"kind":{"Start":{"id":565201753234997255,"kind":{"AlphaBeta":{"alpha":"-60","beta":"-50","depth":0,"fen":"r1bqkb1r/p1p3pp/1pn2p2/3np3/2BP4/5N2/PPP2PPP/RNBQ1R1K w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":556295700},"kind":{"End":{"id":565201753234997255,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":556496000},"kind":{"End":{"id":153122387330596869,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":556943200},"kind":{"Start":{"id":155374187144282117,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"60","depth":1,"fen":"r1bqkb1r/ppp3pp/2n2p2/3nP3/2B5/5N2/PPP2PPP/RNBQ1RK1 b kq - 0 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":557330700},"kind":{"Start":{"id":567453553048682503,"kind":{"AlphaBeta":{"alpha":"-60","beta":"#0","depth":0,"fen":"r1bqkb1r/ppp3pp/2n5/3np3/2B5/5N2/PPP2PPP/RNBQ1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":558719100},"kind":{"End":{"id":567453553048682503,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":558914100},"kind":{"End":{"id":155374187144282117,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":559095600},"kind":{"Start":{"id":157625986957967365,"kind":{"AlphaBeta":{"alpha":"#-0","beta":"60","depth":1,"fen":"r1bqkb1r/ppp3pp/2n2p2/3nN3/2BP4/8/PPP2PPP/RNBQ1RK1 b kq - 0 7"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":559454600},"kind":{"Start":{"id":569705352862367751,"kind":{"AlphaBeta":{"alpha":"-60","beta":"#0","depth":0,"fen":"r1bqkb1r/ppp3pp/2n5/3np3/2BP4/8/PPP2PPP/RNBQ1RK1 w kq - 0 8"}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":566028300},"kind":{"End":{"id":569705352862367751,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":566232200},"kind":{"End":{"id":157625986957967365,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":566385000},"kind":{"End":{"id":2251799813685251,"kind":{"AlphaBeta":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":566640800},"kind":{"Instant":{"kind":{"SearchWithDepthComplete":{"best_move":"b2b4","best_value":"-60","nodes_evaluated":3479}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":567079800},"kind":{"End":{"id":2251799813685250,"kind":{"SearchDepth":{}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":567235500},"kind":{"Instant":{"kind":{"SearchComplete":{"best_move":"b2b4","best_value":"-60","nodes_evaluated":8603}}}}}
+{"timestamp":{"secs_since_epoch":1648406943,"nanos_since_epoch":567388700},"kind":{"End":{"id":1,"kind":{"Search":{}}}}}
