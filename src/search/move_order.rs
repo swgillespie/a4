@@ -6,6 +6,7 @@
 //! as quickly as possible.
 
 use std::cmp::max;
+
 use crate::{
     core::{Move, PieceKind, Square},
     position::Position,
@@ -170,6 +171,7 @@ mod tests {
 
         // White trades a bishop and a rook (8) for a pawn and a bishop (4), a loss of 4. SEE of this is zero,
         // indicating that the capture is not profitable.
+        assert_eq!(predicted_yield, 0);
     }
 
     #[test]
