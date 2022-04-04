@@ -43,6 +43,7 @@ pub enum StartEventKind {
     Search(SearchStartEvent),
     SearchDepth(SearchDepthStartEvent),
     AlphaBeta(AlphaBetaStartEvent),
+    AlphaBetaMove(AlphaBetaMoveStartEvent),
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -62,6 +63,11 @@ pub struct AlphaBetaStartEvent {
     pub beta: String,
     pub depth: u32,
     pub fen: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct AlphaBetaMoveStartEvent {
+    pub mov: String,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -113,6 +119,7 @@ pub enum EndEventKind {
     Search(SearchEndEvent),
     SearchDepth(SearchDepthEndEvent),
     AlphaBeta(AlphaBetaEndEvent),
+    AlphaBetaMove(AlphaBetaMoveEndEvent),
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -123,6 +130,9 @@ pub struct SearchDepthEndEvent {}
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct AlphaBetaEndEvent {}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct AlphaBetaMoveEndEvent {}
 
 /// The SearchGraphLayer is a Layer that specifically understands the instrumentation in a4's search routines and uses
 /// them to reconstruct the search tree after a search is performed. It does not do any particular deep analysis of the
@@ -253,6 +263,20 @@ impl SearchGraphLayer {
     fn on_alpha_beta_exit(&self, id: &Id) {
         self.record_end_event(id, AlphaBetaEndEvent {});
     }
+
+    fn on_alpha_beta_move_enter(&self, attrs: &Attributes<'_>, id: &Id) {
+        let attrs = attrs.extract_fields();
+        self.record_start_event(
+            id,
+            AlphaBetaMoveStartEvent {
+                mov: attrs.get("mov").unwrap().parse().unwrap(),
+            },
+        );
+    }
+
+    fn on_alpha_beta_move_exit(&self, id: &Id) {
+        self.record_end_event(id, AlphaBetaMoveEndEvent {});
+    }
 }
 
 impl<S: Subscriber> Layer<S> for SearchGraphLayer
@@ -265,6 +289,7 @@ where
             constants::SEARCH => self.on_search_enter(attrs, id),
             constants::SEARCH_WITH_DEPTH => self.on_search_with_depth_enter(attrs, id),
             constants::ALPHA_BETA => self.on_alpha_beta_enter(attrs, id),
+            constants::ALPHA_BETA_MOVE => self.on_alpha_beta_move_enter(attrs, id),
             _ => {}
         }
     }
@@ -275,6 +300,7 @@ where
             constants::SEARCH => self.on_search_exit(&id),
             constants::SEARCH_WITH_DEPTH => self.on_search_with_depth_exit(&id),
             constants::ALPHA_BETA => self.on_alpha_beta_exit(&id),
+            constants::ALPHA_BETA_MOVE => self.on_alpha_beta_move_exit(&id),
             _ => {}
         }
     }

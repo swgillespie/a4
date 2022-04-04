@@ -9,13 +9,16 @@
 #![allow(dead_code, unused_variables)] // Active development.
 
 use std::{
+    cell::RefCell,
     fs::File,
     io::{stdin, stdout, BufRead, BufReader, Write},
     path::PathBuf,
+    rc::Rc,
     time::SystemTime,
 };
 
 use a4::{
+    eval,
     position::Position,
     tracing::search::{
         EndEvent, EndEventKind, InstantEvent, InstantEventKind, SearchEvent, SearchEventKind,
@@ -59,12 +62,12 @@ fn repl(search: &Search) -> anyhow::Result<()> {
     let mut stdin = BufReader::new(stdin());
     let mut stdout = stdout();
     let selected_search = Some(search);
+    let mut selected_subsearch = None;
     loop {
         let mut line = String::new();
         write!(&mut stdout, "a4> ")?;
         stdout.flush()?;
         stdin.read_line(&mut line)?;
-        writeln!(&mut stdout, "{}", line.trim())?;
         let components: Vec<_> = line.trim().split_whitespace().collect();
         let (&command, arguments) = components.split_first().unwrap_or((&"", &[]));
         match (command, arguments) {
@@ -107,6 +110,60 @@ fn repl(search: &Search) -> anyhow::Result<()> {
                     }
                 }
             }
+            ("subsearch", ["list"]) => {
+                if let Some(selected) = selected_search {
+                    for (i, subsearches) in selected.subsearches.iter().enumerate() {
+                        writeln!(
+                            &mut stdout,
+                            "{:>3}. Depth {:<2} {:<5} ({})",
+                            i, subsearches.depth, subsearches.best_move, subsearches.best_score,
+                        )?;
+                    }
+                } else {
+                    writeln!(&mut stdout, "no search selected")?;
+                }
+            }
+            ("subsearch", ["select", idx]) => {
+                if let Some(selected) = selected_search {
+                    if let Some(subsearch) = selected.subsearches.get(idx.parse::<usize>()?) {
+                        selected_subsearch = Some(subsearch);
+                        writeln!(&mut stdout, "subsearch {} selected", idx)?;
+                    } else {
+                        writeln!(&mut stdout, "subsearch index out of bounds")?;
+                    }
+                } else {
+                    writeln!(&mut stdout, "no search selected")?;
+                }
+            }
+            ("alphabeta", ["list"]) => {
+                if let Some(subsearch) = selected_subsearch {
+                    writeln!(&mut stdout, "== {}", subsearch.ab.fen)?;
+                    for (i, ab) in subsearch.ab.subsearches.iter().enumerate() {
+                        writeln!(
+                            &mut stdout,
+                            "{:>3}. {} [{}, {}]",
+                            i, ab.mov, ab.search.alpha, ab.search.beta
+                        )?;
+                    }
+
+                    writeln!(
+                        &mut stdout,
+                        "Searched {} positions",
+                        subsearch.ab.subsearches.len()
+                    )?;
+                } else {
+                    writeln!(&mut stdout, "no subsearch selected")?;
+                }
+            }
+            ("eval", fen) => {
+                if let Ok(pos) = Position::from_fen(fen.join(" ")) {
+                    let score = eval::evaluate(&pos);
+                    writeln!(&mut stdout, "{}", score)?;
+                } else {
+                    writeln!(&mut stdout, "invalid fen")?;
+                }
+            }
+
             (cmd, _) => {
                 writeln!(&mut stdout, "unknown command {}", cmd)?;
             }
@@ -129,14 +186,13 @@ pub struct SearchWithDepth {
     best_move: String,
     best_score: String,
     nodes_evaluated: u64,
-    searches: Vec<AlphaBeta>,
+    ab: AlphaBeta,
 }
 
 pub struct AlphaBeta {
     fen: String,
     alpha: String,
     beta: String,
-    depth: u32,
     subsearches: Vec<AlphaBetaSubsearch>,
 }
 
@@ -145,7 +201,7 @@ pub struct AlphaBetaSubsearch {
     mov: String,
 }
 
-#[derive(Default)]
+#[derive(Debug, Default)]
 struct SearchBuilder {
     id: u64,
     fen: String,
@@ -153,7 +209,7 @@ struct SearchBuilder {
     best_move: Option<String>,
     best_score: Option<String>,
     nodes_evaluated: u64,
-    searches: Vec<AlphaBeta>,
+    ab: Option<Rc<RefCell<AlphaBetaBuilder>>>,
 }
 
 impl From<SearchBuilder> for SearchWithDepth {
@@ -165,8 +221,10 @@ impl From<SearchBuilder> for SearchWithDepth {
             best_move,
             best_score,
             nodes_evaluated,
-            searches,
+            ab,
         } = builder;
+        let maybe_ab = ab.unwrap();
+        let ab_ref = maybe_ab.borrow();
         SearchWithDepth {
             id,
             fen,
@@ -174,10 +232,49 @@ impl From<SearchBuilder> for SearchWithDepth {
             best_move: best_move.unwrap(),
             best_score: best_score.unwrap(),
             nodes_evaluated,
-            searches,
+            ab: ab_ref.clone().into(),
         }
     }
 }
+
+#[derive(Default, Debug, Clone)]
+struct AlphaBetaBuilder {
+    alpha: Option<String>,
+    beta: Option<String>,
+    fen: Option<String>,
+    moves: Vec<(String, Rc<RefCell<AlphaBetaBuilder>>)>,
+}
+
+impl AlphaBetaBuilder {
+    pub fn new() -> Self {
+        Default::default()
+    }
+}
+
+impl From<AlphaBetaBuilder> for AlphaBeta {
+    fn from(builder: AlphaBetaBuilder) -> Self {
+        let move_children = builder
+            .moves
+            .into_iter()
+            .map(|(mov, builder)| {
+                let ab_ref = builder.borrow();
+                AlphaBetaSubsearch {
+                    mov,
+                    search: ab_ref.clone().into(),
+                }
+            })
+            .collect();
+
+        AlphaBeta {
+            fen: builder.fen.unwrap(),
+            alpha: builder.alpha.unwrap(),
+            beta: builder.beta.unwrap(),
+            subsearches: move_children,
+        }
+    }
+}
+
+type AlphaBetaBuilderRef = Rc<RefCell<AlphaBetaBuilder>>;
 
 #[derive(Default)]
 pub struct ObjectModelBuilder {
@@ -187,6 +284,7 @@ pub struct ObjectModelBuilder {
     nodes_evaluated: u64,
     finished_searches: Vec<SearchWithDepth>,
     current_search: Option<SearchBuilder>,
+    ab_stack: Vec<AlphaBetaBuilderRef>,
 }
 
 impl From<ObjectModelBuilder> for Search {
@@ -228,6 +326,7 @@ impl ObjectModelBuilder {
                     self.current_search.is_none(),
                     "recursive search depths not possible"
                 );
+                assert!(self.ab_stack.is_empty(), "ab stack should be empty");
 
                 self.current_search = Some(SearchBuilder {
                     id,
@@ -235,16 +334,26 @@ impl ObjectModelBuilder {
                     depth: search_depth.depth,
                     ..Default::default()
                 });
+                self.ab_stack
+                    .push(Rc::new(RefCell::new(AlphaBetaBuilder::new())));
             }
             StartEventKind::AlphaBeta(ab) => {
-                let searches = &mut self.current_search().searches;
-                searches.push(AlphaBeta {
-                    fen: ab.fen,
-                    depth: ab.depth,
-                    alpha: ab.alpha,
-                    beta: ab.beta,
-                    subsearches: vec![],
-                })
+                let current_ab = self.current_alpha_beta();
+                let mut current_ab_mut = current_ab.borrow_mut();
+                current_ab_mut.alpha = Some(ab.alpha);
+                current_ab_mut.beta = Some(ab.beta);
+                current_ab_mut.fen = Some(ab.fen);
+            }
+            StartEventKind::AlphaBetaMove(ab_move) => {
+                let new_ab = {
+                    let current_ab = self.current_alpha_beta();
+                    let mut current_ab_mut = current_ab.borrow_mut();
+                    let new_ab = Rc::new(RefCell::new(AlphaBetaBuilder::new()));
+                    current_ab_mut.moves.push((ab_move.mov, new_ab.clone()));
+                    new_ab
+                };
+
+                self.ab_stack.push(new_ab);
             }
         }
     }
@@ -275,12 +384,15 @@ impl ObjectModelBuilder {
                     "should be terminating a search?"
                 );
 
+                self.current_search().ab = Some(self.current_alpha_beta().clone());
                 let finished_search: SearchWithDepth = self.current_search.take().unwrap().into();
                 self.finished_searches.push(finished_search);
+                self.ab_stack.pop();
             }
             EndEventKind::Search(_) => {}
-            EndEventKind::AlphaBeta(_) => {
-                self.current_search().searches.pop();
+            EndEventKind::AlphaBeta(_) => {}
+            EndEventKind::AlphaBetaMove(_) => {
+                self.ab_stack.pop();
             }
         }
     }
@@ -289,7 +401,7 @@ impl ObjectModelBuilder {
         self.current_search.as_mut().unwrap()
     }
 
-    fn current_alpha_beta(&mut self) -> &mut AlphaBeta {
-        self.current_search().searches.last_mut().unwrap()
+    fn current_alpha_beta(&self) -> AlphaBetaBuilderRef {
+        self.ab_stack.last().cloned().unwrap()
     }
 }
