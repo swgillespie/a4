@@ -225,6 +225,12 @@ impl From<SearchBuilder> for SearchWithDepth {
         } = builder;
         let maybe_ab = ab.unwrap();
         let ab_ref = maybe_ab.borrow();
+        assert!(
+            best_move.is_some(),
+            "search builder for {} (depth {}) is incomplete",
+            fen,
+            depth
+        );
         SearchWithDepth {
             id,
             fen,
