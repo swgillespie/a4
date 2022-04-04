@@ -22,7 +22,7 @@ use a4::{
     position::Position,
     tracing::search::{
         EndEvent, EndEventKind, InstantEvent, InstantEventKind, SearchEvent, SearchEventKind,
-        StartEvent, StartEventKind,
+        SearchTerminationReason, StartEvent, StartEventKind,
     },
 };
 use structopt::StructOpt;
@@ -96,28 +96,51 @@ fn repl(search: &Search) -> anyhow::Result<()> {
                             "==== Depth {} =================",
                             subsearch.depth
                         )?;
-                        writeln!(&mut stdout, "{:<20} {}", "Best Move:", subsearch.best_move)?;
-                        writeln!(
-                            &mut stdout,
-                            "{:<20} {}",
-                            "Best Score:", subsearch.best_score
-                        )?;
-                        writeln!(
-                            &mut stdout,
-                            "{:<20} {}",
-                            "Nodes Evaluated:", subsearch.nodes_evaluated
-                        )?;
+                        match subsearch.termination {
+                            Termination::Complete {
+                                ref best_move,
+                                ref best_score,
+                                nodes_evaluated,
+                            } => {
+                                writeln!(&mut stdout, "{:<20} {}", "Best Move:", best_move)?;
+                                writeln!(&mut stdout, "{:<20} {}", "Best Score:", best_score)?;
+                                writeln!(
+                                    &mut stdout,
+                                    "{:<20} {}",
+                                    "Nodes Evaluated:", nodes_evaluated
+                                )?;
+                            }
+                            Termination::Premature { ref reason } => {
+                                writeln!(&mut stdout, "Terminated Prematurely")?;
+                                writeln!(&mut stdout, "Reason: {reason:?}")?;
+                            }
+                        }
                     }
                 }
             }
             ("subsearch", ["list"]) => {
                 if let Some(selected) = selected_search {
                     for (i, subsearches) in selected.subsearches.iter().enumerate() {
-                        writeln!(
-                            &mut stdout,
-                            "{:>3}. Depth {:<2} {:<5} ({})",
-                            i, subsearches.depth, subsearches.best_move, subsearches.best_score,
-                        )?;
+                        match subsearches.termination {
+                            Termination::Complete {
+                                ref best_move,
+                                ref best_score,
+                                nodes_evaluated,
+                            } => {
+                                writeln!(
+                                    &mut stdout,
+                                    "{:>3}. Depth {:<2} {:<5} ({})",
+                                    i, subsearches.depth, best_move, best_score,
+                                )?;
+                            }
+                            Termination::Premature { ref reason } => {
+                                writeln!(
+                                    &mut stdout,
+                                    "{:>3}. Depth {:<2}, Terminated Early: {:?}",
+                                    i, subsearches.depth, reason
+                                )?;
+                            }
+                        }
                     }
                 } else {
                     writeln!(&mut stdout, "no search selected")?;
@@ -138,10 +161,17 @@ fn repl(search: &Search) -> anyhow::Result<()> {
             ("alphabeta", ["list"]) => {
                 if let Some(subsearch) = selected_subsearch {
                     writeln!(&mut stdout, "== {}", subsearch.ab.fen)?;
+                    if let Some(ref ab) = subsearch.ab.hash_move_subsearch {
+                        writeln!(
+                            &mut stdout,
+                            "Hash. {} [{}, {}]",
+                            ab.mov, ab.search.alpha, ab.search.beta
+                        )?;
+                    }
                     for (i, ab) in subsearch.ab.subsearches.iter().enumerate() {
                         writeln!(
                             &mut stdout,
-                            "{:>3}. {} [{}, {}]",
+                            "{:>4}. {} [{}, {}]",
                             i, ab.mov, ab.search.alpha, ab.search.beta
                         )?;
                     }
@@ -183,9 +213,7 @@ pub struct SearchWithDepth {
     id: u64,
     fen: String,
     depth: u32,
-    best_move: String,
-    best_score: String,
-    nodes_evaluated: u64,
+    termination: Termination,
     ab: AlphaBeta,
 }
 
@@ -193,6 +221,7 @@ pub struct AlphaBeta {
     fen: String,
     alpha: String,
     beta: String,
+    hash_move_subsearch: Option<Box<AlphaBetaSubsearch>>,
     subsearches: Vec<AlphaBetaSubsearch>,
 }
 
@@ -206,10 +235,20 @@ struct SearchBuilder {
     id: u64,
     fen: String,
     depth: u32,
-    best_move: Option<String>,
-    best_score: Option<String>,
-    nodes_evaluated: u64,
+    termination: Option<Termination>,
     ab: Option<Rc<RefCell<AlphaBetaBuilder>>>,
+}
+
+#[derive(Debug)]
+enum Termination {
+    Complete {
+        best_move: String,
+        best_score: String,
+        nodes_evaluated: u64,
+    },
+    Premature {
+        reason: SearchTerminationReason,
+    },
 }
 
 impl From<SearchBuilder> for SearchWithDepth {
@@ -218,15 +257,13 @@ impl From<SearchBuilder> for SearchWithDepth {
             id,
             fen,
             depth,
-            best_move,
-            best_score,
-            nodes_evaluated,
+            termination,
             ab,
         } = builder;
         let maybe_ab = ab.unwrap();
         let ab_ref = maybe_ab.borrow();
         assert!(
-            best_move.is_some(),
+            termination.is_some(),
             "search builder for {} (depth {}) is incomplete",
             fen,
             depth
@@ -235,9 +272,7 @@ impl From<SearchBuilder> for SearchWithDepth {
             id,
             fen,
             depth,
-            best_move: best_move.unwrap(),
-            best_score: best_score.unwrap(),
-            nodes_evaluated,
+            termination: termination.unwrap(),
             ab: ab_ref.clone().into(),
         }
     }
@@ -248,6 +283,7 @@ struct AlphaBetaBuilder {
     alpha: Option<String>,
     beta: Option<String>,
     fen: Option<String>,
+    hash_move: Option<(String, AlphaBetaBuilderRef)>,
     moves: Vec<(String, Rc<RefCell<AlphaBetaBuilder>>)>,
 }
 
@@ -271,10 +307,18 @@ impl From<AlphaBetaBuilder> for AlphaBeta {
             })
             .collect();
 
+        let hash_move = builder.hash_move.map(|(mov, builder)| {
+            let ab_ref = builder.borrow();
+            Box::new(AlphaBetaSubsearch {
+                mov,
+                search: ab_ref.clone().into(),
+            })
+        });
         AlphaBeta {
             fen: builder.fen.unwrap(),
             alpha: builder.alpha.unwrap(),
             beta: builder.beta.unwrap(),
+            hash_move_subsearch: hash_move,
             subsearches: move_children,
         }
     }
@@ -361,6 +405,18 @@ impl ObjectModelBuilder {
 
                 self.ab_stack.push(new_ab);
             }
+
+            StartEventKind::AlphaBetaHashMove(ab_hash_move) => {
+                let new_ab = {
+                    let current_ab = self.current_alpha_beta();
+                    let mut current_ab_mut = current_ab.borrow_mut();
+                    let new_ab = Rc::new(RefCell::new(AlphaBetaBuilder::new()));
+                    current_ab_mut.hash_move = Some((ab_hash_move.mov, new_ab.clone()));
+                    new_ab
+                };
+
+                self.ab_stack.push(new_ab);
+            }
         }
     }
 
@@ -371,12 +427,19 @@ impl ObjectModelBuilder {
                 self.search_best_score = Some(search_complete.best_value);
                 self.nodes_evaluated = search_complete.nodes_evaluated;
             }
-            InstantEventKind::SearchTermination(search_termination) => {}
+            InstantEventKind::SearchTermination(search_termination) => {
+                let search = self.current_search.as_mut().unwrap();
+                search.termination = Some(Termination::Premature {
+                    reason: search_termination.reason,
+                });
+            }
             InstantEventKind::SearchWithDepthComplete(search_with_depth_complete) => {
                 let search = self.current_search.as_mut().unwrap();
-                search.best_move = Some(search_with_depth_complete.best_move);
-                search.best_score = Some(search_with_depth_complete.best_value);
-                search.nodes_evaluated = search_with_depth_complete.nodes_evaluated;
+                search.termination = Some(Termination::Complete {
+                    best_move: search_with_depth_complete.best_move,
+                    best_score: search_with_depth_complete.best_value,
+                    nodes_evaluated: search_with_depth_complete.nodes_evaluated,
+                });
             }
         }
     }
@@ -397,7 +460,7 @@ impl ObjectModelBuilder {
             }
             EndEventKind::Search(_) => {}
             EndEventKind::AlphaBeta(_) => {}
-            EndEventKind::AlphaBetaMove(_) => {
+            EndEventKind::AlphaBetaMove(_) | EndEventKind::AlphaBetaHashMove(_) => {
                 self.ab_stack.pop();
             }
         }
