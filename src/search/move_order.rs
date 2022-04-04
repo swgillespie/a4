@@ -23,11 +23,16 @@ pub fn order_moves(pos: &Position, moves: &mut [Move]) {
     fn see_weight(pos: &Position, mov: Move) -> i32 {
         if mov.is_capture() {
             let child_pos = pos.clone_and_make_move(mov);
-            let captured_piece_value = pos
-                .piece_at(mov.destination())
-                .expect("illegal move given to order moves")
-                .kind
-                .value();
+            // En-passant, the forever special case - there's no piece at the target square of an ep-move, but
+            // en-passant can only capture pawns (weight 1).
+            let captured_piece_value = if mov.is_en_passant() {
+                1
+            } else {
+                pos.piece_at(mov.destination())
+                    .expect("illegal move given to order moves")
+                    .kind
+                    .value()
+            };
 
             // For promo captures, we "gain" material points from turning the pawn into another piece.
             let promotion_value = if mov.is_promotion() {
@@ -44,22 +49,31 @@ pub fn order_moves(pos: &Position, moves: &mut [Move]) {
         return 0;
     }
 
+    // No use ordering an empty list.
+    if moves.is_empty() {
+        return;
+    }
+
     // We are particularly interested in investigating captures first.
     let (captures, quiet) = partition_by(moves, |mov| mov.is_capture());
 
     // Captures resulting in check are particularly interesting.
-    let (_, _) = partition_by(captures, |mov| {
-        let mut child_pos = pos.clone();
-        child_pos.make_move(mov);
-        child_pos.is_check(pos.side_to_move())
-    });
+    if !captures.is_empty() {
+        let (_, _) = partition_by(captures, |mov| {
+            let mut child_pos = pos.clone();
+            child_pos.make_move(mov);
+            child_pos.is_check(pos.side_to_move())
+        });
+    }
 
     // Quiet moves resulting in checks are also interesting.
-    let (_, _) = partition_by(quiet, |mov| {
-        let mut child_pos = pos.clone();
-        child_pos.make_move(mov);
-        child_pos.is_check(pos.side_to_move())
-    });
+    if !quiet.is_empty() {
+        let (_, _) = partition_by(quiet, |mov| {
+            let mut child_pos = pos.clone();
+            child_pos.make_move(mov);
+            child_pos.is_check(pos.side_to_move())
+        });
+    }
 
     captures.sort_by_cached_key(|&mov| see_weight(pos, mov));
 }
@@ -73,14 +87,16 @@ fn partition_by<F: FnMut(Move) -> bool>(
     moves: &mut [Move],
     mut func: F,
 ) -> (&mut [Move], &mut [Move]) {
+    assert!(!moves.is_empty(), "partition_by on empty list");
+
     let mut i = 0;
     let mut j = moves.len() - 1;
     loop {
-        while func(moves[i]) && i < moves.len() {
+        while i < moves.len() && func(moves[i]) {
             i += 1;
         }
 
-        while !func(moves[j]) && j > 0 {
+        while j > 0 && !func(moves[j]) {
             j -= 1;
         }
 
@@ -213,5 +229,29 @@ mod tests {
 
         order_moves(&pos, &mut moves);
         assert_eq!(moves.first().cloned().unwrap(), Move::capture(D4, E5));
+    }
+
+    #[test]
+    fn move_ordering_en_passant() {
+        let pos = Position::from_fen("k7/8/7r/2Pp4/8/6B1/8/K7 w - d6 0 2").unwrap();
+        // The SEE square is not the location of the capture, it's the destination of the pawn.
+        // There's no material on the square the pawn moves to.
+        let mut moves = Vec::new();
+        generate_moves(pos.side_to_move(), &pos, &mut moves);
+        moves.retain(|&m| pos.is_legal_given_pseudolegal(m));
+
+        order_moves(&pos, &mut moves);
+        assert_eq!(moves.first().cloned().unwrap(), Move::en_passant(C5, D6));
+    }
+
+    #[test]
+    fn move_ordering_no_legal_moves() {
+        // Catches out-of-bounds stuff in the move ordering code.
+        let pos = Position::from_fen("3k4/3Q4/3K4/8/8/8/8/8 b - - 0 1").unwrap();
+        let mut moves = Vec::new();
+        generate_moves(pos.side_to_move(), &pos, &mut moves);
+        moves.retain(|&m| pos.is_legal_given_pseudolegal(m));
+        order_moves(&pos, &mut moves);
+        assert_eq!(moves.len(), 0);
     }
 }
