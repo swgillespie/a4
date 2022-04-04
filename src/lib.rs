@@ -12,7 +12,13 @@
 //! positions, reading and writing common Chess formats, and manipulating board positions. As an executable, `a4`
 //! is capable of playing chess via the `UCI` protocol.
 
-#![feature(try_blocks, once_cell, bench_black_box, core_intrinsics)]
+#![feature(
+    try_blocks,
+    once_cell,
+    bench_black_box,
+    core_intrinsics,
+    slice_swap_unchecked
+)]
 
 pub mod core;
 pub mod debug;

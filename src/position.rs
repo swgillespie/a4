@@ -285,6 +285,13 @@ impl Position {
 //
 
 impl Position {
+    /// Shorthand for cloning a position and making a move.
+    pub fn clone_and_make_move(&self, mov: Move) -> Position {
+        let mut pos = self.clone();
+        pos.make_move(mov);
+        pos
+    }
+
     /// Makes a move on the position, updating all internal state to reflect the effects of the move.
     pub fn make_move(&mut self, mov: Move) {
         // Quick out for null moves:
