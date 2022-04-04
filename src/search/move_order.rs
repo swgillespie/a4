@@ -5,6 +5,8 @@
 //! that are most likely to be good are searched first, so that the alpha-beta search can cutoff the remaining nodes
 //! as quickly as possible.
 
+use std::cmp::max;
+
 use crate::{
     core::{Move, PieceKind, Square},
     position::Position,
@@ -100,10 +102,13 @@ fn static_exchange_evaluation(pos: &Position, target: Square) -> i32 {
     let mut value = 0;
     if let Some(attacker) = smallest_attacker(pos, target) {
         let target_piece = pos.piece_at(target).unwrap();
-        let mut child = pos.clone();
-        let mov = Move::capture(attacker, target);
-        child.make_move(mov);
-        value = target_piece.kind.value() - static_exchange_evaluation(&child, target);
+        let child = pos.clone_and_make_move(Move::capture(attacker, target));
+        // The term may be negative, which indicates an unprofitable recapture. We must assume that our opponent won't
+        // do that.
+        value = max(
+            target_piece.kind.value() - static_exchange_evaluation(&child, target),
+            0,
+        );
     }
 
     value
@@ -148,8 +153,9 @@ mod tests {
         // White to move, white threatens f6 and initiates an exchange.
         let predicted_yield = static_exchange_evaluation(&pos, F6);
 
-        // White trades a bishop and a rook (8) for a pawn and a bishop (4), a loss of 4.
-        assert_eq!(predicted_yield, -4);
+        // White trades a bishop and a rook (8) for a pawn and a bishop (4), a loss of 4. SEE of this is zero,
+        // indicating that the capture is not profitable.
+        assert_eq!(predicted_yield, 0);
     }
 
     #[test]
@@ -159,7 +165,20 @@ mod tests {
         let predicted_yield = static_exchange_evaluation(&pos, D7);
 
         // White trades a bishop (3) for a queen and a rook (14), for a win of 11.
-        assert_eq!(predicted_yield, 11);
+        //
+        // However, it's not actually profitable for Black to recapture, since doing so would trade a rook for a
+        // bishop. SEE assumes that Black will not recapture.
+        assert_eq!(predicted_yield, 9);
+    }
+
+    #[test]
+    fn see_stands_pat_if_faced_with_bad_exchange() {
+        let pos = Position::from_fen("8/2q5/8/4p3/3P4/5N2/8/8 w - - 0 1").unwrap();
+        let predicted_yield = static_exchange_evaluation(&pos, E5);
+
+        // Black has the option to recapture the pawn with the queen, but would never do that because it immediately
+        // blunders the queen.
+        assert_eq!(predicted_yield, 1);
     }
 
     #[test]
@@ -168,7 +187,10 @@ mod tests {
         let predicted_yield = static_exchange_evaluation(&pos, D6);
 
         // Rook (5) - Pawn (1) + Rook (5) - Bishop (3) + Bishop(3) = 9
-        assert_eq!(predicted_yield, 9);
+        //
+        // Black will retake once with the bishop and not retake with the rook, since trading a rook for a bishop is
+        // a loss of material.
+        assert_eq!(predicted_yield, 5);
     }
 
     #[test]
@@ -183,7 +205,6 @@ mod tests {
     }
 
     #[test]
-    #[ignore]
     fn move_ordering_real_world() {
         let pos =
             Position::from_fen("r1bqkb1r/ppp3pp/2n2p2/3np3/2BP4/5N2/PPP2PPP/RNBQ1RK1 w kq - 0 7")
