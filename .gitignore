@@ -4,3 +4,4 @@ Cargo.lock
 .vscode/
 .mypy_cache
 .pytest_cache
+log.json
