@@ -54,8 +54,7 @@ def load_tests_from_file(path):
                 {
                     "path": path,
                     "kind": "quality",
-                    "fen": test["fen"],
-                    "bestmove": test["bestmove"],
+                    "positions": test["positions"],
                 }
             )
     return tests
@@ -85,19 +84,27 @@ def run_perft_test(test):
 
 async def run_quality_test(test):
     assert test["kind"] == "quality"
-    engine = await popen_release()
-    bestmove = Move.from_uci(test["bestmove"])
-    try:
-        board = Board(test["fen"])
-        info = await engine.play(board, Limit(time=0.5), info=INFO_ALL)
-        return {
-            "test": test,
-            "pass": info.move == bestmove,
-            "expected": bestmove,
-            "actual": info.move,
-        }
-    finally:
-        await engine.quit()
+    for i, pos in enumerate(test["positions"]):
+        engine = await popen_release()
+        try:
+            bestmove = Move.from_uci(pos["bestmove"])
+            board = Board(pos["fen"])
+            info = await engine.play(board, Limit(time=0.5), info=INFO_ALL)
+            if info.move != bestmove:
+                return {
+                    "test": test,
+                    "index": i,
+                    "pass": False,
+                    "expected": bestmove,
+                    "actual": info.move,
+                }
+
+        finally:
+            await engine.quit()
+    return {
+        "test": test,
+        "pass": True,
+    }
 
 
 def main():
@@ -135,10 +142,11 @@ def main():
                 )
             )
         elif fail["test"]["kind"] == "quality":
+            failed_pos = fail["test"]["positions"][fail["index"]]
             print(
                 "  ({}) quality: {} => {} (expected {})".format(
                     fail["test"]["path"],
-                    fail["test"]["fen"],
+                    failed_pos["fen"],
                     fail["actual"],
                     fail["expected"],
                 )
