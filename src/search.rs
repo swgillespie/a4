@@ -203,7 +203,15 @@ impl<'a: 'b, 'b> Searcher<'a, 'b> {
         self.nodes_evaluated += 1;
         // The "stand pat" score is a lower bound to how bad this position is. We're interested in finding refutations
         // to this position that drop this lower bound.
+        //
+        // Note that the evaluation function returns a number that is relative to White - positive numbers are good
+        // for White, negative numbers are good for Black. We must first flip the sign if we're evaluating a position
+        // with Black to move.
         let mut stand_pat = evaluate(pos);
+        if pos.side_to_move() == Color::Black {
+            stand_pat = -stand_pat;
+        }
+
         if stand_pat >= beta {
             // There exists a refutation in a sibling node - no point seaerching this.
             tracing::debug!(%stand_pat, event = %constants::STAND_PAT_BETA_CUTOFF);
@@ -219,14 +227,8 @@ impl<'a: 'b, 'b> Searcher<'a, 'b> {
         moves.retain(|&m| pos.is_legal_given_pseudolegal(m));
         moves.retain(|&m| m.is_capture());
         if moves.len() == 0 {
-            let result = if pos.side_to_move() == Color::Black {
-                -stand_pat
-            } else {
-                stand_pat
-            };
-
-            tracing::debug!(%result, event = %constants::Q_SEARCH_NO_MORE_CAPTURES);
-            return result;
+            tracing::debug!(result = %stand_pat, event = %constants::Q_SEARCH_NO_MORE_CAPTURES);
+            return stand_pat;
         }
 
         for capture in moves {
