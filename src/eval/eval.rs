@@ -53,13 +53,13 @@ pub fn evaluate(pos: &Position) -> Value {
     let (pawns_w, pawns_b) = evaluate_metric(PAWN_WEIGHT, |c| pos.pawns(c).len() as i16);
     let mobility = MOBILITY_WEIGHT * (white_mobility as i16 - black_mobility as i16);
     let (isolated_pawns_w, isolated_pawns_b) = evaluate_metric(PAWN_FORMATION_WEIGHT, |c| {
-        analysis.isolated_pawns(c).len() as i16
+        -(analysis.isolated_pawns(c).len() as i16)
     });
     let (backward_pawns_w, backward_pawns_b) = evaluate_metric(PAWN_FORMATION_WEIGHT, |c| {
-        analysis.backward_pawns(c).len() as i16
+        -(analysis.backward_pawns(c).len() as i16)
     });
     let (doubled_pawns_w, doubled_pawns_b) = evaluate_metric(PAWN_FORMATION_WEIGHT, |c| {
-        analysis.doubled_pawns(c).len() as i16
+        -(analysis.doubled_pawns(c).len() as i16)
     });
 
     let value = (kings_w - kings_b)
