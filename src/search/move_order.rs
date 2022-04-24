@@ -60,7 +60,7 @@ pub fn order_moves(pos: &Position, moves: &mut [Move]) {
 
     // Captures resulting in check are particularly interesting.
     if !captures.is_empty() {
-        let (_, _) = partition_by(captures, |mov| {
+        partition_by(captures, |mov| {
             let mut child_pos = pos.clone();
             child_pos.make_move(mov);
             child_pos.is_check(pos.side_to_move())
@@ -69,10 +69,17 @@ pub fn order_moves(pos: &Position, moves: &mut [Move]) {
 
     // Quiet moves resulting in checks are also interesting.
     if !quiet.is_empty() {
-        let (_, _) = partition_by(quiet, |mov| {
+        partition_by(quiet, |mov| {
             let mut child_pos = pos.clone();
             child_pos.make_move(mov);
             child_pos.is_check(pos.side_to_move())
+        });
+
+        // If we have high-value pieces under attack, consider moving those earlier than
+        // other moves.
+        partition_by(quiet, |mov| {
+            !pos.squares_attacking(pos.side_to_move().toggle(), mov.source())
+                .is_empty()
         });
     }
 
@@ -255,5 +262,17 @@ mod tests {
         moves.retain(|&m| pos.is_legal_given_pseudolegal(m));
         order_moves(&pos, &mut moves);
         assert_eq!(moves.len(), 0);
+    }
+
+    #[test]
+    fn consider_moving_attacked_pieces() {
+        let pos =
+            Position::from_fen("r1bqkbnr/p1pppppp/1pn5/3P4/4P3/8/PPP2PPP/RNBQKBNR b KQkq - 0 3")
+                .unwrap();
+        let mut moves = Vec::new();
+        generate_moves(pos.side_to_move(), &pos, &mut moves);
+        moves.retain(|&m| pos.is_legal_given_pseudolegal(m));
+        order_moves(&pos, &mut moves);
+        assert_eq!(moves.first().cloned().unwrap().source(), C6);
     }
 }
