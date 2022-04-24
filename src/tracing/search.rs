@@ -45,6 +45,8 @@ pub enum StartEventKind {
     AlphaBeta(AlphaBetaStartEvent),
     AlphaBetaMove(AlphaBetaMoveStartEvent),
     AlphaBetaHashMove(AlphaBetaHashMoveStartEvent),
+    QSearch(QSearchStartEvent),
+    QSearchMove(QSearchMoveStartEvent),
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -77,6 +79,18 @@ pub struct AlphaBetaHashMoveStartEvent {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
+pub struct QSearchStartEvent {
+    pub alpha: String,
+    pub beta: String,
+    pub fen: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct QSearchMoveStartEvent {
+    pub capture: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
 pub struct InstantEvent {
     pub kind: InstantEventKind,
 }
@@ -86,6 +100,9 @@ pub enum InstantEventKind {
     SearchTermination(SearchTerminationEvent),
     SearchComplete(SearchCompleteEvent),
     SearchWithDepthComplete(SearchWithDepthCompleteEvent),
+    QSearchStandPatBetaCutoff(QSearchStandPatBetaCutoffEvent),
+    QSearchStandPatImprovedAlpha(QSearchStandPatImprovedAlphaEvent),
+    QSearchNoMoreCaptures(QSearchNoMoreCapturesEvent),
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -115,6 +132,21 @@ pub enum SearchTerminationReason {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
+pub struct QSearchStandPatBetaCutoffEvent {
+    pub stand_pat: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct QSearchStandPatImprovedAlphaEvent {
+    pub stand_pat: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct QSearchNoMoreCapturesEvent {
+    pub result: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
 pub struct EndEvent {
     pub id: u64,
     pub kind: EndEventKind,
@@ -127,6 +159,8 @@ pub enum EndEventKind {
     AlphaBeta(AlphaBetaEndEvent),
     AlphaBetaMove(AlphaBetaMoveEndEvent),
     AlphaBetaHashMove(AlphaBetaHashMoveEndEvent),
+    QSearch(QSearchEndEvent),
+    QSearchMove(QSearchMoveEndEvent),
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -143,6 +177,12 @@ pub struct AlphaBetaMoveEndEvent {}
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct AlphaBetaHashMoveEndEvent {}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct QSearchEndEvent {}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct QSearchMoveEndEvent {}
 
 /// The SearchGraphLayer is a Layer that specifically understands the instrumentation in a4's search routines and uses
 /// them to reconstruct the search tree after a search is performed. It does not do any particular deep analysis of the
@@ -301,6 +341,36 @@ impl SearchGraphLayer {
     fn on_alpha_beta_hash_move_exit(&self, id: &Id) {
         self.record_end_event(id, AlphaBetaHashMoveEndEvent {})
     }
+
+    fn on_qsearch_enter(&self, attrs: &Attributes<'_>, id: &Id) {
+        let attrs = attrs.extract_fields();
+        self.record_start_event(
+            id,
+            QSearchStartEvent {
+                alpha: attrs.get("alpha").unwrap().clone(),
+                beta: attrs.get("beta").unwrap().clone(),
+                fen: attrs.get("pos").unwrap().clone(),
+            },
+        )
+    }
+
+    fn on_qsearch_exit(&self, id: &Id) {
+        self.record_end_event(id, QSearchEndEvent {})
+    }
+
+    fn on_qsearch_move_enter(&self, attrs: &Attributes<'_>, id: &Id) {
+        let attrs = attrs.extract_fields();
+        self.record_start_event(
+            id,
+            QSearchMoveStartEvent {
+                capture: attrs.get("capture").unwrap().clone(),
+            },
+        )
+    }
+
+    fn on_qsearch_move_exit(&self, id: &Id) {
+        self.record_end_event(id, QSearchMoveEndEvent {})
+    }
 }
 
 impl<S: Subscriber> Layer<S> for SearchGraphLayer
@@ -315,6 +385,8 @@ where
             constants::ALPHA_BETA => self.on_alpha_beta_enter(attrs, id),
             constants::ALPHA_BETA_MOVE => self.on_alpha_beta_move_enter(attrs, id),
             constants::ALPHA_BETA_HASH_MOVE => self.on_alpha_beta_hash_move_enter(attrs, id),
+            constants::Q_SEARCH => self.on_qsearch_enter(attrs, id),
+            constants::Q_SEARCH_MOVE => self.on_qsearch_move_enter(attrs, id),
             _ => {}
         }
     }
@@ -327,6 +399,8 @@ where
             constants::ALPHA_BETA => self.on_alpha_beta_exit(&id),
             constants::ALPHA_BETA_MOVE => self.on_alpha_beta_move_exit(&id),
             constants::ALPHA_BETA_HASH_MOVE => self.on_alpha_beta_hash_move_exit(&id),
+            constants::Q_SEARCH => self.on_qsearch_exit(&id),
+            constants::Q_SEARCH_MOVE => self.on_qsearch_move_exit(&id),
             _ => {}
         }
     }
@@ -340,6 +414,21 @@ where
                 constants::SEARCH_TERMINATION => self.on_search_termination(event),
                 constants::SEARCH_COMPLETE => self.on_search_complete(event),
                 constants::SEARCH_WITH_DEPTH_COMPLETE => self.on_search_with_depth_complete(event),
+                constants::STAND_PAT_BETA_CUTOFF => {
+                    self.record_instant_event(QSearchStandPatBetaCutoffEvent {
+                        stand_pat: attrs.get("stand_pat").unwrap().clone(),
+                    })
+                }
+                constants::STAND_PAT_IMPROVED_ALPHA => {
+                    self.record_instant_event(QSearchStandPatImprovedAlphaEvent {
+                        stand_pat: attrs.get("stand_pat").unwrap().clone(),
+                    })
+                }
+                constants::Q_SEARCH_NO_MORE_CAPTURES => {
+                    self.record_instant_event(QSearchNoMoreCapturesEvent {
+                        result: attrs.get("result").unwrap().clone(),
+                    })
+                }
                 _ => {}
             }
         }

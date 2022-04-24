@@ -219,11 +219,14 @@ impl<'a: 'b, 'b> Searcher<'a, 'b> {
         moves.retain(|&m| pos.is_legal_given_pseudolegal(m));
         moves.retain(|&m| m.is_capture());
         if moves.len() == 0 {
-            return if pos.side_to_move() == Color::Black {
+            let result = if pos.side_to_move() == Color::Black {
                 -stand_pat
             } else {
                 stand_pat
             };
+
+            tracing::debug!(%result, event = %constants::Q_SEARCH_NO_MORE_CAPTURES);
+            return result;
         }
 
         for capture in moves {

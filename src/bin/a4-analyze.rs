@@ -405,7 +405,6 @@ impl ObjectModelBuilder {
 
                 self.ab_stack.push(new_ab);
             }
-
             StartEventKind::AlphaBetaHashMove(ab_hash_move) => {
                 let new_ab = {
                     let current_ab = self.current_alpha_beta();
@@ -417,6 +416,8 @@ impl ObjectModelBuilder {
 
                 self.ab_stack.push(new_ab);
             }
+            StartEventKind::QSearch(_) => {}
+            StartEventKind::QSearchMove(_) => {}
         }
     }
 
@@ -441,6 +442,7 @@ impl ObjectModelBuilder {
                     nodes_evaluated: search_with_depth_complete.nodes_evaluated,
                 });
             }
+            _ => {}
         }
     }
 
@@ -463,6 +465,8 @@ impl ObjectModelBuilder {
             EndEventKind::AlphaBetaMove(_) | EndEventKind::AlphaBetaHashMove(_) => {
                 self.ab_stack.pop();
             }
+            EndEventKind::QSearch(_) => {}
+            EndEventKind::QSearchMove(_) => {}
         }
     }
 
