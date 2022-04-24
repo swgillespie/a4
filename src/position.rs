@@ -717,18 +717,27 @@ impl Position {
             Color::Black => buf.push('b'),
         }
         buf.push(' ');
+        let mut can_castle_at_least_once = false;
         if self.can_castle_kingside(Color::White) {
             buf.push('K');
+            can_castle_at_least_once = true;
         }
         if self.can_castle_queenside(Color::White) {
             buf.push('Q');
+            can_castle_at_least_once = true;
         }
         if self.can_castle_kingside(Color::Black) {
             buf.push('k');
+            can_castle_at_least_once = true;
         }
         if self.can_castle_queenside(Color::Black) {
             buf.push('q');
+            can_castle_at_least_once = true;
         }
+        if !can_castle_at_least_once {
+            buf.push('-');
+        }
+
         buf.push(' ');
         if let Some(ep_square) = self.en_passant_square() {
             write!(&mut buf, "{}", ep_square).unwrap();
@@ -1205,6 +1214,13 @@ mod tests {
             let str = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
             let pos = Position::from_fen(str).unwrap();
             assert_eq!(pos.as_fen(), str);
+        }
+
+        #[test]
+        fn no_castle_rights_produces_dash() {
+            let fen = "1r6/1p6/1Pp1pNbk/2P1Pr1p/3P1pP1/3R4/6PP/4R1K1 b - - 0 36";
+            let pos = Position::from_fen(fen).unwrap();
+            assert_eq!(pos.as_fen(), fen);
         }
     }
 
