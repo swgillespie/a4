@@ -20,6 +20,7 @@
     slice_swap_unchecked
 )]
 
+mod book;
 pub mod core;
 pub mod debug;
 pub mod eval;

@@ -16,7 +16,7 @@ use std::{
 
 use anyhow::anyhow;
 
-use crate::{core::Move, position::Position, table, threads, threads::SearchRequest};
+use crate::{book, core::Move, position::Position, table, threads, threads::SearchRequest};
 
 pub fn run() -> io::Result<()> {
     threads::initialize();
@@ -189,6 +189,18 @@ fn handle_go(args: &[&str]) {
         }
     };
 
+    // Play out the book, if possible.
+    let pos = threads::get_main_thread()
+        .get_position()
+        .expect("no position for go?");
+    let move_seq: Vec<_> = pos.history().into_iter().map(|m| m.as_uci()).collect();
+    if let Some(book_move) = book::query(&move_seq) {
+        tracing::info!("book move: {}", book_move);
+        println!("bestmove {}", book_move);
+        return;
+    }
+
+    // If not, do a regular search.
     match result {
         Ok(()) => {
             threads::get_main_thread().set_search(options);

@@ -39,6 +39,8 @@ pub struct Position {
     side_to_move: Color,
     /// The Zobrist hash of this position.
     zobrist_hash: u64,
+    /// The move history of this position.
+    history: Vec<Move>,
 }
 
 impl Position {
@@ -114,6 +116,10 @@ impl Position {
         // TODO(swgillespie) this is pretty inefficient
         kings.into_iter().next()
     }
+
+    pub fn history(&self) -> &[Move] {
+        &self.history
+    }
 }
 
 impl Position {
@@ -127,6 +133,7 @@ impl Position {
             en_passant_square: None,
             side_to_move: Color::White,
             zobrist_hash: 0,
+            history: vec![],
         }
     }
 
@@ -294,6 +301,8 @@ impl Position {
 
     /// Makes a move on the position, updating all internal state to reflect the effects of the move.
     pub fn make_move(&mut self, mov: Move) {
+        self.history.push(mov);
+
         // Quick out for null moves:
         //  1. EP is not legal next turn.
         //  2. Halfmove clock always increases.
