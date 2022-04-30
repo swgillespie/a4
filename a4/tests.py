@@ -17,7 +17,7 @@ import subprocess
 import sys
 
 from chess import Board, Move
-from chess.engine import Limit, INFO_ALL
+from chess.engine import Limit, INFO_ALL, EngineError
 
 from a4.uci import popen_release
 
@@ -98,7 +98,14 @@ async def run_quality_test(test):
                     "expected": bestmove,
                     "actual": info.move,
                 }
-
+        except EngineError as e:
+            return {
+                "test": test,
+                "index": i,
+                "pass": False,
+                "expected": bestmove,
+                "actual": f"exception: {e}",
+            }
         finally:
             await engine.quit()
     return {
