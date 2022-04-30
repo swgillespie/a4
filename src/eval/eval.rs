@@ -81,9 +81,10 @@ impl<'a> Evaluator<'a> {
             }
         }
 
-        self.dump_evaluation();
-        let centipawns =
-            sum_terms(self.material) + sum_terms(self.mobility) + sum_terms(self.pawn_modifiers);
+        let centipawns = self.final_adjustment(
+            sum_terms(self.material) + sum_terms(self.mobility) + sum_terms(self.pawn_modifiers),
+        );
+        self.dump_evaluation(centipawns);
         Value::new(centipawns)
     }
 
@@ -121,6 +122,51 @@ impl<'a> Evaluator<'a> {
         }
     }
 
+    /// Final adjustment of the centipawn score, based on some late heuristics.
+    fn final_adjustment(&mut self, input_cp: i16) -> i16 {
+        let winning_side = if input_cp > 0 {
+            Color::White
+        } else {
+            Color::Black
+        };
+
+        let pos = self.analysis.position();
+        if pos.pawns(winning_side).is_empty() {
+            // Winning side has no pawns; the only way they can win is by coordinating
+            // minor pieces.
+            //
+            // A few known rules here:
+            // 1. A minor piece alone can't win and can only draw.
+            let knights = pos.knights(winning_side);
+            let bishops = pos.bishops(winning_side);
+            let rooks = pos.rooks(winning_side);
+            let queens = pos.queens(winning_side);
+            if rooks.is_empty() && queens.is_empty() && (knights.or(bishops).len() == 1) {
+                self.remark(A1, "position is draw by insufficient material");
+                return 0;
+            }
+
+            // 2. Two knights can't checkmate a bare king.
+            if pos.pieces(winning_side.toggle()).len() == 1
+                && bishops.is_empty()
+                && rooks.is_empty()
+                && queens.is_empty()
+                && knights.len() == 2
+            {
+                self.remark(A2, "position is draw by insufficient material");
+                return 0;
+            }
+
+            // 3. Bare king vs bare king is a draw.
+            if pos.pieces(winning_side).len() == 1 && pos.pieces(winning_side.toggle()).len() == 1 {
+                self.remark(A3, "position is draw by insufficient material");
+                return 0;
+            }
+        }
+
+        return input_cp;
+    }
+
     #[cfg(feature = "trace-eval")]
     fn remark(&mut self, square: Square, remark: &'static str) {
         self.remarks.push((square, remark));
@@ -130,7 +176,7 @@ impl<'a> Evaluator<'a> {
     fn remark(&mut self, _: Square, _: &'static str) {}
 
     #[cfg(feature = "trace-eval")]
-    fn dump_evaluation(&self) {
+    fn dump_evaluation(&self, cp: i16) {
         println!("========================================");
         println!("FEN: {}", self.analysis.position().as_fen());
         println!("========================================");
@@ -155,6 +201,8 @@ impl<'a> Evaluator<'a> {
             sum_terms(self.pawn_modifiers)
         );
         println!("----------------------------------------");
+        println!("Final Score: {}", cp);
+        println!("----------------------------------------");
         println!("Remarks");
         println!("----------------------------------------");
         for (square, remark) in &self.remarks {
@@ -163,7 +211,7 @@ impl<'a> Evaluator<'a> {
     }
 
     #[cfg(not(feature = "trace-eval"))]
-    fn dump_evaluation(&self) {}
+    fn dump_evaluation(&self, _: i16) {}
 }
 
 fn sum_terms(terms: [i16; 2]) -> i16 {
@@ -189,5 +237,29 @@ mod tests {
     fn black_mate_evaluation() {
         let pos = Position::from_fen("4k3/4Q3/4K3/8/8/8/8/8 b - - 0 1").unwrap();
         assert_eq!(Value::mate_in(0), evaluate(&pos));
+    }
+
+    #[test]
+    fn drawn_by_insufficient_material_1() {
+        let pos = Position::from_fen("3k4/8/8/8/2N5/8/8/3K4 w - - 0 1").unwrap();
+        assert_eq!(Value::new(0), evaluate(&pos));
+    }
+
+    #[test]
+    fn drawn_by_insufficient_material_2() {
+        let pos = Position::from_fen("3k4/8/8/5B2/8/8/8/3K4 w - - 0 1").unwrap();
+        assert_eq!(Value::new(0), evaluate(&pos));
+    }
+
+    #[test]
+    fn drawn_by_insufficient_material_3() {
+        let pos = Position::from_fen("3k4/8/8/8/5N2/2N5/8/3K4 w - - 0 1").unwrap();
+        assert_eq!(Value::new(0), evaluate(&pos));
+    }
+
+    #[test]
+    fn drawn_by_insufficient_material_4() {
+        let pos = Position::from_fen("3k4/8/8/8/8/8/8/3K4 w - - 0 1").unwrap();
+        assert_eq!(Value::new(0), evaluate(&pos));
     }
 }
