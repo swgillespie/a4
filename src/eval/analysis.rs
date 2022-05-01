@@ -142,6 +142,14 @@ impl<'a> Analysis<'a> {
         result
     }
 
+    pub fn piece_at_square_is(&self, square: Square, color: Color, kind: PieceKind) -> bool {
+        if let Some(piece) = self.pos.piece_at(square) {
+            return piece.color == color && piece.kind == kind;
+        }
+
+        false
+    }
+
     pub fn position(&self) -> &Position {
         self.pos
     }

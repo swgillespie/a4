@@ -18,13 +18,16 @@ const KNIGHT_WEIGHT: i16 = 300;
 const PAWN_WEIGHT: i16 = 100;
 const MOBILITY_WEIGHT: i16 = 4;
 const SPACE_WEIGHT: i16 = 13;
-const THREATS_WEIGHT: i16 = 7;
+const THREATS_WEIGHT: i16 = 50;
 const TEMPO_WEIGHT: i16 = 15;
 
 // Pawn piece modifiers
 const ISOLATED_PAWN_MODIFIER: i16 = 17;
 const BACKWARD_PAWN_MODIFIER: i16 = 10;
 const DOUBLED_PAWN_MODIFIER: i16 = 10;
+
+// Queen modifiers
+const QUEEN_EARLY_DEVELOPMENT_MODIFIER: i16 = 40;
 
 pub struct Evaluator<'a> {
     analysis: Analysis<'a>,
@@ -34,6 +37,7 @@ pub struct Evaluator<'a> {
     space: [i16; 2],
     threats: [i16; 2],
     tempo: [i16; 2],
+    positional_considerations: [i16; 2],
     #[cfg(feature = "trace-eval")]
     remarks: Vec<(Square, &'static str)>,
 }
@@ -48,6 +52,7 @@ impl<'a> Evaluator<'a> {
             space: [0; 2],
             threats: [0; 2],
             tempo: [0; 2],
+            positional_considerations: [0; 2],
             #[cfg(feature = "trace-eval")]
             remarks: vec![],
         }
@@ -100,7 +105,8 @@ impl<'a> Evaluator<'a> {
                 + sum_terms(self.pawn_modifiers)
                 + sum_terms(self.space)
                 + sum_terms(self.tempo)
-                + sum_terms(self.threats),
+                + sum_terms(self.threats)
+                + sum_terms(self.positional_considerations),
         );
         self.dump_evaluation(centipawns);
         Value::new(centipawns)
@@ -118,8 +124,33 @@ impl<'a> Evaluator<'a> {
         self.material[side as usize] += ROOK_WEIGHT;
     }
 
-    fn evaluate_queen(&mut self, side: Color, _square: Square) {
+    fn evaluate_queen(&mut self, side: Color, square: Square) {
         self.material[side as usize] += QUEEN_WEIGHT;
+        let mut penalize_queen_development_before =
+            |square: Square, color: Color, kind: PieceKind| {
+                if self.analysis.piece_at_square_is(square, color, kind) {
+                    self.positional_considerations[color as usize] -=
+                        QUEEN_EARLY_DEVELOPMENT_MODIFIER;
+                    self.remark(
+                        square,
+                        "penalizing early queen development before this square",
+                    );
+                }
+            };
+
+        if side == Color::White && !(SS_RANK_1 | SS_RANK_2).contains(square) {
+            penalize_queen_development_before(B1, Color::White, PieceKind::Knight);
+            penalize_queen_development_before(C1, Color::White, PieceKind::Bishop);
+            penalize_queen_development_before(F1, Color::White, PieceKind::Bishop);
+            penalize_queen_development_before(G1, Color::White, PieceKind::Knight);
+        }
+
+        if side == Color::Black && !(SS_RANK_7 | SS_RANK_8).contains(square) {
+            penalize_queen_development_before(B8, Color::Black, PieceKind::Knight);
+            penalize_queen_development_before(C8, Color::Black, PieceKind::Bishop);
+            penalize_queen_development_before(F8, Color::Black, PieceKind::Bishop);
+            penalize_queen_development_before(G8, Color::Black, PieceKind::Knight);
+        }
     }
 
     fn evaluate_pawn(&mut self, side: Color, square: Square) {
@@ -289,6 +320,12 @@ impl<'a> Evaluator<'a> {
             self.tempo[Color::White as usize],
             self.tempo[Color::Black as usize],
             sum_terms(self.tempo)
+        );
+        println!(
+            "Positional     | {:^5} | {:^5} | {:^5} |",
+            self.positional_considerations[Color::White as usize],
+            self.positional_considerations[Color::Black as usize],
+            sum_terms(self.positional_considerations)
         );
         println!("----------------------------------------");
         println!("Final Score: {}", cp);
