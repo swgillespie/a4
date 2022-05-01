@@ -18,6 +18,8 @@ const KNIGHT_WEIGHT: i16 = 300;
 const PAWN_WEIGHT: i16 = 100;
 const MOBILITY_WEIGHT: i16 = 10;
 const SPACE_WEIGHT: i16 = 13;
+const THREATS_WEIGHT: i16 = 7;
+const TEMPO_WEIGHT: i16 = 15;
 
 // Pawn piece modifiers
 const ISOLATED_PAWN_MODIFIER: i16 = 17;
@@ -30,6 +32,8 @@ pub struct Evaluator<'a> {
     material: [i16; 2],
     pawn_modifiers: [i16; 2],
     space: [i16; 2],
+    threats: [i16; 2],
+    tempo: [i16; 2],
     #[cfg(feature = "trace-eval")]
     remarks: Vec<(Square, &'static str)>,
 }
@@ -42,6 +46,8 @@ impl<'a> Evaluator<'a> {
             material: [0; 2],
             pawn_modifiers: [0; 2],
             space: [0; 2],
+            threats: [0; 2],
+            tempo: [0; 2],
             #[cfg(feature = "trace-eval")]
             remarks: vec![],
         }
@@ -84,12 +90,16 @@ impl<'a> Evaluator<'a> {
             }
         }
 
+        self.tempo[self.analysis.position().side_to_move() as usize] = TEMPO_WEIGHT;
         self.space();
+        self.threats();
         let centipawns = self.final_adjustment(
             sum_terms(self.material)
                 + sum_terms(self.mobility)
                 + sum_terms(self.pawn_modifiers)
-                + sum_terms(self.space),
+                + sum_terms(self.space)
+                + sum_terms(self.tempo)
+                + sum_terms(self.threats),
         );
         self.dump_evaluation(centipawns);
         Value::new(centipawns)
@@ -163,6 +173,23 @@ impl<'a> Evaluator<'a> {
                 safe_squares & space_behind_pawns & !self.analysis.attacked_by(side.toggle());
             self.space[side as usize] =
                 (safe_squares.len() as i16 + totally_safe_spaces.len() as i16) * SPACE_WEIGHT;
+        }
+    }
+
+    /// Threat term for evaluation. The intent of this term is to encode the intuition that it is best to keep your
+    /// pieces protected and take penalties whenever our opponent attacks a poorly-defended piece, even if we are able
+    /// to deflect the attack in search.
+    fn threats(&mut self) {
+        let pos = self.analysis.position();
+        for side in colors() {
+            // Opponent's pieces that are defended are "attacked" by their fellow pieces.
+            let defended_pieces =
+                pos.pieces(side.toggle()) & self.analysis.attacked_by(side.toggle());
+
+            // Weak pieces are attacked by us and not defended adequately.
+            let weak_pieces =
+                pos.pieces(side.toggle()) & !defended_pieces & self.analysis.attacked_by(side);
+            self.threats[side as usize] = weak_pieces.len() as i16 * THREATS_WEIGHT;
         }
     }
 
@@ -250,7 +277,18 @@ impl<'a> Evaluator<'a> {
             self.space[Color::Black as usize],
             sum_terms(self.space)
         );
-
+        println!(
+            "Threats        | {:^5} | {:^5} | {:^5} |",
+            self.threats[Color::White as usize],
+            self.threats[Color::Black as usize],
+            sum_terms(self.threats)
+        );
+        println!(
+            "Tempo          | {:^5} | {:^5} | {:^5} |",
+            self.tempo[Color::White as usize],
+            self.tempo[Color::Black as usize],
+            sum_terms(self.tempo)
+        );
         println!("----------------------------------------");
         println!("Final Score: {}", cp);
         println!("----------------------------------------");
