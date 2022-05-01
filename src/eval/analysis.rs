@@ -52,6 +52,7 @@ pub struct Analysis<'a> {
     isolated_pawns: OnceAnalysis<SquareSet>,
     backward_pawns: OnceAnalysis<SquareSet>,
     moves: OnceAnalysis<Vec<Move>>,
+    attacked_by: OnceAnalysis<[OnceCell<SquareSet>; 6]>,
 }
 
 impl<'a> Analysis<'a> {
@@ -62,6 +63,7 @@ impl<'a> Analysis<'a> {
             isolated_pawns: OnceAnalysis::new(),
             backward_pawns: OnceAnalysis::new(),
             moves: OnceAnalysis::new(),
+            attacked_by: OnceAnalysis::new(),
         }
     }
 
@@ -103,6 +105,41 @@ impl<'a> Analysis<'a> {
 
     pub fn mobility(&self, color: Color) -> usize {
         self.moves(color).len()
+    }
+
+    pub fn attacked_by_kind(&self, color: Color, kind: PieceKind) -> SquareSet {
+        let tables = self.attacked_by.get_or_init(color, || {
+            [
+                OnceCell::new(),
+                OnceCell::new(),
+                OnceCell::new(),
+                OnceCell::new(),
+                OnceCell::new(),
+                OnceCell::new(),
+            ]
+        });
+
+        let table_ref = &tables[kind as usize];
+        table_ref
+            .get_or_init(|| {
+                let mut result = SquareSet::empty();
+                let occ = self.pos.pieces(Color::White) & self.pos.pieces(Color::Black);
+                for piece in self.pos.pieces_of_kind(color, kind) {
+                    result = result | attacks(kind, color, piece, occ);
+                }
+
+                result
+            })
+            .clone()
+    }
+
+    pub fn attacked_by(&self, color: Color) -> SquareSet {
+        let mut result = SquareSet::empty();
+        for kind in piece_kinds() {
+            result = result | self.attacked_by_kind(color, kind);
+        }
+
+        result
     }
 
     pub fn position(&self) -> &Position {

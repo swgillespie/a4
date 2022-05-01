@@ -17,6 +17,7 @@ const BISHOP_WEIGHT: i16 = 300;
 const KNIGHT_WEIGHT: i16 = 300;
 const PAWN_WEIGHT: i16 = 100;
 const MOBILITY_WEIGHT: i16 = 10;
+const SPACE_WEIGHT: i16 = 13;
 
 // Pawn piece modifiers
 const ISOLATED_PAWN_MODIFIER: i16 = 17;
@@ -28,6 +29,7 @@ pub struct Evaluator<'a> {
     mobility: [i16; 2],
     material: [i16; 2],
     pawn_modifiers: [i16; 2],
+    space: [i16; 2],
     #[cfg(feature = "trace-eval")]
     remarks: Vec<(Square, &'static str)>,
 }
@@ -39,6 +41,7 @@ impl<'a> Evaluator<'a> {
             mobility: [0; 2],
             material: [0; 2],
             pawn_modifiers: [0; 2],
+            space: [0; 2],
             #[cfg(feature = "trace-eval")]
             remarks: vec![],
         }
@@ -81,8 +84,12 @@ impl<'a> Evaluator<'a> {
             }
         }
 
+        self.space();
         let centipawns = self.final_adjustment(
-            sum_terms(self.material) + sum_terms(self.mobility) + sum_terms(self.pawn_modifiers),
+            sum_terms(self.material)
+                + sum_terms(self.mobility)
+                + sum_terms(self.pawn_modifiers)
+                + sum_terms(self.space),
         );
         self.dump_evaluation(centipawns);
         Value::new(centipawns)
@@ -119,6 +126,43 @@ impl<'a> Evaluator<'a> {
         if self.analysis.backward_pawns(side).contains(square) {
             self.pawn_modifiers[side as usize] -= BACKWARD_PAWN_MODIFIER;
             self.remark(square, "pawn is backward");
+        }
+    }
+
+    /// Computes the space coefficient for each side. "Space" represents the space that is controlled by a given player
+    /// - the space behind their advanced pawns.
+    ///
+    /// The intention of this term is to encourage the engine to grab space and hold it early in the game to prevent
+    /// poor opening play. This term encodes the inutition of "control the center". It does not require that the center
+    /// be held with pawns to not discourage hypermodern play.
+    fn space(&mut self) {
+        for side in colors() {
+            let center_files = SS_FILE_C | SS_FILE_D | SS_FILE_E | SS_FILE_F;
+            let our_side_of_the_board = match side {
+                Color::White => SS_RANK_2 | SS_RANK_3 | SS_RANK_4,
+                Color::Black => SS_RANK_7 | SS_RANK_6 | SS_RANK_5,
+            };
+            let space_squares = center_files & our_side_of_the_board;
+            let down = match side {
+                Color::White => Direction::South,
+                Color::Black => Direction::North,
+            };
+            let pos = self.analysis.position();
+
+            // Our pawns lead the way into the unknown and claim space; a space is only claimed, though, if it is actually
+            // safe and not attacked by our opponent's pawns.
+            let safe_squares = space_squares
+                & !pos.pawns(side)
+                & !self
+                    .analysis
+                    .attacked_by_kind(side.toggle(), PieceKind::Pawn);
+            let mut space_behind_pawns = pos.pawns(side);
+            space_behind_pawns = space_behind_pawns | pos.pawns(side).shift(down);
+            space_behind_pawns = space_behind_pawns | pos.pawns(side).shift(down).shift(down);
+            let totally_safe_spaces =
+                safe_squares & space_behind_pawns & !self.analysis.attacked_by(side.toggle());
+            self.space[side as usize] =
+                (safe_squares.len() as i16 + totally_safe_spaces.len() as i16) * SPACE_WEIGHT;
         }
     }
 
@@ -200,6 +244,13 @@ impl<'a> Evaluator<'a> {
             self.pawn_modifiers[Color::Black as usize],
             sum_terms(self.pawn_modifiers)
         );
+        println!(
+            "Space          | {:^5} | {:^5} | {:^5} |",
+            self.space[Color::White as usize],
+            self.space[Color::Black as usize],
+            sum_terms(self.space)
+        );
+
         println!("----------------------------------------");
         println!("Final Score: {}", cp);
         println!("----------------------------------------");
