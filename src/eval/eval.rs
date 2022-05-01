@@ -16,7 +16,7 @@ const ROOK_WEIGHT: i16 = 500;
 const BISHOP_WEIGHT: i16 = 300;
 const KNIGHT_WEIGHT: i16 = 300;
 const PAWN_WEIGHT: i16 = 100;
-const MOBILITY_WEIGHT: i16 = 10;
+const MOBILITY_WEIGHT: i16 = 4;
 const SPACE_WEIGHT: i16 = 13;
 const THREATS_WEIGHT: i16 = 7;
 const TEMPO_WEIGHT: i16 = 15;
@@ -72,8 +72,9 @@ impl<'a> Evaluator<'a> {
             }
         }
 
-        self.mobility[Color::White as usize] = white_mobility as i16 * MOBILITY_WEIGHT;
-        self.mobility[Color::Black as usize] = black_mobility as i16 * MOBILITY_WEIGHT;
+        // Arbitrary term reducing mobility by 4 to try and penalize low-mobility positions.
+        self.mobility[Color::White as usize] = (white_mobility - 4) as i16 * MOBILITY_WEIGHT;
+        self.mobility[Color::Black as usize] = (black_mobility - 4) as i16 * MOBILITY_WEIGHT;
 
         for side in colors() {
             for kind in piece_kinds() {
