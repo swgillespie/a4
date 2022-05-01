@@ -43,7 +43,7 @@ currently in progress. Code for dealing with UCI is likely to be lifted directly
 
 Measured via the STS test harness (see `a4/sts.py`)
 
-a4 - 2528
+a4 - 4122
 Stockfish 0 - 4691
 Stockfish 1 - 4567 (lol)
 ...
