@@ -78,8 +78,8 @@ impl<'a> Evaluator<'a> {
         }
 
         // Arbitrary term reducing mobility by 4 to try and penalize low-mobility positions.
-        self.mobility[Color::White as usize] = (white_mobility - 4) as i16 * MOBILITY_WEIGHT;
-        self.mobility[Color::Black as usize] = (black_mobility - 4) as i16 * MOBILITY_WEIGHT;
+        self.mobility[Color::White as usize] = (white_mobility as i16 - 4) * MOBILITY_WEIGHT;
+        self.mobility[Color::Black as usize] = (black_mobility as i16 - 4) * MOBILITY_WEIGHT;
 
         for side in colors() {
             for kind in piece_kinds() {
