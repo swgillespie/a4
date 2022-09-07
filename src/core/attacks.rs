@@ -5,7 +5,7 @@
 // <LICENSE-MIT or http://opensource.org/licenses/MIT>, at your
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
-use lazy_static::lazy_static;
+use std::sync::LazyLock;
 
 use crate::core::*;
 
@@ -205,12 +205,10 @@ impl RayTable {
     }
 }
 
-lazy_static! {
-    static ref KING_TABLE: KingTable = KingTable::new();
-    static ref PAWN_TABLE: PawnTable = PawnTable::new();
-    static ref KNIGHT_TABLE: KnightTable = KnightTable::new();
-    static ref RAY_TABLE: RayTable = RayTable::new();
-}
+static KING_TABLE: LazyLock<KingTable> = LazyLock::new(KingTable::new);
+static PAWN_TABLE: LazyLock<PawnTable> = LazyLock::new(PawnTable::new);
+static KNIGHT_TABLE: LazyLock<KnightTable> = LazyLock::new(KnightTable::new);
+static RAY_TABLE: LazyLock<RayTable> = LazyLock::new(RayTable::new);
 
 fn positive_ray_attacks(sq: Square, occupancy: SquareSet, dir: Direction) -> SquareSet {
     debug_assert!(dir.as_vector() > 0);
