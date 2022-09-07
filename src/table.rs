@@ -6,7 +6,7 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
-use std::{fmt, lazy::SyncLazy};
+use std::{fmt, sync::LazyLock};
 
 /// A4's transposition table, which is responsible for memoizing search results
 /// for individual positions.
@@ -149,10 +149,10 @@ impl TableEntry {
     }
 }
 
-static TABLE: SyncLazy<Table> = SyncLazy::new(Table::new);
+static TABLE: LazyLock<Table> = LazyLock::new(Table::new);
 
 pub fn initialize() {
-    SyncLazy::force(&TABLE);
+    LazyLock::force(&TABLE);
 }
 
 pub fn clear() {

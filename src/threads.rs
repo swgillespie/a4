@@ -15,12 +15,11 @@
 
 use std::{
     cell::RefCell,
-    lazy::SyncOnceCell,
     sync::{
         atomic::{AtomicBool, Ordering},
         mpsc,
         mpsc::{Receiver, SyncSender},
-        Condvar, Mutex, RwLock,
+        Condvar, Mutex, OnceLock, RwLock,
     },
     thread,
     time::Duration,
@@ -231,13 +230,13 @@ impl WorkerThread {
 }
 
 pub fn get_main_thread() -> &'static MainThread {
-    static MAIN_THREAD: SyncOnceCell<MainThread> = SyncOnceCell::new();
+    static MAIN_THREAD: OnceLock<MainThread> = OnceLock::new();
 
     &MAIN_THREAD.get_or_init(MainThread::new)
 }
 
 pub fn get_worker_threads() -> &'static [WorkerThread] {
-    static WORKER_THREADS: SyncOnceCell<Vec<WorkerThread>> = SyncOnceCell::new();
+    static WORKER_THREADS: OnceLock<Vec<WorkerThread>> = OnceLock::new();
 
     &WORKER_THREADS.get_or_init(|| {
         let mut workers = vec![];

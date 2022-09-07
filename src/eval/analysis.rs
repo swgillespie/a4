@@ -6,7 +6,7 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
-use std::lazy::OnceCell;
+use std::cell::OnceCell;
 
 use crate::{
     core::{
