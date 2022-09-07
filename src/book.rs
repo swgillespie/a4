@@ -6,15 +6,15 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
-use std::lazy::SyncLazy;
+use std::sync::LazyLock;
 
 use rand::prelude::SliceRandom;
 use serde::Deserialize;
 
 const BOOK_STR: &str = include_str!("book.json");
 
-static BOOK: SyncLazy<PositionNode> =
-    SyncLazy::new(|| serde_json::from_str(BOOK_STR).expect("failed to deserialize book"));
+static BOOK: LazyLock<PositionNode> =
+    LazyLock::new(|| serde_json::from_str(BOOK_STR).expect("failed to deserialize book"));
 
 #[derive(Deserialize)]
 struct PositionNode {
