@@ -5,6 +5,8 @@
 // <LICENSE-MIT or http://opensource.org/licenses/MIT>, at your
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
+use std::sync::LazyLock;
+
 use crate::core::{Color, Piece, PieceKind, Square};
 
 struct Xorshift64 {
@@ -83,9 +85,7 @@ impl ZobristHasher {
 
 const ZOBRIST_SEED: u64 = 0xf68e34a4e8ccf09a;
 
-lazy_static::lazy_static! {
-    static ref ZOBRIST_HASHER: ZobristHasher = ZobristHasher::new(ZOBRIST_SEED);
-}
+static ZOBRIST_HASHER: LazyLock<ZobristHasher> = LazyLock::new(|| ZobristHasher::new(ZOBRIST_SEED));
 
 pub fn modify_piece(hash: &mut u64, square: Square, piece: Piece) {
     *hash ^= ZOBRIST_HASHER.square_hash(piece.kind, piece.color, square);
