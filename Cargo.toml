@@ -5,7 +5,7 @@ authors = ["Sean Gillespie <sean@swgillespie.me>"]
 edition = "2021"
 
 [dependencies]
-anyhow = "1.0.44"
+anyhow = "1.0.64"
 bitflags = "1.2.1"
 chashmap = "2.2.2"
 derive_more = "0.99.17"
