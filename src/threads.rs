@@ -91,14 +91,6 @@ impl MainThread {
             .expect("failed to acquire position write lock") = Some(pos);
     }
 
-    pub fn get_position(&self) -> Option<Position> {
-        let pos = self
-            .position
-            .write()
-            .expect("failed to acquire position write lock");
-        (*pos).clone()
-    }
-
     pub fn set_search(&self, search: SearchRequest) {
         *self
             .search
