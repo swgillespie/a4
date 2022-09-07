@@ -29,6 +29,5 @@ pub mod position;
 pub mod search;
 mod table;
 mod threads;
-pub mod tracing;
 pub mod uci;
 mod zobrist;
