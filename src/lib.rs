@@ -20,6 +20,23 @@
     slice_swap_unchecked
 )]
 
+/// Helper macro for writing UCI messages to standard out. This macro echoes the message to standard out while also
+/// logging it.
+macro_rules! uci_output {
+    ($fmt:expr) => {
+        {
+            ::tracing::info!(msg = $fmt, "uci out");
+            println!($fmt)
+        }
+    };
+    ($fmt:expr, $($arg:tt)*) => {
+        {
+            ::tracing::info!(msg = format!($fmt, $($arg)*), "uci out");
+            println!($fmt, $($arg)*)
+        }
+    };
+}
+
 pub mod core;
 pub mod debug;
 pub mod eval;

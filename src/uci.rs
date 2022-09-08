@@ -11,12 +11,21 @@
 
 use std::{
     io::{self, BufRead},
+    sync::atomic::{AtomicUsize, Ordering},
     time::Duration,
 };
 
 use anyhow::anyhow;
 
 use crate::{core::Move, position::Position, table, threads, threads::SearchRequest};
+
+struct Options {
+    threads: AtomicUsize,
+}
+
+static OPTIONS: Options = Options {
+    threads: AtomicUsize::new(1),
+};
 
 pub fn run() -> io::Result<()> {
     threads::initialize();
@@ -25,7 +34,7 @@ pub fn run() -> io::Result<()> {
     let locked_stdin = stdin.lock();
     for maybe_line in locked_stdin.lines() {
         let line = maybe_line?;
-        tracing::info!("{}", line);
+        tracing::info!(msg = line, "uci in");
         let components: Vec<_> = line.split_whitespace().collect();
         let (&command, arguments) = components.split_first().unwrap_or((&"", &[]));
         match (command, arguments) {
@@ -38,9 +47,10 @@ pub fn run() -> io::Result<()> {
             ("go", args) => handle_go(args),
             ("stop", []) => handle_stop(),
             ("quit", []) => return Ok(()),
+            ("setoption", ["name", name, "value", value]) => handle_setoption(name, value),
             // a4 extensions to UCI, for debugging purposes
             ("table", args) => handle_table(args),
-            _ => println!("unrecognized command: {} {:?}", command, arguments),
+            _ => uci_output!("unrecognized command: {} {:?}", command, arguments),
         }
     }
 
@@ -48,13 +58,14 @@ pub fn run() -> io::Result<()> {
 }
 
 fn handle_uci() {
-    println!(
+    uci_output!(
         "id name {} {}",
         env!("CARGO_PKG_NAME"),
         env!("CARGO_PKG_VERSION")
     );
-    println!("id author {}", env!("CARGO_PKG_AUTHORS"));
-    println!("uciok");
+    uci_output!("id author {}", env!("CARGO_PKG_AUTHORS"));
+    uci_output!("option name Threads type spin default 1 min 1 max 32");
+    uci_output!("uciok");
 }
 
 fn handle_stop() {
@@ -63,7 +74,7 @@ fn handle_stop() {
 
 fn handle_isready() {
     // TODO(swgillespie) ask the main thread if it's idle and all worker threads are idle?
-    println!("readyok");
+    uci_output!("readyok");
 }
 
 fn handle_position(args: &[&str]) {
@@ -105,7 +116,7 @@ fn handle_position(args: &[&str]) {
 
     match result {
         Ok(()) => threads::get_main_thread().set_position(position),
-        Err(e) => println!("invalid position command: {}", e),
+        Err(e) => uci_output!("invalid position command: {}", e),
     }
 }
 
@@ -194,12 +205,13 @@ fn handle_go(args: &[&str]) {
             threads::get_main_thread().set_search(options);
             threads::get_main_thread().begin_search();
         }
-        Err(e) => println!("invalid go command: {}", e),
+        Err(e) => uci_output!("invalid go command: {}", e),
     }
 }
 
 fn handle_ucinewgame() {
     threads::get_main_thread().set_position(Position::new());
+    threads::initialize_worker_threads(OPTIONS.threads.load(Ordering::Relaxed));
     table::clear();
 }
 
@@ -208,10 +220,29 @@ fn handle_table(args: &[&str]) {
     let pos = if let Ok(pos) = Position::from_fen(fen_str) {
         pos
     } else {
-        println!("invalid fen position");
+        uci_output!("invalid fen position");
         return;
     };
 
     let entry = table::query(&pos);
-    println!("{:?}", entry);
+    uci_output!("{:?}", entry);
+}
+
+fn handle_setoption(name: &str, value: &str) {
+    match name {
+        "Threads" => {
+            let count: usize = match value.parse() {
+                Ok(v) => v,
+                Err(e) => {
+                    uci_output!("invalid Threads value: {:?}", e);
+                    return;
+                }
+            };
+
+            OPTIONS.threads.store(count, Ordering::Relaxed);
+        }
+        e => {
+            uci_output!("unknown option: {}", e);
+        }
+    }
 }

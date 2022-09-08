@@ -19,7 +19,7 @@ use std::{
         atomic::{AtomicBool, Ordering},
         mpsc,
         mpsc::{Receiver, SyncSender},
-        Condvar, Mutex, OnceLock, RwLock,
+        Condvar, Mutex, Once, OnceLock, RwLock,
     },
     thread,
     time::Duration,
@@ -227,9 +227,9 @@ pub fn get_main_thread() -> &'static MainThread {
     &MAIN_THREAD.get_or_init(MainThread::new)
 }
 
-pub fn get_worker_threads() -> &'static [WorkerThread] {
-    static WORKER_THREADS: OnceLock<Vec<WorkerThread>> = OnceLock::new();
+static WORKER_THREADS: OnceLock<Vec<WorkerThread>> = OnceLock::new();
 
+pub fn get_worker_threads() -> &'static [WorkerThread] {
     &WORKER_THREADS.get_or_init(|| {
         let mut workers = vec![];
         for id in 0..num_cpus::get() {
@@ -238,6 +238,32 @@ pub fn get_worker_threads() -> &'static [WorkerThread] {
 
         workers
     })
+}
+
+pub fn initialize_worker_threads(num_threads: usize) {
+    static INIT: Once = Once::new();
+
+    INIT.call_once(|| {
+        let workers = {
+            let mut workers = vec![];
+            for id in 0..num_threads {
+                workers.push(WorkerThread::new(id));
+            }
+
+            workers
+        };
+
+        let _ = WORKER_THREADS.set(workers);
+        for worker in WORKER_THREADS.get().unwrap() {
+            thread::Builder::new()
+                .name(format!("a4 worker thread #{}", worker.id))
+                .spawn(move || {
+                    WORKER_THREAD_ID.with(|id| *id.borrow_mut() = Some(worker.id));
+                    worker.thread_loop();
+                })
+                .expect("failed to spawn worker thread");
+        }
+    });
 }
 
 thread_local! {
@@ -250,14 +276,4 @@ pub fn get_worker_id() -> Option<usize> {
 
 pub fn initialize() {
     let _ = get_main_thread();
-    let workers = get_worker_threads();
-    for worker in workers {
-        thread::Builder::new()
-            .name(format!("a4 worker thread #{}", worker.id))
-            .spawn(move || {
-                WORKER_THREAD_ID.with(|id| *id.borrow_mut() = Some(worker.id));
-                worker.thread_loop();
-            })
-            .expect("failed to spawn worker thread");
-    }
 }

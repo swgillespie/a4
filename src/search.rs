@@ -394,7 +394,7 @@ pub fn search(pos: &Position, options: &SearchOptions) -> SearchResult {
                     .map(|mov| mov.as_uci())
                     .collect::<Vec<_>>()
                     .join(" ");
-                println!(
+                uci_output!(
                     "info depth {} nodes {} nps {} pv {} score {}",
                     depth,
                     searcher.nodes_evaluated,
@@ -407,7 +407,7 @@ pub fn search(pos: &Position, options: &SearchOptions) -> SearchResult {
     }
 
     if threads::get_worker_id() == Some(0) {
-        println!("bestmove {}", current_best_move.as_uci());
+        uci_output!("bestmove {}", current_best_move.as_uci());
     }
 
     SearchResult {
