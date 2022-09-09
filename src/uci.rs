@@ -17,7 +17,13 @@ use std::{
 
 use anyhow::anyhow;
 
-use crate::{core::Move, position::Position, table, threads, threads::SearchRequest};
+use crate::{
+    core::Move,
+    log::{self, LogLevel},
+    position::Position,
+    table, threads,
+    threads::SearchRequest,
+};
 
 struct Options {
     threads: AtomicUsize,
@@ -65,6 +71,9 @@ fn handle_uci() {
     );
     uci_output!("id author {}", env!("CARGO_PKG_AUTHORS"));
     uci_output!("option name Threads type spin default 1 min 1 max 32");
+    uci_output!("option name DebugLogEnabled type check default false");
+    uci_output!("option name DebugLogLevel type spin default 0 min 0 max 3");
+    uci_output!("option name DebugLogFile type string");
     uci_output!("uciok");
 }
 
@@ -240,6 +249,47 @@ fn handle_setoption(name: &str, value: &str) {
             };
 
             OPTIONS.threads.store(count, Ordering::Relaxed);
+        }
+        "DebugLogEnabled" => {
+            let value: bool = match value.parse() {
+                Ok(v) => v,
+                Err(e) => {
+                    uci_output!("invalid DebugLogEnabled value: {:?}", e);
+                    return;
+                }
+            };
+
+            if value {
+                log::enable();
+            } else {
+                log::disable();
+            }
+
+            info!("logging enabled via UCI");
+        }
+        "DebugLogPath" => {
+            if let Err(e) = log::set_file(value) {
+                uci_output!("failed to set log file output: {:?}", e);
+                return;
+            }
+        }
+        "DebugLogLevel" => {
+            let level = match value.parse() {
+                Ok(0) => LogLevel::Always,
+                Ok(1) => LogLevel::Warn,
+                Ok(2) => LogLevel::Info,
+                Ok(3) => LogLevel::Debug,
+                Ok(_) => {
+                    uci_output!("invalid DebugLogLevel level, must be in range [0, 4)",);
+                    return;
+                }
+                Err(e) => {
+                    uci_output!("invalid DebugLogLevel level: {:?}", e);
+                    return;
+                }
+            };
+
+            log::set_level(level);
         }
         e => {
             uci_output!("unknown option: {}", e);

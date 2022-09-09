@@ -19,6 +19,7 @@
     core_intrinsics,
     slice_swap_unchecked
 )]
+#![allow(unused_macros)]
 
 /// Helper macro for writing UCI messages to standard out. This macro echoes the message to standard out while also
 /// logging it.
@@ -37,9 +38,60 @@ macro_rules! uci_output {
     };
 }
 
+macro_rules! log {
+    ($level:expr, $format:literal) => {
+        crate::log::log($level, format_args!($format));
+    };
+
+    ($level:expr, $format:literal, $($args:tt)*) => {
+        crate::log::log($level, format_args!($format, $($args)*))
+    };
+}
+
+macro_rules! debug {
+    ($format:literal) => {
+        log!(crate::log::LogLevel::Debug, $format);
+    };
+
+    ($format:literal, $($args:tt)*) => {
+        log!(crate::log::LogLevel::Debug, $format, $($args)*)
+    };
+}
+
+macro_rules! info {
+    ($format:literal) => {
+        log!(crate::log::LogLevel::Info, $format);
+    };
+
+    ($format:literal, $($args:tt)*) => {
+        log!(crate::log::LogLevel::Info, $format, $($args)*)
+    };
+}
+
+macro_rules! warn {
+    ($format:literal) => {
+        log!(crate::log::LogLevel::Warn, $format);
+    };
+
+    ($format:literal, $($args:tt)*) => {
+        log!(crate::log::LogLevel::Warn, $format, $($args)*)
+    };
+}
+
+macro_rules! always {
+    ($format:literal) => {
+        log!(crate::log::LogLevel::Always, $format);
+    };
+
+    ($format:literal, $($args:tt)*) => {
+        log!(crate::log::LogLevel::Always, $format, $($args)*)
+    };
+}
+
 pub mod core;
 pub mod debug;
 pub mod eval;
+mod log;
 pub mod movegen;
 pub mod position;
 pub mod search;
