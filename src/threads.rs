@@ -194,6 +194,7 @@ impl WorkerThread {
                     depth: search.depth.unwrap_or(10),
                 };
 
+                info!("search: {:?}", opts);
                 search::search(&position, &opts);
 
                 // The 0th worker thread is special in that it is responsible for printing its search results to stdout.

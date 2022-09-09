@@ -73,7 +73,7 @@ fn handle_uci() {
     uci_output!("option name Threads type spin default 1 min 1 max 32");
     uci_output!("option name DebugLogEnabled type check default false");
     uci_output!("option name DebugLogLevel type spin default 0 min 0 max 3");
-    uci_output!("option name DebugLogFile type string");
+    uci_output!("option name DebugLogPath type string");
     uci_output!("uciok");
 }
 

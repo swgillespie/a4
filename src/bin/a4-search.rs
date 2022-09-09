@@ -52,13 +52,13 @@ fn main() {
     println!("===========================");
     println!("{:<15} {}", "Best Move:", result.best_move.as_uci());
     println!("{:<15} {:?}", "Best Score:", result.best_score);
-    for (i, depth) in result.stats.nodes_evaluated_per_depth.iter().enumerate() {
+    for (i, depth) in result.stats.nodes_searched_per_depth.iter().enumerate() {
         println!("{:<15} {}", format!("Depth {}:", i + 1), depth);
         if i == 0 {
             continue;
         }
 
-        if let Some(prev) = result.stats.nodes_evaluated_per_depth.get(i - 1) {
+        if let Some(prev) = result.stats.nodes_searched_per_depth.get(i - 1) {
             println!("  {:<5} {}", "EBB:", *depth as f64 / *prev as f64);
         }
     }

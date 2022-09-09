@@ -5,3 +5,4 @@ Cargo.lock
 .mypy_cache
 .pytest_cache
 log.json
+scratch/

@@ -40,7 +40,7 @@ pub struct SearchOptions<'a> {
 
 struct Searcher<'a, 'b> {
     search_start_time: Instant,
-    nodes_evaluated: u64,
+    nodes_searched: u64,
     options: &'a SearchOptions<'b>,
     /// Whether this searcher is terminating. This flag is set the first time our termination check reveals that we
     /// should terminate.
@@ -50,8 +50,8 @@ struct Searcher<'a, 'b> {
 /// Statistics about the search, reported to the caller upon termination of the search.
 #[derive(Clone, Debug, Default)]
 pub struct SearchStats {
-    pub nodes_evaluated: u64,
-    pub nodes_evaluated_per_depth: Vec<u64>,
+    pub nodes_searched: u64,
+    pub nodes_searched_per_depth: Vec<u64>,
 }
 
 #[derive(Clone, Debug)]
@@ -64,7 +64,7 @@ pub struct SearchResult {
 impl<'a: 'b, 'b> Searcher<'a, 'b> {
     fn new(options: &'a SearchOptions) -> Searcher<'a, 'b> {
         Searcher {
-            nodes_evaluated: 0,
+            nodes_searched: 0,
             search_start_time: Instant::now(),
             options,
             terminating: false,
@@ -117,8 +117,7 @@ impl<'a: 'b, 'b> Searcher<'a, 'b> {
         // Keep track if any move improved alpha. If so, this is a PV node.
         let mut improved_alpha = false;
         if let Some(hash_move) = hash_move {
-            let mut hash_pos = pos.clone();
-            hash_pos.make_move(hash_move);
+            let hash_pos = self.make_move(pos, hash_move);
             let value = -self.alpha_beta(&hash_pos, -beta, -alpha, depth - 1);
             if value >= beta {
                 table::record_cut(pos, hash_move, depth, value);
@@ -157,8 +156,7 @@ impl<'a: 'b, 'b> Searcher<'a, 'b> {
         // First, we order our moves so that we maximizes the chances of good moves being searched first.
         move_order::order_moves(pos, &mut moves);
         for mov in moves {
-            let mut child = pos.clone();
-            child.make_move(mov);
+            let child = self.make_move(pos, mov);
             let value = -self.alpha_beta(&child, -beta, -alpha, depth - 1);
             if value >= beta {
                 table::record_cut(pos, mov, depth, value);
@@ -187,7 +185,6 @@ impl<'a: 'b, 'b> Searcher<'a, 'b> {
     /// pawn. We can't simply terminate the search there - we must continue evaluations until captures are complete,
     /// otherwise we will not see that our queen is lost.
     fn quiesce(&mut self, pos: &Position, mut alpha: Value, beta: Value) -> Value {
-        self.nodes_evaluated += 1;
         // The "stand pat" score is a lower bound to how bad this position is. We're interested in finding refutations
         // to this position that drop this lower bound.
         //
@@ -220,8 +217,7 @@ impl<'a: 'b, 'b> Searcher<'a, 'b> {
                 return alpha;
             }
 
-            let mut child = pos.clone();
-            child.make_move(capture);
+            let child = self.make_move(pos, capture);
             stand_pat = -self.quiesce(&child, -beta, -alpha);
             if stand_pat >= beta {
                 return beta;
@@ -248,7 +244,7 @@ impl<'a: 'b, 'b> Searcher<'a, 'b> {
         }
 
         if let Some(limit) = self.options.node_limit {
-            if self.nodes_evaluated > limit {
+            if self.nodes_searched > limit {
                 info!("terminating search due to nodes evaluated");
                 self.terminating = true;
                 return false;
@@ -343,6 +339,11 @@ impl<'a: 'b, 'b> Searcher<'a, 'b> {
 
         (hash_move, None)
     }
+
+    fn make_move(&mut self, pos: &Position, mov: Move) -> Position {
+        self.nodes_searched += 1;
+        pos.clone_and_make_move(mov)
+    }
 }
 
 pub fn search(pos: &Position, options: &SearchOptions) -> SearchResult {
@@ -378,14 +379,12 @@ pub fn search(pos: &Position, options: &SearchOptions) -> SearchResult {
         let search_start = Instant::now();
         if let Some((best_move, best_score)) = searcher.search(pos, depth) {
             let search_time = Instant::now().duration_since(search_start);
-            node_count += searcher.nodes_evaluated;
-            stats.nodes_evaluated += searcher.nodes_evaluated;
-            stats
-                .nodes_evaluated_per_depth
-                .push(searcher.nodes_evaluated);
+            node_count += searcher.nodes_searched;
+            stats.nodes_searched += searcher.nodes_searched;
+            stats.nodes_searched_per_depth.push(searcher.nodes_searched);
             current_best_move = best_move;
             current_best_score = best_score;
-            let nps = searcher.nodes_evaluated as f64 / search_time.as_secs_f64();
+            let nps = searcher.nodes_searched as f64 / search_time.as_secs_f64();
             let pv = table::get_pv(pos, depth);
             if threads::get_worker_id() == Some(0) {
                 // TODO(swgillespie) - seldepth, how far did the qsearch go
@@ -397,7 +396,7 @@ pub fn search(pos: &Position, options: &SearchOptions) -> SearchResult {
                 uci_output!(
                     "info depth {} nodes {} nps {} pv {} score {}",
                     depth,
-                    searcher.nodes_evaluated,
+                    searcher.nodes_searched,
                     nps.floor() as i64,
                     pv_str,
                     current_best_score.as_uci(),
