@@ -40,7 +40,7 @@ pub fn run() -> io::Result<()> {
     let locked_stdin = stdin.lock();
     for maybe_line in locked_stdin.lines() {
         let line = maybe_line?;
-        tracing::info!(msg = line, "uci in");
+        info!("uci <= {}", line);
         let components: Vec<_> = line.split_whitespace().collect();
         let (&command, arguments) = components.split_first().unwrap_or((&"", &[]));
         match (command, arguments) {

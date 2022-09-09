@@ -26,13 +26,13 @@
 macro_rules! uci_output {
     ($fmt:expr) => {
         {
-            ::tracing::info!(msg = $fmt, "uci out");
+            always!("uci => {}", format_args!($fmt));
             println!($fmt)
         }
     };
     ($fmt:expr, $($arg:tt)*) => {
         {
-            ::tracing::info!(msg = format!($fmt, $($arg)*), "uci out");
+            always!("uci => {}", format_args!($fmt, $($arg)*));
             println!($fmt, $($arg)*)
         }
     };

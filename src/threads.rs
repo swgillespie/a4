@@ -112,24 +112,23 @@ impl MainThread {
 }
 
 fn main_thread_loop(rx: Receiver<Request>) {
-    let _span = tracing::info_span!("main_thread").entered();
-    tracing::info!("starting");
+    info!("starting");
     while let Ok(req) = rx.recv() {
         match req {
             Request::Search => {
-                tracing::info!("sending start signal to workers");
+                info!("sending start signal to workers");
                 for worker in get_worker_threads() {
                     worker.start();
                 }
             }
             Request::Stop => {
-                tracing::info!("sending stop signal to workers");
+                info!("sending stop signal to workers");
                 for worker in get_worker_threads() {
                     worker.stop();
                     worker.wait_until_idle()
                 }
 
-                tracing::info!("all workers are now idle")
+                info!("all workers are now idle");
             }
         }
     }
@@ -163,19 +162,18 @@ impl WorkerThread {
     }
 
     fn wait_until_idle(&self) {
-        tracing::info!("waiting until worker thread {} is idle", self.id);
+        info!("waiting until worker thread {} is idle", self.id);
         let idle = self.idle_lock.lock().expect("failed to acquire idle lock");
         let _idle = self
             .idle_cv
             .wait_while(idle, |idle| !*idle)
             .expect("failed to wait on condvar");
-        tracing::info!("worker thread {} is idle", self.id);
+        info!("worker thread {} is idle", self.id);
     }
 
     fn thread_loop(&self) {
-        let _span = tracing::info_span!("worker_thread", self.id).entered();
         let main_thread = get_main_thread();
-        tracing::info!("entering worker loop");
+        info!("entering worker loop");
         loop {
             let idle = self.idle_lock.lock().expect("failed to acquire idle lock");
             let mut idle = self
@@ -183,7 +181,7 @@ impl WorkerThread {
                 .wait_while(idle, |idle| *idle)
                 .expect("failed to wait on condvar");
 
-            tracing::info!("worker becoming active");
+            info!("worker becoming active");
             if let Some(search) = main_thread.search() {
                 let position = main_thread
                     .position()
@@ -200,7 +198,7 @@ impl WorkerThread {
 
                 // The 0th worker thread is special in that it is responsible for printing its search results to stdout.
                 if self.id == 0 {
-                    tracing::info!("stopping search for other threads");
+                    info!("stopping search for other threads");
                     for worker in get_worker_threads() {
                         if worker.id == self.id {
                             continue;
@@ -211,12 +209,12 @@ impl WorkerThread {
                     }
                 }
             } else {
-                tracing::warn!("worker going back to sleep due to no search work");
+                warn!("worker going back to sleep due to no search work");
             }
 
             self.stop_flag.store(false, Ordering::Release);
             *idle = true;
-            tracing::info!("worker is idle");
+            info!("worker is idle");
         }
     }
 }

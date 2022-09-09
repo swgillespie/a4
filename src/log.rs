@@ -16,6 +16,10 @@ use std::{
     },
 };
 
+use chrono::Local;
+
+use crate::threads;
+
 #[repr(u8)]
 #[derive(PartialEq, PartialOrd, Eq, Debug)]
 pub enum LogLevel {
@@ -38,7 +42,7 @@ static LOGGER: Logger = Logger {
 };
 
 pub fn set_file(name: &str) -> io::Result<()> {
-    let file = File::options().append(true).open(name)?;
+    let file = File::options().append(true).create(true).open(name)?;
     let mut logger_file = LOGGER.file.lock().unwrap();
     if let Some(old_file) = logger_file.replace(file) {
         old_file.sync_all()?;
@@ -61,9 +65,12 @@ pub fn set_level(level: LogLevel) {
 pub fn log(level: LogLevel, args: Arguments<'_>) {
     if LOGGER.enabled.load(Ordering::Acquire) && LOGGER.level.load(Ordering::Acquire) >= level as u8
     {
+        let id = threads::get_worker_id()
+            .map(|t| t.to_string())
+            .unwrap_or_else(|| "?".to_owned());
         let mut file = LOGGER.file.lock().unwrap();
         if let Some(ref mut file) = *file {
-            let _ = writeln!(file, "{}", args);
+            let _ = writeln!(file, "[{}][{:?}][tid {}] {}", Local::now(), level, id, args);
         }
     }
 }

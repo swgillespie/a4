@@ -7,15 +7,7 @@
 // except according to those terms.
 
 use a4::uci;
-use tracing_subscriber::{filter::LevelFilter, EnvFilter, FmtSubscriber};
 
 fn main() {
-    let subscriber = FmtSubscriber::builder()
-        .with_max_level(LevelFilter::INFO)
-        .with_env_filter(EnvFilter::from_env("A4_LOG"))
-        .with_writer(std::io::stderr)
-        .finish();
-    tracing::subscriber::set_global_default(subscriber).expect("setting default subscriber failed");
-
     uci::run().expect("fatal error while running UCI server");
 }

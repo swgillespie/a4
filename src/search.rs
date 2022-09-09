@@ -241,7 +241,7 @@ impl<'a: 'b, 'b> Searcher<'a, 'b> {
 
         if let Some(limit) = self.options.time_limit {
             if Instant::now().saturating_duration_since(self.search_start_time) > limit {
-                tracing::info!("terminating search due to time limit");
+                info!("terminating search due to time limit");
                 self.terminating = true;
                 return false;
             }
@@ -249,7 +249,7 @@ impl<'a: 'b, 'b> Searcher<'a, 'b> {
 
         if let Some(limit) = self.options.node_limit {
             if self.nodes_evaluated > limit {
-                tracing::info!("terminating search due to nodes evaluated");
+                info!("terminating search due to nodes evaluated");
                 self.terminating = true;
                 return false;
             }
@@ -257,7 +257,7 @@ impl<'a: 'b, 'b> Searcher<'a, 'b> {
 
         if let Some(ptr) = self.options.hard_stop {
             if ptr.load(Ordering::Acquire) {
-                tracing::info!("terminating search due to explicit termination");
+                info!("terminating search due to explicit termination");
                 self.terminating = true;
                 return false;
             }
@@ -352,7 +352,7 @@ pub fn search(pos: &Position, options: &SearchOptions) -> SearchResult {
     let start_time = Instant::now();
     let mut node_count = 0;
     for depth in 1..=options.depth {
-        tracing::info!("beginning iterative search of depth {}", depth);
+        info!("beginning iterative search of depth {}", depth);
         let time_since_start = Instant::now().duration_since(start_time);
         if let Some(limit) = options.time_limit {
             if limit < time_since_start {
