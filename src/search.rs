@@ -394,10 +394,11 @@ pub fn search(pos: &Position, options: &SearchOptions) -> SearchResult {
                     .collect::<Vec<_>>()
                     .join(" ");
                 uci_output!(
-                    "info depth {} nodes {} nps {} pv {} score {}",
+                    "info depth {} nodes {} nps {} time {} pv {} score {}",
                     depth,
                     searcher.nodes_searched,
                     nps.floor() as i64,
+                    search_time.as_millis(),
                     pv_str,
                     current_best_score.as_uci(),
                 );
